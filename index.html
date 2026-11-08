@@ -26,6 +26,8 @@ img{max-width:100%}
 [hidden]{display:none!important}
 </style>
 <script>window.BW_STANDALONE=true</script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="native.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Montserrat:wght@500;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap">
@@ -42,6 +44,7 @@ img{max-width:100%}
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
   color-scheme:dark;
 }
+*,*::before,*::after{box-sizing:border-box}
 html,body{height:100%}
 body{background:radial-gradient(900px 420px at 85% -8%,rgba(52,227,200,.10),transparent 62%),radial-gradient(800px 420px at -10% 108%,rgba(47,134,255,.09),transparent 60%),var(--bg);color:var(--fg);font-family:var(--body-font);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent;overflow:hidden}
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;background:none;border:none;padding:0}
@@ -66,6 +69,8 @@ p{margin:0}
 .icon-btn:hover{border-color:var(--line)}
 .icon-btn svg{width:22px;height:22px}
 #main{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:20px;display:flex;flex-direction:column;gap:20px}
+#main > *{flex-shrink:0}
+.sheet > *,.re-body > *,.g-in > *{flex-shrink:0}
 
 /* buttons */
 .primary{min-height:56px;border-radius:16px;background:var(--body);color:var(--on-lift);font:800 17px var(--body-font);letter-spacing:.01em;padding:0 20px;box-shadow:0 8px 28px -10px rgba(47,134,255,.7)}
@@ -165,8 +170,8 @@ button.card:hover{border-color:#2D3746}
 .minibar{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--body-dim);border:1px solid rgba(47,134,255,.45);color:var(--fg);border-radius:14px;padding:12px 14px;text-align:left}
 .minibar b{font:800 15px var(--body-font)}
 .minibar .mono{color:var(--body);font-weight:700}
-.tabbar{display:grid;grid-template-columns:repeat(4,1fr);background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;margin-bottom:8px}
-.tabbar button{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em;position:relative}
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;margin-bottom:8px}
+.tabbar button{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.02em;position:relative}
 .tabbar svg{width:22px;height:22px}
 .tabbar button[aria-current="page"]{color:var(--mind)}
 .tabbar button[aria-current="page"]::after{content:"";position:absolute;top:6px;width:4px;height:4px;border-radius:50%;background:var(--mind);box-shadow:0 0 8px var(--mind)}
@@ -298,6 +303,106 @@ button.card:hover{border-color:#2D3746}
 .pairs button{aspect-ratio:1;border-radius:12px;border:1px solid var(--line);background:repeating-linear-gradient(45deg,var(--surface-2) 0 6px,var(--surface) 6px 12px);font:32px/1 var(--body-font);color:transparent}
 .pairs button.up{background:var(--surface);color:var(--sym)}
 .pairs button.matched{background:var(--surface);color:var(--sym);opacity:.35}
+/* ---------- accounts, feed, programs ---------- */
+.gate{z-index:85;background:radial-gradient(700px 400px at 100% 0%,rgba(52,227,200,.14),transparent 60%),radial-gradient(700px 400px at 0% 100%,rgba(47,134,255,.14),transparent 60%),var(--bg);overflow-y:auto;padding:env(safe-area-inset-top,0px) max(20px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(20px,env(safe-area-inset-left,0px))}
+.g-in{margin:auto;width:100%;max-width:440px;display:flex;flex-direction:column;gap:16px;padding-block:28px}
+.g-in h1{font:700 clamp(24px,7vw,30px)/1.15 var(--display);letter-spacing:-.01em}
+.g-in .w-logo .mark{width:min(60%,220px)}
+.g-in .w-logo .wm{font-size:26px}
+.g-err{color:var(--bad);font-size:14px;font-weight:600;min-height:0}
+.g-err:empty{display:none}
+.g-note{font-size:13px;color:var(--muted);text-align:center}
+.g-alt{display:flex;justify-content:center;gap:6px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+.preview-tag{align-self:center;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--p15);border:1px solid rgba(255,192,46,.4);border-radius:999px;padding:4px 10px}
+.spinner{width:28px;height:28px;border-radius:50%;border:3px solid var(--surface-2);border-top-color:var(--mind);animation:spin .8s linear infinite;align-self:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.plans{display:flex;flex-direction:column;gap:10px}
+.plan{text-align:left;border-radius:18px;padding:16px;background:var(--surface);border:1.5px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.plan[aria-pressed="true"]{border-color:var(--mind);box-shadow:0 0 0 3px var(--mind-dim)}
+.plan.pro[aria-pressed="true"]{border-color:var(--body);box-shadow:0 0 0 3px var(--body-dim)}
+.plan-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.plan-top b{font:700 17px var(--display)}
+.plan-price{font:700 18px var(--mono);font-variant-numeric:tabular-nums}
+.plan-price small{font-size:12px;color:var(--muted);font-weight:500}
+.plan ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+.plan li::before{content:"✓  ";color:var(--good);font-weight:700}
+.badge{font:700 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--body-dim);color:var(--body)}
+.badge.teal{background:var(--mind-dim);color:var(--mind)}
+.badge.gold{background:rgba(255,192,46,.15);color:var(--p15)}
+.promo-row{display:flex;gap:8px}
+.promo-row .input{flex:1;text-transform:uppercase;font-family:var(--mono)}
+.textarea{min-height:110px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:12px 14px;width:100%;resize:vertical;font:inherit;color:inherit}
+.textarea:focus{border-color:rgba(52,227,200,.6);outline:none}
+.preview-strip{font-size:12px;color:var(--p15);text-align:center;border:1px dashed rgba(255,192,46,.35);border-radius:12px;padding:8px}
+
+.av{flex:none;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,var(--mind),var(--body));color:#041016;font-weight:800}
+.av img{width:100%;height:100%;object-fit:cover}
+.seg.wide{display:grid;grid-template-columns:repeat(3,1fr);width:100%}
+.seg.wide button{padding:0 6px}
+.compose-card{display:flex;align-items:center;gap:12px;text-align:left;padding:14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:15px}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.post-h{display:flex;align-items:center;gap:10px;min-width:0}
+.post-who{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column}
+.post-who b{font-size:15px;display:flex;gap:6px;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.post-who span{font-size:12px;color:var(--muted)}
+.post-body{font-size:15px;white-space:pre-wrap;overflow-wrap:anywhere}
+.post-kind{align-self:flex-start}
+.post-actions{display:flex;gap:4px;border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+.pa{min-height:38px;padding:0 12px;border-radius:10px;display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:700;font-size:14px}
+.pa svg{width:19px;height:19px}
+.pa[aria-pressed="true"]{color:var(--bad)}
+.pa[aria-pressed="true"] svg{fill:currentColor}
+.media{display:grid;gap:4px;border-radius:14px;overflow:hidden}
+.media.n2,.media.n4{grid-template-columns:1fr 1fr}
+.media.n3{grid-template-columns:2fr 1fr}
+.media.n3 > :first-child{grid-row:span 2}
+.media img,.media video{width:100%;height:100%;max-height:420px;object-fit:cover;display:block;background:#000}
+.media.n1 img,.media.n1 video{max-height:520px;object-fit:contain}
+.media button{display:block;padding:0}
+.att{border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(52,227,200,.06),rgba(47,134,255,.06));padding:14px;display:flex;flex-direction:column;gap:8px}
+.att-big{font:600 clamp(24px,8vw,32px)/1.1 var(--display);font-variant-numeric:tabular-nums}
+.att-stats{display:flex;gap:18px;flex-wrap:wrap}
+.att-stats div{display:flex;flex-direction:column}
+.att-stats b{font:600 15px var(--mono);font-variant-numeric:tabular-nums}
+.att-lines{display:flex;flex-direction:column;gap:3px;font-size:14px}
+.att-lines span{display:flex;justify-content:space-between;gap:10px}
+.att-lines em{font-style:normal;color:var(--muted);font-family:var(--mono);font-size:13px;white-space:nowrap}
+.pick-att{display:flex;gap:8px;flex-wrap:wrap}
+.pick-att .secondary{min-height:42px;font-size:14px;padding:0 12px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumb{position:relative;width:76px;height:76px;border-radius:12px;overflow:hidden;background:#000}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover}
+.thumb button{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;font-size:13px}
+.cmt{display:flex;gap:10px;align-items:flex-start}
+.cmt-b{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.cmt-b b{font-size:13px}
+.cmt-b p{font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.cmt-b .link{font-size:12px;align-self:flex-start;padding:2px 0;color:var(--muted)}
+.cmt-in{display:flex;gap:8px;align-items:flex-end}
+.cmt-in .textarea{min-height:46px;height:46px}
+.prof{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
+.prof-top{display:flex;gap:14px;align-items:center;min-width:0}
+.prof-top div{min-width:0}
+.prof-top h2{font:700 19px/1.2 var(--display);overflow-wrap:anywhere}
+.prof-stats{display:flex;gap:22px}
+.prof-stats div{display:flex;flex-direction:column}
+.prof-stats b{font:600 17px var(--mono)}
+.prog{text-align:left;border-radius:20px;padding:16px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;min-width:0}
+.prog.premium{background:linear-gradient(160deg,rgba(47,134,255,.12),transparent 60%),var(--surface);border-color:rgba(47,134,255,.4)}
+.prog h3{font:700 17px/1.2 var(--display)}
+.prog-meta{display:flex;gap:6px;flex-wrap:wrap}
+.prog-cover{margin:-16px -16px 4px;height:140px;background-size:cover;background-position:center}
+.plock{display:inline-flex;align-items:center;gap:6px;color:var(--body);font-weight:800;font-size:13px}
+.prog-body p{font-size:15px;line-height:1.55;margin:0 0 10px}
+.admin-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.admin-row:last-child{border-bottom:none}
+.admin-row b{font-family:var(--mono)}
+.admin-row span{font-size:13px;color:var(--muted)}
+.viewer{z-index:95;background:rgba(0,0,0,.94);align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.viewer img{max-width:100%;max-height:100%;object-fit:contain}
+.viewer button{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:16px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:20px}
+.loadrow{display:flex;justify-content:center;padding:8px}
+
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -312,10 +417,11 @@ button.card:hover{border-color:#2D3746}
     <div id="restdock"></div>
     <div id="minibar"></div>
     <nav class="tabbar">
-      <button data-act="tab" data-tab="workout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Workout</button>
-      <button data-act="tab" data-tab="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>History</button>
+      <button data-act="tab" data-tab="feed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>Feed</button>
+      <button data-act="tab" data-tab="programs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Programs</button>
+      <button data-act="tab" data-tab="workout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Workout</button>
       <button data-act="tab" data-tab="games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 3h0V4zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 3h0V4z"/></svg>Brain gym</button>
-      <button data-act="tab" data-tab="exercises"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Exercises</button>
+      <button data-act="tab" data-tab="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Profile</button>
     </nav>
   </div>
 </div>
@@ -698,7 +804,7 @@ const DEF_SETTINGS={unit:'lb',rest:90,game:'math',autoGame:true,sound:true};
 const ST={
   settings:Object.assign({},DEF_SETTINGS,LS.get('settings',{})),
   workouts:LS.get('workouts',[]),routines:LS.get('routines',[]),custom:LS.get('custom',[]),
-  active:LS.get('active',null),tab:LS.get('tab','workout'),cloud:false,
+  active:LS.get('active',null),tab:({history:'profile',exercises:'profile'})[LS.get('tab','workout')]||LS.get('tab','workout'),cloud:false,
 };
 let lastSets={};
 function rebuildEx(){
@@ -744,10 +850,10 @@ const volOf=w=>w.exercises.reduce((a,e)=>a+e.sets.reduce((b,s)=>b+((s.done!==fal
 const fmtVol=kg=>Math.round(u()==='lb'?kg*KG_LB:kg).toLocaleString()+' '+u();
 
 /* ================= cloud save (falls back to this device) ================= */
-const Cloud={ok:false,cols:{},q:Promise.resolve(),aq:Promise.resolve(),aTimer:null,
+const Cloud={ok:false,mode:null,cols:{},q:Promise.resolve(),aq:Promise.resolve(),aTimer:null,
   async init(){
     try{
-      if(!window.claude||!window.claude.use)return;
+      if(LIVE||!window.claude||!window.claude.use)return;
       const [d,usr]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
       if(!d||!usr)return;const id=await usr.id();if(!id)return;
       const root=`data/users/${id}`,prof=d.doc(root+'/profile');
@@ -771,12 +877,12 @@ const Cloud={ok:false,cols:{},q:Promise.resolve(),aq:Promise.resolve(),aTimer:nu
       softRender();renderDock();
     }catch(e){}
   },
-  put(k,o){if(!this.ok)return;this.q=this.q.then(()=>this.cols[k].doc(o.id).set(o)).catch(()=>toast('Couldn’t sync. Saved on this device.'))},
-  del(k,id){if(!this.ok)return;this.q=this.q.then(()=>this.cols[k].doc(id).delete()).catch(()=>{})},
-  saveSettings(){if(!this.ok)return;const v=clone(ST.settings);this.q=this.q.then(()=>this.settingsRef.set({v})).catch(()=>{})},
+  put(k,o){if(!this.ok)return;if(this.mode==='live'){this.q=this.q.then(()=>API.putDoc(KIND[k],o.id,o)).catch(()=>toast('Couldn’t sync. Saved on this phone.'));return}this.q=this.q.then(()=>this.cols[k].doc(o.id).set(o)).catch(()=>toast('Couldn’t sync. Saved on this device.'))},
+  del(k,id){if(!this.ok)return;if(this.mode==='live'){this.q=this.q.then(()=>API.delDoc(KIND[k],id)).catch(()=>{});return}this.q=this.q.then(()=>this.cols[k].doc(id).delete()).catch(()=>{})},
+  saveSettings(){if(!this.ok)return;if(this.mode==='live'){const v=clone(ST.settings);this.q=this.q.then(()=>API.putDoc('settings','main',v)).catch(()=>{});return}const v=clone(ST.settings);this.q=this.q.then(()=>this.settingsRef.set({v})).catch(()=>{})},
   saveActive(){
     if(!this.ok)return;clearTimeout(this.aTimer);
-    this.aTimer=setTimeout(()=>{const v=ST.active?clone(ST.active):null;this.aq=this.aq.then(()=>v?this.activeRef.set({v}):this.activeRef.delete()).catch(()=>{})},2000);
+    this.aTimer=setTimeout(()=>{const v=ST.active?clone(ST.active):null;if(this.mode==='live'){this.aq=this.aq.then(()=>v?API.putDoc('active','current',v):API.delDoc('active','current')).catch(()=>{});return}this.aq=this.aq.then(()=>v?this.activeRef.set({v}):this.activeRef.delete()).catch(()=>{})},2000);
   },
 };
 function saveSettings(){LS.set('settings',ST.settings);Cloud.saveSettings()}
@@ -842,16 +948,18 @@ function startRest(i,j){
 
 /* ================= rendering ================= */
 let tabScroll={};
-function setTab(t){tabScroll[ST.tab]=$('#main').scrollTop;ST.tab=t;LS.set('tab',t);render();$('#main').scrollTop=tabScroll[t]||0}
+function setTab(t){if(t==='history'||t==='exercises'){PROFILE_SUB=t;LS.set('profileSub',t);t='profile'}tabScroll[ST.tab]=$('#main').scrollTop;ST.tab=t;LS.set('tab',t);render();$('#main').scrollTop=tabScroll[t]||0}
 function render(){
-  const titles={workout:ST.active?'Lifting':'Workout',history:'History',exercises:'Exercises',games:'Brain gym'};
+  if(!appEntered)return;
+  const titles={workout:ST.active?'Lifting':'Workout',feed:'Feed',programs:'Programs',profile:'Profile',games:'Brain gym'};
   $('#title').textContent=titles[ST.tab];
   document.querySelectorAll('.tabbar button').forEach(b=>{if(b.dataset.tab===ST.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   const m=$('#main');
   if(ST.tab==='workout')m.innerHTML=ST.active?workoutHTML():startHTML();
-  else if(ST.tab==='history')m.innerHTML=historyHTML();
+  else if(ST.tab==='feed'){m.innerHTML=feedHTML();if(!FEED.loaded&&!FEED.loading)loadFeed(true)}
+  else if(ST.tab==='programs'){m.innerHTML=programsHTML();if(PROG.list==null&&!PROG.err)loadPrograms()}
   else if(ST.tab==='games')m.innerHTML=gamesHTML();
-  else{m.innerHTML=exercisesHTML();renderExList()}
+  else{m.innerHTML=profileHTML();if(PROFILE_SUB==='exercises')renderExList();if(!myStats||(PROFILE_SUB==='posts'&&myPosts==null))loadMine()}
   renderDock();
 }
 function softRender(){const a=document.activeElement;if(a&&$('#main').contains(a)&&a.tagName==='INPUT')return;const st=$('#main').scrollTop;render();$('#main').scrollTop=st}
@@ -1280,7 +1388,7 @@ function saveFinished(){
   sheet(`<span class="eyebrow">Workout saved</span><h2>${esc(w.name)}</h2>
     <div class="tiles"><div class="tile"><b>${clock((end-A.start)/1000)}</b><span>Duration</span></div><div class="tile"><b>${fmtVol(volOf(w))}</b><span>Volume</span></div><div class="tile"><b>${sets}</b><span>Sets</span></div></div>
     ${prs.length?`<div class="card"><span class="eyebrow">Personal records</span><div class="lines">${prs.map(p=>`<span style="color:var(--fg)">${esc(p)}</span>`).join('')}</div></div>`:''}
-    <button class="primary" data-close>Done</button>`);
+    <button class="primary" data-act="share-workout" data-id="${esc(w.id)}">Share to feed</button><button class="secondary" data-close>Done</button>`);
 }
 function openHistory(id){
   const w=ST.workouts.find(x=>x.id===id);if(!w)return;
@@ -1288,7 +1396,7 @@ function openHistory(id){
     <span class="eyebrow">${new Date(w.start).toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} · ${clock((w.end-w.start)/1000)} · ${fmtVol(volOf(w))}</span>
     ${w.prs?.length?`<div class="card"><span class="eyebrow">Personal records</span><div class="lines">${w.prs.map(p=>`<span style="color:var(--fg)">${esc(p)}</span>`).join('')}</div></div>`:''}
     ${w.exercises.map(e=>`<div class="card"><h3>${esc(exOf(e).name)}</h3>${e.note?`<p class="muted" style="font-size:14px">${esc(e.note)}</p>`:''}<div class="lines">${e.sets.map((s,j)=>`<span class="mono" style="color:var(--fg)">${setLabel(e.sets,j)} · ${esc(setText(e.type,s))}</span>`).join('')}</div></div>`).join('')}
-    <button class="primary" id="hAgain">Do this workout again</button><button class="secondary" id="hRout">Save as routine</button><button class="secondary danger" id="hDel">Delete workout</button>`);
+    <button class="primary" data-act="share-workout" data-id="${esc(w.id)}">Share to feed</button><button class="secondary" id="hAgain">Do this workout again</button><button class="secondary" id="hRout">Save as routine</button><button class="secondary danger" id="hDel">Delete workout</button>`);
   o.querySelector('#hAgain').onclick=()=>{o.close();startWorkout(w)};
   o.querySelector('#hRout').onclick=()=>{o.close();saveRoutineFrom(w)};
   confirmBtn(o.querySelector('#hDel'),'Tap again to delete',()=>{delItem('workouts',w.id);o.close();render()});
@@ -1320,7 +1428,7 @@ function openExercise(id){
     <div class="tiles"><div class="tile"><b>${best?esc(metric[1](best)):'—'}</b><span>${metric[2]}</span></div><div class="tile"><b>${heavy?dispW(heavy)+' '+u():'—'}</b><span>Heaviest</span></div><div class="tile"><b>${sessions.length}</b><span>Sessions</span></div></div>
     ${chart}
     ${sessions.length?`<div class="stack">${sessions.slice(-8).reverse().map(s=>`<div class="card"><span class="eyebrow">${new Date(s.w.start).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</span><div class="lines">${s.x.sets.map((st,j)=>`<span class="mono" style="color:var(--fg)">${setLabel(s.x.sets,j)} · ${esc(setText(e.type,st))}</span>`).join('')}</div></div>`).join('')}</div>`:'<p class="empty">No sessions logged yet.</p>'}
-    ${ST.active?'<button class="outline" id="eAdd">Add to workout</button>':''}${e.custom?'<button class="secondary danger" id="eDel">Delete custom exercise</button>':''}`);
+    ${sessions.length?`<button class="primary" data-act="share-lift" data-id="${esc(id)}">Share my best lift</button>`:''}${ST.active?'<button class="outline" id="eAdd">Add to workout</button>':''}${e.custom?'<button class="secondary danger" id="eDel">Delete custom exercise</button>':''}`);
   const a=o.querySelector('#eAdd');if(a)a.onclick=()=>{ST.active.exercises.push(newEx(id));saveActive();o.close();setTab('workout')};
   const d=o.querySelector('#eDel');if(d)confirmBtn(d,'Tap again to delete',()=>{delItem('custom',id);o.close();render()});
 }
@@ -1380,20 +1488,925 @@ function openRoutineEditor(src){
 function openSettings(){
   const S=ST.settings,rests=[0,30,45,60,90,120,180,240,300];
   const o=sheet(`<div class="sheet-h"><h2>Settings</h2><button class="link" data-close>Done</button></div>
+    ${ME.user?accountHTML():''}
     <div class="field"><label>Weight units</label><div class="seg"><button data-u="lb" aria-pressed="${S.unit==='lb'}">lb · mi</button><button data-u="kg" aria-pressed="${S.unit==='kg'}">kg · km</button></div></div>
     <div class="field"><label>Default rest timer</label><div class="chips">${rests.map(v=>`<button class="chip" data-r="${v}" aria-pressed="${v===S.rest}">${v?clock(v):'Off'}</button>`).join('')}</div></div>
     <label class="toggle"><span>Open a game when rest starts</span><input type="checkbox" id="sAuto" ${S.autoGame?'checked':''}></label>
     <label class="toggle"><span>Beep and buzz when rest ends</span><input type="checkbox" id="sSound" ${S.sound?'checked':''}></label>
-    ${STANDALONE?`<div class="field"><label>Your data</label><p class="muted" style="font-size:13px">Your log lives on this device. Save a backup now and then, and use it to move to a new phone.</p>
+    ${STANDALONE?`<div class="field"><label>Your data</label><p class="muted" style="font-size:13px">${API.live?'Your log is saved to your account and follows you to any phone. You can also keep a backup file.':'Your log lives on this device. Save a backup now and then, and use it to move to a new phone.'}</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" id="sExp">Save backup</button><label class="secondary" style="display:inline-flex;align-items:center;cursor:pointer">Restore backup<input type="file" id="sImp" accept="application/json,.json" hidden></label></div></div>
       <button class="outline" id="sShare">Share Brainweight</button>`
     :`<p class="muted" style="font-size:13px">${ST.cloud?'Workouts, routines and settings are saved to your Claude account and follow you across devices.':'Saving on this device only. Open this page signed in to Claude to keep your log across devices.'}</p>`}`);
+  if(ME.user)wireAccount(o);
   if(STANDALONE){o.querySelector('#sExp').onclick=exportBackup;o.querySelector('#sImp').onchange=e=>{const f=e.target.files[0];if(f)importBackup(f)};o.querySelector('#sShare').onclick=shareApp}
   o.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{S.unit=b.dataset.u;o.querySelectorAll('[data-u]').forEach(c=>c.setAttribute('aria-pressed',c===b));saveSettings();render()});
   o.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{S.rest=+b.dataset.r;o.querySelectorAll('[data-r]').forEach(c=>c.setAttribute('aria-pressed',c===b));saveSettings();render()});
   o.querySelector('#sAuto').onchange=e=>{S.autoGame=e.target.checked;saveSettings()};
   o.querySelector('#sSound').onchange=e=>{S.sound=e.target.checked;saveSettings();ensureAudio()};
 }
+
+const DEMO_PROGRAMS=[{"id":"p10","title":"First 8 weeks","summary":"Two full-body workouts you alternate three days a week. The best place to start if you are new to lifting.","body":"Train three days a week with a rest day between sessions, alternating Day A and Day B (A, B, A one week, then B, A, B the next).\n\nPick weights you could lift for two more reps than the target. When you hit the top of the rep range on every set, add the smallest jump you can next time: about 5 lb on lower-body lifts and 2.5 to 5 lb on upper-body lifts.\n\nRest 2 to 3 minutes on squats, deadlifts and presses, and about 90 seconds on everything else. That is plenty of time for a brain game.","level":"Beginner","goal":"Build a base","days_per_week":3,"weeks":8,"premium":false,"sort":10,"published":true,"routines":[{"name":"Day A","exercises":[{"exId":"back-squat-barbell","rest":150,"sets":[{"r":8,"kind":"w"},{"r":8,"kind":"n"},{"r":8,"kind":"n"},{"r":8,"kind":"n"}]},{"exId":"bench-press-barbell","rest":150,"sets":[{"r":8,"kind":"w"},{"r":8,"kind":"n"},{"r":8,"kind":"n"},{"r":8,"kind":"n"}]},{"exId":"seated-row-cable","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"lateral-raise-dumbbell","rest":60,"sets":[{"r":15,"kind":"n"},{"r":15,"kind":"n"}]},{"exId":"plank","rest":60,"sets":[{"t":30,"kind":"n"},{"t":30,"kind":"n"}]}]},{"name":"Day B","exercises":[{"exId":"romanian-deadlift-barbell","rest":150,"sets":[{"r":8,"kind":"w"},{"r":8,"kind":"n"},{"r":8,"kind":"n"},{"r":8,"kind":"n"}]},{"exId":"overhead-press-dumbbell","rest":120,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"lat-pulldown-cable","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"leg-press","rest":90,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"biceps-curl-dumbbell","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"triceps-pushdown-cable","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"}]}]}]},{"id":"p20","title":"Push pull legs","summary":"Six days a week, each muscle trained twice. A classic split for building size once the basics feel solid.","body":"Run Push, Pull, Legs, then repeat, and take one rest day each week.\n\nThe first lift of each day is your heavy one: work in the 5 to 8 rep range and try to add weight or a rep every week. Everything after it is for size, so focus on a full range of motion and stop one or two reps short of failure.\n\nIf six days is too many, run it as Push, Pull, Legs, rest, and repeat.","level":"Intermediate","goal":"Build muscle","days_per_week":6,"weeks":12,"premium":false,"sort":20,"published":true,"routines":[{"name":"Push","exercises":[{"exId":"bench-press-barbell","rest":180,"sets":[{"r":8,"kind":"w"},{"r":6,"kind":"n"},{"r":6,"kind":"n"},{"r":6,"kind":"n"},{"r":6,"kind":"n"}]},{"exId":"incline-bench-press-dumbbell","rest":120,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"overhead-press-dumbbell","rest":120,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"lateral-raise-cable","rest":60,"sets":[{"r":15,"kind":"n"},{"r":15,"kind":"n"},{"r":15,"kind":"n"}]},{"exId":"rope-pushdown","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"overhead-triceps-extension-cable","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"}]}]},{"name":"Pull","exercises":[{"exId":"deadlift-barbell","rest":180,"sets":[{"r":5,"kind":"w"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]},{"exId":"pull-up","rest":120,"sets":[{"r":8,"kind":"n"},{"r":8,"kind":"n"},{"r":8,"kind":"n"}]},{"exId":"chest-supported-row-dumbbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"face-pull-cable","rest":60,"sets":[{"r":15,"kind":"n"},{"r":15,"kind":"n"},{"r":15,"kind":"n"}]},{"exId":"biceps-curl-ez-bar","rest":60,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"hammer-curl-dumbbell","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"}]}]},{"name":"Legs","exercises":[{"exId":"back-squat-barbell","rest":180,"sets":[{"r":8,"kind":"w"},{"r":6,"kind":"n"},{"r":6,"kind":"n"},{"r":6,"kind":"n"},{"r":6,"kind":"n"}]},{"exId":"romanian-deadlift-barbell","rest":120,"sets":[{"r":8,"kind":"n"},{"r":8,"kind":"n"},{"r":8,"kind":"n"}]},{"exId":"bulgarian-split-squat-dumbbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"lying-leg-curl","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"leg-extension","rest":60,"sets":[{"r":15,"kind":"n"},{"r":15,"kind":"n"}]},{"exId":"standing-calf-raise-machine","rest":60,"sets":[{"r":15,"kind":"n"},{"r":15,"kind":"n"},{"r":15,"kind":"n"},{"r":15,"kind":"n"}]}]}]},{"id":"p30","title":"Upper lower","summary":"Four days a week: two upper-body days and two lower-body days. A good balance of strength and size.","body":"Train Upper A, Lower A, rest, Upper B, Lower B, then two rest days.\n\nThe A days are heavier with lower reps. The B days use lighter weight and more reps. Each week, try to beat last week's numbers on the first two lifts of each day.","level":"Intermediate","goal":"Strength and size","days_per_week":4,"weeks":10,"premium":false,"sort":30,"published":true,"routines":[{"name":"Upper A","exercises":[{"exId":"bench-press-barbell","rest":180,"sets":[{"r":8,"kind":"w"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]},{"exId":"bent-over-row-barbell","rest":150,"sets":[{"r":6,"kind":"n"},{"r":6,"kind":"n"},{"r":6,"kind":"n"},{"r":6,"kind":"n"}]},{"exId":"overhead-press-barbell","rest":120,"sets":[{"r":8,"kind":"n"},{"r":8,"kind":"n"},{"r":8,"kind":"n"}]},{"exId":"lat-pulldown-cable","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"skull-crusher-ez-bar","rest":60,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"biceps-curl-barbell","rest":60,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"}]}]},{"name":"Lower A","exercises":[{"exId":"back-squat-barbell","rest":180,"sets":[{"r":8,"kind":"w"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]},{"exId":"romanian-deadlift-barbell","rest":150,"sets":[{"r":8,"kind":"n"},{"r":8,"kind":"n"},{"r":8,"kind":"n"}]},{"exId":"leg-press","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"seated-leg-curl","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"standing-calf-raise-machine","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]}]},{"name":"Upper B","exercises":[{"exId":"incline-bench-press-dumbbell","rest":120,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"chest-supported-row-machine","rest":90,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"lateral-raise-dumbbell","rest":60,"sets":[{"r":15,"kind":"n"},{"r":15,"kind":"n"},{"r":15,"kind":"n"}]},{"exId":"pull-up","rest":90,"sets":[{"r":8,"kind":"n"},{"r":8,"kind":"n"},{"r":8,"kind":"n"}]},{"exId":"rope-pushdown","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"hammer-curl-dumbbell","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"}]}]},{"name":"Lower B","exercises":[{"exId":"deadlift-barbell","rest":180,"sets":[{"r":5,"kind":"w"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]},{"exId":"bulgarian-split-squat-dumbbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"hip-thrust-barbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"leg-extension","rest":60,"sets":[{"r":15,"kind":"n"},{"r":15,"kind":"n"}]},{"exId":"hanging-leg-raise","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]}]}]},{"id":"p40","title":"Strength 5×5","summary":"Three big lifts a day, five sets of five. Simple, proven, and all about adding weight to the bar.","body":"Alternate Workout A and Workout B three days a week, with a rest day between sessions.\n\nStart lighter than you think you need. Every session you complete all 5×5, add 5 lb to that lift next time (10 lb for deadlifts). If you miss reps on a lift three sessions in a row, drop that lift by 10 percent and build back up.\n\nRest 3 to 5 minutes between heavy sets.","level":"Beginner","goal":"Get stronger","days_per_week":3,"weeks":12,"premium":false,"sort":40,"published":true,"routines":[{"name":"Workout A","exercises":[{"exId":"back-squat-barbell","rest":180,"sets":[{"r":5,"kind":"w"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]},{"exId":"bench-press-barbell","rest":180,"sets":[{"r":5,"kind":"w"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]},{"exId":"bent-over-row-barbell","rest":150,"sets":[{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]}]},{"name":"Workout B","exercises":[{"exId":"back-squat-barbell","rest":180,"sets":[{"r":5,"kind":"w"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]},{"exId":"overhead-press-barbell","rest":180,"sets":[{"r":5,"kind":"w"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"},{"r":5,"kind":"n"}]},{"exId":"deadlift-barbell","rest":240,"sets":[{"r":5,"kind":"w"},{"r":5,"kind":"n"}]}]}]},{"id":"p50","title":"Dumbbells only","summary":"Three full-body workouts using nothing but a pair of dumbbells and a bench. Great for home or a crowded gym.","body":"Do the three workouts in order across the week, with a rest day after each.\n\nWhen every set hits the top of the rep range, move up to the next dumbbell. If you cannot go heavier, add a rep or slow the lowering part of each rep to three seconds.","level":"Beginner","goal":"Train anywhere","days_per_week":3,"weeks":8,"premium":false,"sort":50,"published":true,"routines":[{"name":"Day 1","exercises":[{"exId":"goblet-squat-dumbbell","rest":90,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"bench-press-dumbbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"single-arm-row-dumbbell","rest":60,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"lateral-raise-dumbbell","rest":60,"sets":[{"r":15,"kind":"n"},{"r":15,"kind":"n"}]}]},{"name":"Day 2","exercises":[{"exId":"romanian-deadlift-dumbbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"overhead-press-dumbbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"reverse-lunge-dumbbell","rest":60,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"hammer-curl-dumbbell","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"}]}]},{"name":"Day 3","exercises":[{"exId":"bulgarian-split-squat-dumbbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"incline-bench-press-dumbbell","rest":90,"sets":[{"r":10,"kind":"n"},{"r":10,"kind":"n"},{"r":10,"kind":"n"}]},{"exId":"chest-supported-row-dumbbell","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"},{"r":12,"kind":"n"}]},{"exId":"overhead-triceps-extension-dumbbell","rest":60,"sets":[{"r":12,"kind":"n"},{"r":12,"kind":"n"}]}]}]}];
+/* ================= accounts + backend ================= */
+const CFG=Object.assign({coachName:'Mitchell'},window.BW_CONFIG||{});
+const COACH=CFG.coachName||'Mitchell';
+const PRICE={member:{month:'$4.99',year:'$39.99'},pro:{month:'$9.99',year:'$79.99'}};
+const LIVE=!!(CFG.supabaseUrl&&CFG.supabaseAnonKey&&window.supabase&&window.supabase.createClient);
+const sb=LIVE?window.supabase.createClient(CFG.supabaseUrl,CFG.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
+const ME={user:null,profile:null,access:null};
+const siteURL=()=>location.origin+location.pathname;
+const KIND={workouts:'workout',routines:'routine',custom:'exercise'};
+const AUTHOR='id,username,display_name,avatar_url,is_admin';
+const lvl=()=>ME.access?.level||0;
+const isAdmin=()=>!!ME.access?.admin;
+const isReserved=n=>/(brainweight|brainweigt|brainwt)/.test(String(n||'').toLowerCase().replace(/[^a-z0-9]/g,'').replace(/[013457]/g,c=>({0:'o',1:'i',3:'e',4:'a',5:'s',7:'t'})[c]));
+const RESERVED_MSG='Names with “Brainweight” in them are reserved.';
+const safeURL=u=>/^(https:\/\/|blob:)/.test(String(u||''))?String(u):'';
+function errMsg(e){
+  const m=String((e&&(e.message||e.error_description||e.msg))||e||'');
+  const map=[['invalid_code','That promo code doesn’t exist.'],['code_expired','That promo code has expired.'],['code_used_up','That promo code has been used up.'],['already_redeemed','You already used that promo code.'],['Invalid login credentials','That email and password don’t match.'],['Email not confirmed','Confirm your email first. Check your inbox for the link.'],['already registered','There’s already an account with that email. Try signing in.'],['Password should be','Use a password with at least 8 characters.'],['reserved_name',RESERVED_MSG],['profiles_username_key','That username is taken.'],['profiles_username_check','Usernames use 3–20 lowercase letters, numbers or underscores.'],['Failed to fetch','You’re offline. Check your connection and try again.']];
+  for(const [k,v] of map)if(m.includes(k))return v;
+  return m||'Something went wrong. Try again.';
+}
+
+const LiveAPI={
+  live:true,
+  async session(){const {data}=await sb.auth.getSession();return data.session},
+  onAuth(cb){sb.auth.onAuthStateChange((ev,s)=>setTimeout(()=>cb(ev,s),0))},
+  async signUp(email,password,name,username){const {data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name,username},emailRedirectTo:siteURL()}});if(error)throw error;return {session:data.session}},
+  async usernameFree(name){const {data,error}=await sb.rpc('username_available',{name});if(error)throw error;return !!data},
+  async signIn(email,password){const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error},
+  async signOut(){await sb.auth.signOut()},
+  async resetPassword(email){const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:siteURL()});if(error)throw error},
+  async updatePassword(password){const {error}=await sb.auth.updateUser({password});if(error)throw error},
+  async access(){const {data,error}=await sb.rpc('my_access');if(error)throw error;return data},
+  async redeem(code){const {data,error}=await sb.rpc('redeem_promo',{p_code:code});if(error)throw error;return data},
+  async billing(body){
+    const {data,error}=await sb.functions.invoke('billing',{body:Object.assign({return_url:siteURL()},body)});
+    if(error){let m='Billing isn’t set up yet. Try again soon.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}
+    if(!data||!data.url)throw new Error('Billing isn’t set up yet. Try again soon.');
+    return data.url;
+  },
+  async profile(id){const {data,error}=await sb.from('profiles').select('*').eq('id',id).maybeSingle();if(error)throw error;return data},
+  async profileByUsername(name){const {data,error}=await sb.from('profiles').select('*').eq('username',name).maybeSingle();if(error)throw error;return data},
+  async updateProfile(f){const {data,error}=await sb.from('profiles').update(f).eq('id',ME.user.id).select().single();if(error)throw error;return data},
+  async stats(id){const {data,error}=await sb.rpc('profile_stats',{uid:id});if(error)throw error;return data},
+  async docs(){const {data,error}=await sb.from('user_docs').select('kind,id,data');if(error)throw error;return data},
+  async putDoc(kind,id,data){const {error}=await sb.from('user_docs').upsert({user_id:ME.user.id,kind,id:String(id),data,updated_at:new Date().toISOString()});if(error)throw error},
+  async delDoc(kind,id){const {error}=await sb.from('user_docs').delete().eq('kind',kind).eq('id',String(id));if(error)throw error},
+  async posts({mode,userId,before,limit=15}={}){
+    let q=sb.from('posts').select(`*, author:profiles!posts_user_id_fkey(${AUTHOR})`).order('created_at',{ascending:false}).limit(limit);
+    if(before)q=q.lt('created_at',before);
+    if(userId)q=q.eq('user_id',userId);
+    else if(mode==='advice')q=q.eq('kind','advice');
+    else if(mode==='following'){const {data:f,error:fe}=await sb.from('follows').select('following').eq('follower',ME.user.id);if(fe)throw fe;q=q.in('user_id',(f||[]).map(x=>x.following).concat(ME.user.id))}
+    const {data,error}=await q;if(error)throw error;
+    let liked=new Set();
+    if(data.length){const {data:l}=await sb.from('likes').select('post_id').eq('user_id',ME.user.id).in('post_id',data.map(p=>p.id));liked=new Set((l||[]).map(x=>x.post_id))}
+    return data.map(p=>Object.assign(p,{liked:liked.has(p.id)}));
+  },
+  async createPost(p){const {data,error}=await sb.from('posts').insert({kind:p.kind,body:p.body||null,attachment:p.attachment||null,media:p.media||[]}).select(`*, author:profiles!posts_user_id_fkey(${AUTHOR})`).single();if(error)throw error;return Object.assign(data,{liked:false})},
+  async deletePost(id){const {error}=await sb.from('posts').delete().eq('id',id);if(error)throw error},
+  async hidePost(id){const {error}=await sb.from('posts').update({hidden:true}).eq('id',id);if(error)throw error},
+  async like(id,on){const {error}=on?await sb.from('likes').insert({post_id:id,user_id:ME.user.id}):await sb.from('likes').delete().eq('post_id',id).eq('user_id',ME.user.id);if(error&&error.code!=='23505')throw error},
+  async comments(postId){const {data,error}=await sb.from('comments').select(`*, author:profiles!comments_user_id_fkey(${AUTHOR})`).eq('post_id',postId).order('created_at');if(error)throw error;return data},
+  async addComment(postId,body){const {data,error}=await sb.from('comments').insert({post_id:postId,body}).select(`*, author:profiles!comments_user_id_fkey(${AUTHOR})`).single();if(error)throw error;return data},
+  async deleteComment(id){const {error}=await sb.from('comments').delete().eq('id',id);if(error)throw error},
+  async report(r){const {error}=await sb.from('reports').insert(r);if(error)throw error},
+  async block(uid,on){const {error}=on?await sb.from('blocks').insert({blocked:uid}):await sb.from('blocks').delete().eq('blocker',ME.user.id).eq('blocked',uid);if(error&&error.code!=='23505')throw error},
+  async follow(uid,on){const {error}=on?await sb.from('follows').insert({following:uid}):await sb.from('follows').delete().eq('follower',ME.user.id).eq('following',uid);if(error&&error.code!=='23505')throw error},
+  async upload(blob,ext,mime){
+    const path=`${ME.user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const {error}=await sb.storage.from('media').upload(path,blob,{contentType:mime,cacheControl:'31536000',upsert:false});
+    if(error)throw error;
+    return sb.storage.from('media').getPublicUrl(path).data.publicUrl;
+  },
+  async catalog(){const {data,error}=await sb.rpc('program_catalog');if(error)throw error;return data||[]},
+  async program(id){const {data,error}=await sb.from('programs').select('*').eq('id',id).maybeSingle();if(error)throw error;return data},
+  async saveProgram(p){
+    const row=Object.assign({},p,{updated_at:new Date().toISOString()});delete row.unlocked;delete row.routine_count;delete row.created_at;delete row.author_id;
+    const {data,error}=p.id?await sb.from('programs').update(row).eq('id',p.id).select().single():await sb.from('programs').insert(row).select().single();
+    if(error)throw error;return data;
+  },
+  async deleteProgram(id){const {error}=await sb.from('programs').delete().eq('id',id);if(error)throw error},
+  async promos(){const {data,error}=await sb.from('promo_codes').select('*').order('created_at',{ascending:false});if(error)throw error;return data},
+  async savePromo(c){const {error}=await sb.from('promo_codes').insert(c);if(error){if(error.code==='23505')throw new Error('That code already exists.');throw error}},
+  async setPromoActive(code,active){const {error}=await sb.from('promo_codes').update({active}).eq('code',code);if(error)throw error},
+  async reports(){const {data,error}=await sb.from('reports').select('*, post:posts(id,body,kind,user_id,media,hidden), who:profiles!reports_reporter_fkey(username)').eq('resolved',false).order('created_at',{ascending:false});if(error)throw error;return data},
+  async resolveReport(id){const {error}=await sb.from('reports').update({resolved:true}).eq('id',id);if(error)throw error},
+  async giveAccess(username,plan,days){
+    const p=await this.profileByUsername(username.replace(/^@/,'').trim().toLowerCase());
+    if(!p)throw new Error('No one has that username.');
+    const {error}=await sb.from('grants').insert({user_id:p.id,plan,source:'admin',expires_at:days?new Date(Date.now()+days*864e5).toISOString():null});
+    if(error)throw error;return p;
+  },
+  async deleteAccount(){
+    const {data,error}=await sb.functions.invoke('billing',{body:{action:'delete_account'}});
+    if(error||!data||!data.deleted){let m='Couldn’t delete your account. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}
+    try{await sb.auth.signOut({scope:'local'})}catch(e){}
+  },
+};
+
+/* Preview backend: runs entirely on this device with sample content, so every screen can be tried before Supabase is connected. */
+const DemoAPI=(()=>{
+  const ago=m=>new Date(Date.now()-m*60000).toISOString();
+  const P={
+    me:{id:'me',username:'you',display_name:'You',bio:'',avatar_url:null,is_admin:true},
+    jordan:{id:'jordan',username:'jordan_lifts',display_name:'Jordan (sample)',bio:'Sample account for the preview.',avatar_url:null,is_admin:false},
+    ava:{id:'ava',username:'ava.trains',display_name:'Ava (sample)',bio:'Sample account for the preview.',avatar_url:null,is_admin:false},
+    sam:{id:'sam',username:'sam_squats',display_name:'Sam (sample)',bio:'Sample account for the preview.',avatar_url:null,is_admin:false},
+  };
+  const seed=()=>({signedIn:false,level:0,sub:null,grant:null,me:P.me,
+    posts:[
+      {id:'s1',user_id:'jordan',kind:'lift',body:'Finally hit 225 for 5. Played Quick math between every set and got a 31 streak.',attachment:{type:'lift',exId:'bench-press-barbell',name:'Bench press (barbell)',ltype:'w',set:{w:102.06,r:5},e1rm:119.07,pr:true,date:Date.now()-864e5},media:[],like_count:12,comment_count:2,created_at:ago(42)},
+      {id:'s2',user_id:'sam',kind:'advice',body:'My squat has been stuck at 185 for a month. Should I switch to the Strength 5×5 program or keep running push pull legs?',attachment:null,media:[],like_count:3,comment_count:1,created_at:ago(180)},
+      {id:'s3',user_id:'ava',kind:'workout',body:'Leg day done. Felt strong today.',attachment:{type:'workout',name:'Legs',start:Date.now()-26*36e5,end:Date.now()-26*36e5+52*60000,volume:7420,sets:17,prs:['Romanian deadlift (barbell): heaviest weight 185 lb'],exercises:[
+        {name:'Back squat (barbell)',type:'w',sets:[{kind:'w',w:61.2,r:8},{kind:'n',w:83.9,r:6},{kind:'n',w:83.9,r:6},{kind:'n',w:83.9,r:6}]},
+        {name:'Romanian deadlift (barbell)',type:'w',sets:[{kind:'n',w:79.4,r:8},{kind:'n',w:83.9,r:8},{kind:'n',w:83.9,r:8}]},
+        {name:'Lying leg curl',type:'w',sets:[{kind:'n',w:36.3,r:12},{kind:'n',w:36.3,r:12},{kind:'n',w:36.3,r:11}]},
+        {name:'Standing calf raise (machine)',type:'w',sets:[{kind:'n',w:68,r:15},{kind:'n',w:68,r:15},{kind:'n',w:68,r:14},{kind:'n',w:68,r:15}]}]},media:[],like_count:8,comment_count:0,created_at:ago(26*60)},
+    ],
+    comments:[
+      {id:'c1',post_id:'s1',user_id:'ava',body:'Huge! What did your last few weeks look like?',created_at:ago(30)},
+      {id:'c2',post_id:'s1',user_id:'sam',body:'Let’s go 🔥',created_at:ago(20)},
+      {id:'c3',post_id:'s2',user_id:'jordan',body:'5×5 helped me break a plateau. Drop the weight 10 percent and build back up.',created_at:ago(150)},
+    ],
+    likes:[],follows:['jordan'],blocks:[],reports:[],
+    promos:[{code:'FRIENDS-FREE',plan:'pro',duration_days:null,max_uses:10,uses:2,expires_at:null,active:true,note:'Sample code',created_at:ago(5000)}],
+    programs:DEMO_PROGRAMS.concat([{id:'pro1',title:'Bench 300 blueprint (sample)',summary:'A sample of what a Pro program looks like. Replace it with your own detailed lifts.',body:'This is sample text for the preview.\n\nYour Pro programs can include week-by-week instructions, technique cues, photos and the exact workouts to run.',level:'Advanced',goal:'Bigger bench',days_per_week:4,weeks:12,premium:true,sort:0,published:true,cover_url:null,routines:[{name:'Heavy bench day',exercises:[{exId:'bench-press-barbell',rest:240,sets:[{kind:'w',r:5},{kind:'n',r:3},{kind:'n',r:3},{kind:'n',r:3}]},{exId:'paused-bench-press',rest:180,sets:[{kind:'n',r:4},{kind:'n',r:4},{kind:'n',r:4}]},{exId:'close-grip-bench-press-barbell',rest:120,sets:[{kind:'n',r:8},{kind:'n',r:8},{kind:'n',r:8}]}]}]}]),
+  });
+  let D=LS.get('demo',null);
+  if(!D||!D.posts)D=seed();
+  D.posts.forEach(p=>{p.media=(p.media||[]).filter(m=>!String(m.url).startsWith('blob:'))});
+  const save=()=>LS.set('demo',D);
+  const prof=id=>id==='me'?D.me:P[id]||{id,username:'lifter',display_name:'Lifter'};
+  const withAuthor=p=>Object.assign({},p,{author:prof(p.user_id),liked:D.likes.includes(p.id)});
+  const access=()=>({level:D.level,admin:true,subscription:D.sub,grant:D.grant});
+  const wait=(v)=>new Promise(r=>setTimeout(()=>r(v),150));
+  const authCbs=[];
+  return {
+    live:false,
+    async session(){return D.signedIn?{user:{id:'me',email:'you@example.com'}}:null},
+    onAuth(cb){authCbs.push(cb)},
+    async signUp(email,password,name,username){if(password.length<8)throw new Error('Password should be at least 8 characters');D.signedIn=true;D.me.display_name=name||'You';if(username)D.me.username=username;save();return {session:{user:{id:'me',email}}}},
+    async usernameFree(name){return /^[a-z0-9_]{3,20}$/.test(name)&&!isReserved(name)&&!Object.values(P).some(p=>p.username===name)},
+    async signIn(email,password){if(!email||!password)throw new Error('Enter your email and password.');D.signedIn=true;save()},
+    async signOut(){D.signedIn=false;save()},
+    async resetPassword(){},
+    async updatePassword(){},
+    async access(){return wait(access())},
+    async redeem(code){
+      const c=D.promos.find(x=>x.code===String(code).toUpperCase().replace(/\s/g,''));
+      if(!c||!c.active)throw new Error('invalid_code');
+      if(c.max_uses&&c.uses>=c.max_uses)throw new Error('code_used_up');
+      c.uses++;D.grant={plan:c.plan,source:'promo:'+c.code,expires_at:c.duration_days?new Date(Date.now()+c.duration_days*864e5).toISOString():null};
+      D.level=Math.max(D.level,c.plan==='pro'?2:1);save();return access();
+    },
+    async billing(body){
+      if(body.action==='portal'){toast('In the live app this opens Stripe to manage or cancel your plan.');return null}
+      D.level=body.plan==='pro'?2:1;D.sub={plan:body.plan,status:'trialing',trial_end:new Date(Date.now()+7*864e5).toISOString(),current_period_end:new Date(Date.now()+7*864e5).toISOString(),cancel_at_period_end:false,had_trial:true,has_customer:true};
+      save();toast('Preview: plan unlocked. No payment was taken.');return null;
+    },
+    async profile(id){return wait(prof(id))},
+    async profileByUsername(n){return Object.values(P).concat([D.me]).find(p=>p.username===n)||null},
+    async updateProfile(f){if(f.username&&!/^[a-z0-9_]{3,20}$/.test(f.username))throw new Error('profiles_username_check');Object.assign(D.me,f);save();return D.me},
+    async stats(id){return {posts:D.posts.filter(p=>p.user_id===id).length,followers:id==='me'?3:24,following:id==='me'?D.follows.length:12,i_follow:D.follows.includes(id),blocked:D.blocks.includes(id)}},
+    async docs(){return []},async putDoc(){},async delDoc(){},
+    async posts({mode,userId,before,limit=15}={}){
+      let list=D.posts.filter(p=>!D.blocks.includes(p.user_id)&&!p.hidden).sort((a,b)=>b.created_at.localeCompare(a.created_at));
+      if(userId)list=list.filter(p=>p.user_id===userId);
+      else if(mode==='advice')list=list.filter(p=>p.kind==='advice');
+      else if(mode==='following')list=list.filter(p=>p.user_id==='me'||D.follows.includes(p.user_id));
+      if(before)list=list.filter(p=>p.created_at<before);
+      return wait(list.slice(0,limit).map(withAuthor));
+    },
+    async createPost(p){const post={id:'p'+newId(),user_id:'me',kind:p.kind,body:p.body||null,attachment:p.attachment||null,media:p.media||[],like_count:0,comment_count:0,created_at:new Date().toISOString()};D.posts.push(post);save();return withAuthor(post)},
+    async deletePost(id){D.posts=D.posts.filter(p=>p.id!==id);save()},
+    async hidePost(id){const p=D.posts.find(x=>x.id===id);if(p)p.hidden=true;save()},
+    async like(id,on){const p=D.posts.find(x=>x.id===id);if(on&&!D.likes.includes(id)){D.likes.push(id);if(p)p.like_count++}else if(!on&&D.likes.includes(id)){D.likes=D.likes.filter(x=>x!==id);if(p)p.like_count--}save()},
+    async comments(postId){return wait(D.comments.filter(c=>c.post_id===postId).map(c=>Object.assign({},c,{author:prof(c.user_id)})))},
+    async addComment(postId,body){const c={id:'c'+newId(),post_id:postId,user_id:'me',body,created_at:new Date().toISOString()};D.comments.push(c);const p=D.posts.find(x=>x.id===postId);if(p)p.comment_count++;save();return Object.assign({},c,{author:D.me})},
+    async deleteComment(id){const c=D.comments.find(x=>x.id===id);D.comments=D.comments.filter(x=>x.id!==id);const p=c&&D.posts.find(x=>x.id===c.post_id);if(p)p.comment_count--;save()},
+    async report(r){D.reports.push(Object.assign({id:newId(),resolved:false,created_at:new Date().toISOString()},r));save()},
+    async block(uid,on){D.blocks=D.blocks.filter(x=>x!==uid);if(on)D.blocks.push(uid);save()},
+    async follow(uid,on){D.follows=D.follows.filter(x=>x!==uid);if(on)D.follows.push(uid);save()},
+    async upload(blob){return URL.createObjectURL(blob)},
+    async catalog(){return wait(D.programs.filter(p=>p.published||true).map(p=>({id:p.id,title:p.title,summary:p.summary,level:p.level,goal:p.goal,days_per_week:p.days_per_week,weeks:p.weeks,premium:p.premium,cover_url:p.cover_url,sort:p.sort,routine_count:(p.routines||[]).length,unlocked:p.premium?D.level>=2:D.level>=1})).sort((a,b)=>(a.premium-b.premium)||(a.sort-b.sort)))},
+    async program(id){const p=D.programs.find(x=>x.id===id);if(!p)return null;if(p.premium&&D.level<2)return null;return clone(p)},
+    async saveProgram(p){if(p.id){const i=D.programs.findIndex(x=>x.id===p.id);D.programs[i]=Object.assign({},D.programs[i],p)}else{p=Object.assign({},p,{id:'pr'+newId()});D.programs.push(p)}save();return p},
+    async deleteProgram(id){D.programs=D.programs.filter(p=>p.id!==id);save()},
+    async promos(){return D.promos.slice().reverse()},
+    async savePromo(c){if(D.promos.some(x=>x.code===c.code))throw new Error('That code already exists.');D.promos.push(Object.assign({uses:0,created_at:new Date().toISOString()},c));save()},
+    async setPromoActive(code,active){const c=D.promos.find(x=>x.code===code);if(c)c.active=active;save()},
+    async reports(){return D.reports.filter(r=>!r.resolved).map(r=>Object.assign({},r,{post:D.posts.find(p=>p.id===r.post_id)||null,who:{username:'you'}}))},
+    async resolveReport(id){const r=D.reports.find(x=>x.id===id);if(r)r.resolved=true;save()},
+    async giveAccess(username){const p=await this.profileByUsername(username.replace(/^@/,'').trim().toLowerCase());if(!p)throw new Error('No one has that username.');return p},
+    async deleteAccount(){LS.set('demo',null);D=seed();D.signedIn=false;save()},
+    _reset(){D=seed();save()},
+  };
+})();
+const API=LIVE?LiveAPI:DemoAPI;
+
+/* ---------- workout data follows the account ---------- */
+async function loadAccountData(){
+  if(!API.live)return;
+  const uid=ME.user.id,owner=LS.get('owner',null);
+  if(owner&&owner!==uid){ST.workouts=[];ST.routines=[];ST.custom=[];ST.active=null;ST.settings=Object.assign({},DEF_SETTINGS)}
+  const rows=await API.docs();
+  const by={workout:[],routine:[],exercise:[]};let settings=null,active=null;
+  rows.forEach(r=>{if(r.kind==='settings')settings=r.data;else if(r.kind==='active')active=r.data;else if(by[r.kind])by[r.kind].push(r.data)});
+  if(!rows.length&&!owner&&(ST.workouts.length||ST.routines.length||ST.custom.length)){
+    // First sign-in on a phone that already has a log: keep it and upload it.
+    for(const k of ['workouts','routines','custom'])for(const o of ST[k])await API.putDoc(KIND[k],o.id,o).catch(()=>{});
+    await API.putDoc('settings','main',ST.settings).catch(()=>{});
+  }else{
+    ST.workouts=by.workout;ST.routines=by.routine;ST.custom=by.exercise;
+    if(settings)ST.settings=Object.assign({},DEF_SETTINGS,settings);
+    if(active&&(!ST.active||(active.updated||0)>(ST.active.updated||0)))ST.active=active;
+    if(!active&&owner===uid&&ST.active){/* keep the workout in progress on this phone */}
+  }
+  LS.set('owner',uid);['workouts','routines','custom','settings','active'].forEach(k=>LS.set(k,ST[k]));
+  rebuildEx();rebuildHistory();
+  Cloud.mode='live';Cloud.ok=true;ST.cloud=true;
+}
+
+/* ---------- gate: sign in, plans, promo codes ---------- */
+let gateEl=null,gateView=null,payInterval='month',payPlan='member',finishing=false;
+const GATE_LOGO=`<div class="w-logo">${'<span class="mark" role="img" aria-label="Brainweight logo"></span>'}<span class="wm"><b>BRAIN</b>WEIGHT</span><span class="eyebrow">Train your muscles &amp; mind</span></div>`;
+function gate(view,msg){
+  gateView=view;
+  if(!gateEl){gateEl=el('<div class="ov gate" role="dialog" aria-modal="true" aria-label="Brainweight account"><div class="g-in" id="gIn"></div></div>');document.body.appendChild(gateEl)}
+  const box=gateEl.querySelector('#gIn'),demo=!API.live?'<span class="preview-tag">Preview mode</span>':'';
+  const views={
+    loading:`${GATE_LOGO}<div class="spinner" aria-label="Loading"></div>`,
+    signup:`${GATE_LOGO}${demo}<h1>Create your account</h1>
+      <div class="field"><label for="gName">Name</label><input class="input" id="gName" autocomplete="name" placeholder="What should people call you?"></div>
+      <div class="field"><label for="gUser">Username</label><input class="input" id="gUser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="20" placeholder="e.g. heavy_lifts"><span class="g-note" id="gUserHint" style="text-align:left">Letters, numbers and underscores. This is your @name on the feed.</span></div>
+      <div class="field"><label for="gEmail">Email</label><input class="input" id="gEmail" type="email" autocomplete="email" inputmode="email"></div>
+      <div class="field"><label for="gPass">Password</label><input class="input" id="gPass" type="password" autocomplete="new-password" placeholder="At least 8 characters"></div>
+      <p class="g-err" id="gErr">${esc(msg||'')}</p>
+      <button class="primary" id="gGo">Create account</button>
+      <p class="g-alt">Already have an account?<button class="link" data-g="signin">Sign in</button></p>
+      ${!API.live?'<p class="g-note">Preview: any email and password works. Nothing is sent anywhere.</p>':''}`,
+    signin:`${GATE_LOGO}${demo}<h1>Welcome back</h1>
+      <div class="field"><label for="gEmail">Email</label><input class="input" id="gEmail" type="email" autocomplete="email" inputmode="email"></div>
+      <div class="field"><label for="gPass">Password</label><input class="input" id="gPass" type="password" autocomplete="current-password"></div>
+      <p class="g-err" id="gErr">${esc(msg||'')}</p>
+      <button class="primary" id="gGo">Sign in</button>
+      <button class="link" data-g="forgot" style="align-self:center">Forgot your password?</button>
+      <p class="g-alt">New to Brainweight?<button class="link" data-g="signup">Create an account</button></p>`,
+    forgot:`${GATE_LOGO}<h1>Reset your password</h1><p class="muted">Enter your email and we’ll send you a link to set a new password.</p>
+      <div class="field"><label for="gEmail">Email</label><input class="input" id="gEmail" type="email" autocomplete="email" inputmode="email"></div>
+      <p class="g-err" id="gErr">${esc(msg||'')}</p><button class="primary" id="gGo">Send reset link</button>
+      <button class="link" data-g="signin" style="align-self:center">Back to sign in</button>`,
+    sent:`${GATE_LOGO}<h1>Check your email</h1><p class="muted">${esc(msg||'We sent you a link. Open it on this phone to continue.')}</p><button class="secondary" data-g="signin">Back to sign in</button>`,
+    newpass:`${GATE_LOGO}<h1>Set a new password</h1>
+      <div class="field"><label for="gPass">New password</label><input class="input" id="gPass" type="password" autocomplete="new-password" placeholder="At least 8 characters"></div>
+      <p class="g-err" id="gErr">${esc(msg||'')}</p><button class="primary" id="gGo">Save password</button>`,
+    finishing:`${GATE_LOGO}<h1>Finishing setup…</h1><p class="muted">Confirming your plan with Stripe. This usually takes a few seconds.</p><div class="spinner"></div>`,
+    paywall:paywallHTML(msg),
+  };
+  box.innerHTML=views[view];
+  gateEl.scrollTop=0;
+  const go=box.querySelector('#gGo');if(go)go.onclick=()=>gateSubmit(view);
+  box.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter'&&go){e.preventDefault();go.click()}}));
+  if(view==='paywall')wirePaywall(box);
+  const un=box.querySelector('#gUser');
+  if(un){
+    let t=null;const hint=box.querySelector('#gUserHint');
+    const nm=box.querySelector('#gName');
+    nm.addEventListener('input',()=>{if(!un.dataset.touched){un.value=nm.value.toLowerCase().replace(/[^a-z0-9_]/g,'').slice(0,20);un.dispatchEvent(new Event('check'))}});
+    const check=()=>{const v=un.value.toLowerCase().replace(/^@/,'');clearTimeout(t);
+      if(!v){hint.textContent='Letters, numbers and underscores. This is your @name on the feed.';hint.style.color='';return}
+      if(!/^[a-z0-9_]{3,20}$/.test(v)){hint.textContent='Use 3–20 lowercase letters, numbers or underscores.';hint.style.color='var(--bad)';return}
+      if(isReserved(v)){hint.textContent=RESERVED_MSG;hint.style.color='var(--bad)';return}
+      hint.textContent='Checking @'+v+'…';hint.style.color='';
+      t=setTimeout(async()=>{const ok=await API.usernameFree(v).catch(()=>null);if(un.value.toLowerCase().replace(/^@/,'')!==v)return;
+        hint.textContent=ok===false?'@'+v+' is taken':ok?'@'+v+' is available':'@'+v;hint.style.color=ok===false?'var(--bad)':ok?'var(--good)':''},350)};
+    un.addEventListener('input',()=>{un.dataset.touched='1';un.value=un.value.toLowerCase().replace(/\s/g,'');check()});
+    un.addEventListener('check',check);
+  }
+}
+function hideGate(){if(gateEl){gateEl.remove();gateEl=null;gateView=null}}
+function paywallHTML(msg){
+  const had=!!ME.access?.subscription?.had_trial,y=payInterval==='year';
+  const card=(plan,name,items)=>`<button class="plan ${plan}" data-plan="${plan}" aria-pressed="${payPlan===plan}">
+    <div class="plan-top"><b>${name}</b><span class="plan-price">${PRICE[plan][payInterval]}<small>/${y?'year':'month'}</small></span></div>
+    <ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></button>`;
+  return `${GATE_LOGO}${!API.live?'<span class="preview-tag">Preview mode</span>':''}<h1>Choose your plan</h1>
+    <div class="seg wide" style="grid-template-columns:1fr 1fr"><button data-int="month" aria-pressed="${!y}">Monthly</button><button data-int="year" aria-pressed="${y}">Yearly · save 33%</button></div>
+    <div class="plans">
+      ${card('member','Member',['Workout tracker with 541 exercises','Brain games between sets','Share lifts, photos and videos','Recommended programs'])}
+      ${card('pro','Pro',['Everything in Member',`${COACH}’s detailed Pro programs`,'New Pro programs as they’re added'])}
+    </div>
+    <p class="g-err" id="gErr">${esc(msg||'')}</p>
+    <button class="primary" id="gPay">${had?'Subscribe':'Start 7-day free trial'}</button>
+    <p class="g-note">${had?'':'Free for 7 days, then '}${PRICE[payPlan][payInterval]} a ${y?'year':'month'}. Cancel anytime in Settings. Payments are handled securely by Stripe.</p>
+    <div class="field"><label for="gCode">Have a promo code?</label><div class="promo-row"><input class="input" id="gCode" autocomplete="off" autocapitalize="characters" placeholder="CODE"><button class="secondary" id="gRedeem">Redeem</button></div></div>
+    <p class="g-alt">Signed in as ${esc(ME.user?.email||'')}<button class="link" id="gOut">Sign out</button></p>`;
+}
+function wirePaywall(box){
+  box.querySelectorAll('[data-int]').forEach(b=>b.onclick=()=>{payInterval=b.dataset.int;gate('paywall')});
+  box.querySelectorAll('[data-plan]').forEach(b=>b.onclick=()=>{payPlan=b.dataset.plan;gate('paywall')});
+  box.querySelector('#gPay').onclick=async e=>{
+    const b=e.currentTarget;b.disabled=true;b.textContent='Opening checkout…';
+    try{const url=await API.billing({action:'checkout',plan:payPlan,interval:payInterval});if(url){location.href=url;return}await refreshAccess()}
+    catch(err){gate('paywall',errMsg(err))}
+  };
+  box.querySelector('#gRedeem').onclick=async()=>{
+    const code=box.querySelector('#gCode').value.trim();if(!code){box.querySelector('#gCode').focus();return}
+    try{ME.access=await API.redeem(code);toast('Promo code applied');await enterApp()}catch(err){gate('paywall',errMsg(err))}
+  };
+  box.querySelector('#gOut').onclick=signOut;
+}
+async function gateSubmit(view){
+  const v=id=>(gateEl.querySelector(id)?.value||'').trim(),err=m=>{const e=gateEl.querySelector('#gErr');if(e)e.textContent=m},btn=gateEl.querySelector('#gGo');
+  btn.disabled=true;
+  try{
+    if(view==='signup'){
+      const name=v('#gName'),username=v('#gUser').toLowerCase().replace(/^@/,''),email=v('#gEmail'),pass=gateEl.querySelector('#gPass').value;
+      if(!name)throw new Error('Enter your name.');
+      if(!/^[a-z0-9_]{3,20}$/.test(username))throw new Error('Pick a username: 3–20 lowercase letters, numbers or underscores.');
+      if(isReserved(username)||isReserved(name))throw new Error(RESERVED_MSG);
+      if(!(await API.usernameFree(username).catch(()=>true)))throw new Error('@'+username+' is taken. Try another username.');if(!/^\S+@\S+\.\S+$/.test(email))throw new Error('Enter a valid email.');if(pass.length<8)throw new Error('Password should be at least 8 characters');
+      const r=await API.signUp(email,pass,name,username);
+      if(!r.session){gate('sent','We sent a confirmation link to '+email+'. Open it on this phone, then sign in.');return}
+      await afterSignIn();
+    }else if(view==='signin'){
+      await API.signIn(v('#gEmail'),gateEl.querySelector('#gPass').value);await afterSignIn();
+    }else if(view==='forgot'){
+      const email=v('#gEmail');if(!/^\S+@\S+\.\S+$/.test(email))throw new Error('Enter a valid email.');
+      await API.resetPassword(email);gate('sent','If there’s an account for '+email+', a reset link is on its way.');
+    }else if(view==='newpass'){
+      const pass=gateEl.querySelector('#gPass').value;if(pass.length<8)throw new Error('Password should be at least 8 characters');
+      await API.updatePassword(pass);toast('Password updated');await afterSignIn();
+    }
+  }catch(e){err(errMsg(e));btn.disabled=false}
+}
+async function refreshAccess(){ME.access=await API.access();if(lvl()>=1)await enterApp();else gate('paywall')}
+async function afterSignIn(){
+  gate('loading');
+  const s=await API.session();if(!s){gate('signin');return}
+  ME.user=s.user;
+  try{ME.access=await API.access()}catch(e){gate('signin',errMsg(e));return}
+  ME.profile=await API.profile(ME.user.id).catch(()=>null);
+  const back=['#welcome-member','#plan-updated'].includes(location.hash);
+  if(back){try{history.replaceState(null,'',siteURL())}catch(e){}}
+  if(back&&lvl()<1)return waitForCheckout();
+  if(lvl()<1){gate('paywall');return}
+  await enterApp();
+  if(back)toast('You’re all set. Enjoy Brainweight.');
+}
+async function waitForCheckout(){
+  gate('finishing');
+  for(let i=0;i<15;i++){await new Promise(r=>setTimeout(r,2000));try{ME.access=await API.access()}catch(e){}if(lvl()>=1){await enterApp();toast('You’re all set. Enjoy Brainweight.');return}}
+  gate('paywall','Your payment may still be processing. Wait a minute, then reopen the app.');
+}
+let appEntered=false;
+async function enterApp(){
+  try{await loadAccountData()}catch(e){toast('Couldn’t load your workouts. Showing what’s on this phone.')}
+  hideGate();appEntered=true;render();renderDock();
+  if(ST.active){restFired=!ST.active.restEnd;wake()}
+  if(!LS.get('welcomed',false))showWelcome();
+}
+async function signOut(){
+  try{await API.signOut()}catch(e){}
+  ME.user=null;ME.access=null;ME.profile=null;appEntered=false;Cloud.ok=false;Cloud.mode=null;
+  FEED.posts=[];FEED.loaded=false;PROG.list=null;
+  document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());closeGame();
+  gate('signin');
+}
+async function startAccounts(){
+  gate('loading');
+  if(API.live){
+    API.onAuth((ev,s)=>{
+      if(ev==='PASSWORD_RECOVERY'){gate('newpass');return}
+      if(ev==='SIGNED_OUT'&&appEntered){appEntered=false;gate('signin')}
+    });
+  }
+  const s=await API.session().catch(()=>null);
+  if(!s){gate(LS.get('hasAccount',false)?'signin':'signup');return}
+  LS.set('hasAccount',true);
+  await afterSignIn();
+}
+
+/* ---------- small helpers ---------- */
+function avatarHTML(p,size=40){
+  const name=(p&&(p.display_name||p.username))||'?',url=safeURL(p&&p.avatar_url);
+  const ini=esc(name.trim().split(/\s+/).filter(w=>/^[\p{L}\p{N}]/u.test(w)).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?');
+  return `<span class="av" style="width:${size}px;height:${size}px;font-size:${Math.round(size*.38)}px">${url?`<img src="${esc(url)}" alt="">`:ini}</span>`;
+}
+function timeAgo(iso){
+  const s=(Date.now()-new Date(iso).getTime())/1000;
+  if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';if(s<7*86400)return Math.floor(s/86400)+'d';
+  return new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+}
+const nameOf=p=>esc((p&&(p.display_name||p.username))||'Lifter');
+const coachTag=p=>p&&p.is_admin?'<span class="badge teal">Coach</span>':'';
+function bestSetOf(type,sets){
+  const score={w:s=>e1rm(s)||(s.w||0),b:s=>s.r||0,a:s=>s.r||0,t:s=>s.t||0,wt:s=>(s.w||0)*1000+(s.t||0),d:s=>s.d||0,c:s=>s.w||0}[type]||(s=>e1rm(s));
+  return sets.slice().sort((a,b)=>score(b)-score(a))[0];
+}
+function workoutAttachment(w){
+  return {type:'workout',name:w.name,start:w.start,end:w.end,volume:Math.round(volOf(w)),sets:w.exercises.reduce((a,e)=>a+e.sets.length,0),prs:(w.prs||[]).slice(0,6),
+    exercises:w.exercises.slice(0,12).map(e=>({name:exOf(e).name,type:e.type,sets:e.sets.slice(0,12).map(s=>({kind:s.kind,w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))}))};
+}
+function liftAttachment(exId){
+  const e=EXMAP[exId];if(!e)return null;
+  const sessions=ST.workouts.map(w=>({w,x:w.exercises.find(x=>x.exId===exId)})).filter(s=>s.x&&s.x.sets.length);
+  if(!sessions.length)return null;
+  const all=sessions.flatMap(s=>s.x.sets.map(st=>({st,date:s.w.start})));
+  const top=bestSetOf(e.type,all.map(a=>a.st)),date=all.find(a=>a.st===top).date;
+  const latest=sessions[0].w.start;
+  return {type:'lift',exId,name:e.name,ltype:e.type,set:{w:top.w??null,r:top.r??null,t:top.t??null,d:top.d??null},e1rm:e.type==='w'?Math.round(e1rm(top)*10)/10:null,pr:sessions.length>1&&date===latest,date};
+}
+function attachmentHTML(a){
+  if(!a)return'';
+  if(a.type==='lift')return `<div class="att"><span class="eyebrow">${a.pr?'New personal record':'Best lift'}</span>
+    <b style="font-size:16px">${esc(a.name)}</b><span class="att-big">${esc(setText(a.ltype||'w',a.set||{}))}</span>
+    <div class="att-stats">${a.e1rm?`<div><span class="eyebrow">Est. 1RM</span><b>${dispW(a.e1rm)} ${u()}</b></div>`:''}${a.date?`<div><span class="eyebrow">Date</span><b>${new Date(a.date).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</b></div>`:''}</div>
+    ${a.pr?'<span class="badge gold" style="align-self:flex-start">PR</span>':''}</div>`;
+  if(a.type==='workout'){
+    const ex=(a.exercises||[]).slice(0,6);
+    return `<div class="att"><span class="eyebrow">Workout</span><b style="font-size:16px">${esc(a.name||'Workout')}</b>
+      <div class="att-stats"><div><span class="eyebrow">Time</span><b>${clock(((a.end||0)-(a.start||0))/1000)}</b></div><div><span class="eyebrow">Volume</span><b>${fmtVol(a.volume||0)}</b></div><div><span class="eyebrow">Sets</span><b>${a.sets||0}</b></div></div>
+      <div class="att-lines">${ex.map(e=>{const b=bestSetOf(e.type,e.sets||[]);return `<span>${(e.sets||[]).length} × ${esc(e.name)}<em>${b?esc(setText(e.type,b)):''}</em></span>`}).join('')}${(a.exercises||[]).length>6?`<span class="muted">and ${(a.exercises||[]).length-6} more</span>`:''}</div>
+      ${(a.prs||[]).length?`<div class="prog-meta">${a.prs.slice(0,3).map(p=>`<span class="badge gold">${esc(p.split(':')[0])} PR</span>`).join('')}</div>`:''}</div>`;
+  }
+  return'';
+}
+function mediaHTML(media){
+  const m=(media||[]).filter(x=>safeURL(x.url)).slice(0,4);if(!m.length)return'';
+  return `<div class="media n${m.length}">${m.map(x=>x.type==='video'
+    ?`<video src="${esc(x.url)}" controls playsinline preload="metadata"></video>`
+    :`<button data-act="view-img" data-src="${esc(x.url)}" aria-label="View photo"><img src="${esc(x.url)}" alt="" loading="lazy"></button>`).join('')}</div>`;
+}
+async function prepMedia(file){
+  const isVideo=(file.type||'').startsWith('video/')||/\.(mov|mp4|m4v|webm)$/i.test(file.name||'');
+  if(isVideo){
+    if(file.size>50*1024*1024)throw new Error('Videos can be up to 50 MB, about a minute of phone video.');
+    const ext=(file.name.split('.').pop()||'mp4').toLowerCase().replace('m4v','mp4');
+    return {blob:file,type:'video',mime:file.type||(ext==='mov'?'video/quicktime':'video/mp4'),ext,preview:URL.createObjectURL(file)};
+  }
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+    const max=1600,sc=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.round(img.naturalWidth*sc),h=Math.round(img.naturalHeight*sc);
+    const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.85));
+    return {blob,type:'image',mime:'image/jpeg',ext:'jpg',w,h,preview:url};
+  }catch(e){
+    if(file.size>15*1024*1024)throw new Error('That photo is too large.');
+    return {blob:file,type:'image',mime:file.type||'image/jpeg',ext:(file.name.split('.').pop()||'jpg').toLowerCase(),preview:url};
+  }
+}
+
+/* ---------- feed ---------- */
+const FEED={mode:'all',posts:[],loaded:false,loading:false,done:false,err:''};
+function feedHTML(){
+  const p=ME.profile||{};
+  return `${!API.live?'<p class="preview-strip">Preview mode · posts and accounts here are samples</p>':''}
+    <div class="seg wide"><button data-act="feed-mode" data-mode="all" aria-pressed="${FEED.mode==='all'}">For you</button><button data-act="feed-mode" data-mode="following" aria-pressed="${FEED.mode==='following'}">Following</button><button data-act="feed-mode" data-mode="advice" aria-pressed="${FEED.mode==='advice'}">Advice</button></div>
+    <button class="compose-card" data-act="compose">${avatarHTML(p,38)}<span>Share a lift, a workout or a question</span></button>
+    <div class="stack" id="feedList">${feedListHTML()}</div>`;
+}
+function feedListHTML(){
+  if(!FEED.loaded)return'<div class="spinner" aria-label="Loading posts"></div>';
+  if(FEED.err)return `<div class="card"><p class="muted">${esc(FEED.err)}</p><button class="secondary" data-act="feed-refresh">Try again</button></div>`;
+  if(!FEED.posts.length)return `<p class="empty">${FEED.mode==='following'?'Follow people to see their posts here.':FEED.mode==='advice'?'No questions yet. Ask the community for advice on a lift or program.':'No posts yet. Be the first to share a lift.'}</p>`;
+  return FEED.posts.map(postHTML).join('')+(FEED.done?'':'<div class="loadrow"><button class="secondary" data-act="feed-more">Load more</button></div>');
+}
+async function loadFeed(reset){
+  if(FEED.loading)return;FEED.loading=true;FEED.err='';
+  if(reset){FEED.posts=[];FEED.done=false;FEED.loaded=false;paintFeed()}
+  try{
+    const before=reset?null:FEED.posts[FEED.posts.length-1]?.created_at;
+    const list=await API.posts({mode:FEED.mode,before});
+    FEED.posts=FEED.posts.concat(list);FEED.done=list.length<15;
+  }catch(e){FEED.err=errMsg(e)}
+  FEED.loaded=true;FEED.loading=false;paintFeed();
+}
+function paintFeed(){const l=document.getElementById('feedList');if(l&&ST.tab==='feed')l.innerHTML=feedListHTML()}
+const KIND_LABEL={advice:'<span class="badge">Asking for advice</span>',lift:'',workout:'',post:''};
+function postHTML(p){
+  const a=p.author||{};
+  return `<article class="post" data-post="${esc(p.id)}">
+    <div class="post-h"><button data-act="open-profile" data-id="${esc(p.user_id)}" aria-label="Open profile">${avatarHTML(a,40)}</button>
+      <button class="post-who" data-act="open-profile" data-id="${esc(p.user_id)}"><b>${nameOf(a)} ${coachTag(a)}</b><span>@${esc(a.username||'')} · ${timeAgo(p.created_at)}</span></button>
+      <button class="icon-btn" data-act="post-menu" data-id="${esc(p.id)}" aria-label="Post options">•••</button></div>
+    ${p.kind==='advice'?`<span class="post-kind">${KIND_LABEL.advice}</span>`:''}
+    ${p.body?`<p class="post-body">${esc(p.body)}</p>`:''}
+    ${attachmentHTML(p.attachment)}
+    ${mediaHTML(p.media)}
+    <div class="post-actions">
+      <button class="pa" data-act="like" data-id="${esc(p.id)}" aria-pressed="${!!p.liked}" aria-label="Like"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3 4.5 6.6 4.5c2.1 0 3.4 1.2 5.4 3.4 2-2.2 3.3-3.4 5.4-3.4 3.6 0 5.4 3.7 3.8 6.9C19 15.6 12 20 12 20z"/></svg>${p.like_count||0}</button>
+      <button class="pa" data-act="open-post" data-id="${esc(p.id)}" aria-label="Comments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>${p.comment_count||0}${p.kind==='advice'?' answers':''}</button>
+      ${p.attachment&&p.attachment.type==='workout'?`<button class="pa" data-act="post-save-workout" data-id="${esc(p.id)}" style="margin-left:auto">Save workout</button>`:''}
+    </div></article>`;
+}
+const findPost=id=>FEED.posts.find(p=>p.id===id)||(window.__postCache||{})[id];
+function cachePosts(list){window.__postCache=window.__postCache||{};list.forEach(p=>window.__postCache[p.id]=p)}
+function repaintPost(p){document.querySelectorAll(`[data-post="${CSS.escape(p.id)}"]`).forEach(n=>{n.outerHTML=postHTML(p)})}
+async function toggleLike(id){
+  const p=findPost(id);if(!p)return;
+  p.liked=!p.liked;p.like_count=(p.like_count||0)+(p.liked?1:-1);repaintPost(p);
+  try{await API.like(id,p.liked)}catch(e){p.liked=!p.liked;p.like_count+=(p.liked?1:-1);repaintPost(p);toast(errMsg(e))}
+}
+function openPostMenu(id){
+  const p=findPost(id);if(!p)return;
+  const mine=p.user_id===ME.user?.id;
+  const o=sheet(`<div class="sheet-h"><h2>Post</h2><button class="link" data-close>Close</button></div>
+    <div class="menu">${mine||isAdmin()?'<button id="pmDel" class="danger">Delete post</button>':''}
+    ${!mine?`<button id="pmRep">Report post</button><button id="pmBlock" class="danger">Block @${esc(p.author?.username||'')}</button>`:''}
+    ${isAdmin()&&!mine?'<button id="pmHide">Hide post from everyone</button>':''}</div>`);
+  const d=o.querySelector('#pmDel');if(d)confirmBtn(d,'Tap again to delete',async()=>{try{await API.deletePost(id);removePost(id);o.close();toast('Post deleted')}catch(e){toast(errMsg(e))}});
+  const r=o.querySelector('#pmRep');if(r)r.onclick=()=>{o.close();openReport({post_id:id})};
+  const b=o.querySelector('#pmBlock');if(b)confirmBtn(b,'Tap again to block',async()=>{try{await API.block(p.user_id,true);FEED.posts=FEED.posts.filter(x=>x.user_id!==p.user_id);paintFeed();o.close();toast('Blocked. You won’t see their posts.')}catch(e){toast(errMsg(e))}});
+  const h=o.querySelector('#pmHide');if(h)h.onclick=async()=>{try{await API.hidePost(id);removePost(id);o.close();toast('Post hidden')}catch(e){toast(errMsg(e))}};
+}
+function removePost(id){FEED.posts=FEED.posts.filter(x=>x.id!==id);document.querySelectorAll(`[data-post="${CSS.escape(id)}"]`).forEach(n=>n.remove());if(ST.tab==='feed')paintFeed()}
+function openReport(target){
+  const reasons=['Spam or scam','Harassment or hate','Nudity or sexual content','Violence or dangerous acts','Something else'];
+  const o=sheet(`<div class="sheet-h"><h2>Report</h2><button class="link" data-close>Cancel</button></div><p class="muted">Why are you reporting this? ${esc(COACH)} reviews every report.</p>
+    <div class="menu">${reasons.map(r=>`<button data-r="${esc(r)}">${esc(r)}</button>`).join('')}</div>`);
+  o.querySelectorAll('[data-r]').forEach(b=>b.onclick=async()=>{try{await API.report(Object.assign({reason:b.dataset.r},target));o.close();toast('Thanks. We’ll take a look.')}catch(e){toast(errMsg(e))}});
+}
+async function openPost(id){
+  const p=findPost(id);if(!p)return;
+  const o=sheet(`<div class="sheet-h"><h2>${p.kind==='advice'?'Advice':'Comments'}</h2><button class="link" data-close>Close</button></div>
+    ${postHTML(p)}<div class="stack" id="cmts"><div class="spinner"></div></div>
+    <div class="cmt-in"><textarea class="textarea" id="cmtText" maxlength="1000" placeholder="${p.kind==='advice'?'Share your advice':'Add a comment'}" aria-label="Comment"></textarea><button class="primary" id="cmtSend" style="min-height:46px">Send</button></div>`,{full:false});
+  const list=o.querySelector('#cmts');
+  const paint=cs=>{list.innerHTML=cs.length?cs.map(c=>`<div class="cmt">${avatarHTML(c.author,32)}<div class="cmt-b"><b>${nameOf(c.author)} ${coachTag(c.author)} <span class="muted" style="font-weight:500">· ${timeAgo(c.created_at)}</span></b><p>${esc(c.body)}</p>
+      ${c.user_id===ME.user?.id||p.user_id===ME.user?.id||isAdmin()?`<button class="link" data-del="${esc(c.id)}">Delete</button>`:`<button class="link" data-rep="${esc(c.id)}">Report</button>`}</div></div>`).join(''):`<p class="muted" style="font-size:14px">${p.kind==='advice'?'No advice yet. Be the first to help.':'No comments yet.'}</p>`};
+  let cs=[];
+  try{cs=await API.comments(id);paint(cs)}catch(e){list.innerHTML=`<p class="muted">${esc(errMsg(e))}</p>`}
+  list.addEventListener('click',async e=>{
+    const d=e.target.closest('[data-del]'),r=e.target.closest('[data-rep]');
+    if(d){try{await API.deleteComment(d.dataset.del);cs=cs.filter(c=>c.id!==d.dataset.del);p.comment_count=Math.max(0,(p.comment_count||1)-1);paint(cs);repaintPost(p)}catch(err){toast(errMsg(err))}}
+    if(r)openReport({comment_id:r.dataset.rep});
+  });
+  o.querySelector('#cmtSend').onclick=async e=>{
+    const t=o.querySelector('#cmtText'),body=t.value.trim();if(!body)return;
+    e.currentTarget.disabled=true;
+    try{const c=await API.addComment(id,body);cs.push(c);t.value='';p.comment_count=(p.comment_count||0)+1;paint(cs);repaintPost(p)}catch(err){toast(errMsg(err))}
+    e.currentTarget.disabled=false;
+  };
+  o.querySelector('.sheet').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&b.dataset.act==='open-profile')o.close()});
+}
+function openComposer(preset={}){
+  const st={advice:!!preset.advice,attachment:preset.attachment||null,files:[],body:preset.body||''};
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>New post</h2><button class="link" id="cpPost">Post</button></div>
+    <div class="seg" style="align-self:flex-start"><button data-k="post" aria-pressed="${!st.advice}">Share</button><button data-k="advice" aria-pressed="${st.advice}">Ask for advice</button></div>
+    <textarea class="textarea" id="cpText" maxlength="2000" aria-label="Post text"></textarea>
+    <div id="cpAtt"></div><div class="thumbs" id="cpThumbs"></div>
+    <div class="pick-att">
+      <label class="secondary" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">📷 Photo or video<input type="file" id="cpFile" accept="image/*,video/*" multiple hidden></label>
+      <button class="secondary" id="cpWk">🏋️ Workout</button><button class="secondary" id="cpLift">🏆 Lift</button>
+    </div>
+    <p class="g-err" id="cpErr"></p>`,{modal:true});
+  const ta=o.querySelector('#cpText');ta.value=st.body;
+  const setPh=()=>ta.placeholder=st.advice?'What do you want advice on? Add a video of your lift for a form check.':'How did it go? Share a PR, a workout, a photo or a video.';
+  setPh();
+  const drawAtt=()=>{o.querySelector('#cpAtt').innerHTML=st.attachment?`<div style="position:relative">${attachmentHTML(st.attachment)}<button class="link danger" id="cpAttX" style="position:absolute;top:8px;right:12px">Remove</button></div>`:'';const x=o.querySelector('#cpAttX');if(x)x.onclick=()=>{st.attachment=null;drawAtt()}};
+  const drawThumbs=()=>{o.querySelector('#cpThumbs').innerHTML=st.files.map((f,i)=>`<div class="thumb">${f.type==='video'?`<video src="${f.preview}" muted playsinline></video>`:`<img src="${f.preview}" alt="">`}<button data-x="${i}" aria-label="Remove">✕</button></div>`).join('')};
+  drawAtt();
+  o.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{st.advice=b.dataset.k==='advice';o.querySelectorAll('[data-k]').forEach(c=>c.setAttribute('aria-pressed',c===b));setPh()});
+  o.querySelector('#cpThumbs').addEventListener('click',e=>{const x=e.target.closest('[data-x]');if(x){st.files.splice(+x.dataset.x,1);drawThumbs()}});
+  o.querySelector('#cpFile').onchange=async e=>{
+    const files=[...e.target.files];e.target.value='';
+    for(const f of files){if(st.files.length>=4){toast('Up to 4 photos or videos per post');break}try{st.files.push(await prepMedia(f));drawThumbs()}catch(err){toast(errMsg(err))}}
+  };
+  o.querySelector('#cpWk').onclick=()=>pickWorkout(w=>{st.attachment=workoutAttachment(w);drawAtt()});
+  o.querySelector('#cpLift').onclick=()=>pickLift(a=>{st.attachment=a;drawAtt()});
+  o.querySelector('#cpPost').onclick=async e=>{
+    const b=e.currentTarget,body=ta.value.trim(),err=o.querySelector('#cpErr');
+    if(!body&&!st.attachment&&!st.files.length){err.textContent='Write something or add a photo, video, workout or lift.';return}
+    b.disabled=true;
+    try{
+      const media=[];
+      for(let i=0;i<st.files.length;i++){b.textContent=`Uploading ${i+1}/${st.files.length}`;const f=st.files[i];media.push({url:await API.upload(f.blob,f.ext,f.mime),type:f.type,w:f.w||null,h:f.h||null})}
+      b.textContent='Posting…';
+      const kind=st.advice?'advice':st.attachment?st.attachment.type:'post';
+      const post=await API.createPost({kind,body,attachment:st.attachment,media});
+      o.close();toast('Posted');
+      if(FEED.mode==='all'||FEED.mode==='following'||(FEED.mode==='advice'&&kind==='advice'))FEED.posts.unshift(post);
+      if(ST.tab!=='feed')setTab('feed');else paintFeed();
+    }catch(x){err.textContent=errMsg(x);b.disabled=false;b.textContent='Post'}
+  };
+  setTimeout(()=>ta.focus(),60);
+}
+function pickWorkout(cb){
+  if(!ST.workouts.length){toast('Finish a workout first, then you can share it.');return}
+  const o=sheet(`<div class="sheet-h"><h2>Share a workout</h2><button class="link" data-close>Cancel</button></div>
+    <div class="stack">${ST.workouts.slice(0,25).map(w=>`<button class="card" style="text-align:left" data-w="${esc(w.id)}"><h3>${esc(w.name)}</h3><span class="eyebrow">${new Date(w.start).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})} · ${clock((w.end-w.start)/1000)} · ${fmtVol(volOf(w))}</span></button>`).join('')}</div>`);
+  o.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{const w=ST.workouts.find(x=>x.id===b.dataset.w);o.close();if(w)cb(w)});
+}
+function pickLift(cb){
+  const ids=[...new Set(ST.workouts.flatMap(w=>w.exercises.map(e=>e.exId)))].filter(id=>EXMAP[id]);
+  if(!ids.length){toast('Log a lift first, then you can share it.');return}
+  const items=ids.map(liftAttachment).filter(Boolean);
+  const o=sheet(`<div class="sheet-h"><h2>Share a lift</h2><button class="link" data-close>Cancel</button></div><p class="muted" style="font-size:14px">Your best set for each exercise.</p>
+    <div class="pick-list" style="max-height:60vh">${items.map((a,i)=>`<button class="pick" data-i="${i}"><div><b>${esc(a.name)}</b><span>${esc(setText(a.ltype,a.set))}${a.pr?' · PR':''}</span></div></button>`).join('')}</div>`);
+  o.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{o.close();cb(items[+b.dataset.i])});
+}
+function savePostWorkout(id){
+  const p=findPost(id),a=p&&p.attachment;if(!a||a.type!=='workout')return;
+  const byName={};EX.forEach(e=>byName[e.name]=e.id);
+  const exercises=(a.exercises||[]).map(e=>({exId:byName[e.name],rest:null,note:'',sets:(e.sets||[]).map(s=>({kind:s.kind||'n',w:s.w,r:s.r,t:s.t,d:s.d}))})).filter(e=>e.exId);
+  if(!exercises.length){toast('Couldn’t match these exercises to the library.');return}
+  putItem('routines',{id:'r-'+newId(),name:`${a.name||'Workout'} (from @${p.author?.username||'feed'})`,exercises});
+  toast('Saved to your routines');
+}
+
+/* ---------- profiles ---------- */
+async function openProfile(uid){
+  if(uid===ME.user?.id){setTab('profile');return}
+  const o=sheet(`<div class="sheet-h"><h2>Profile</h2><button class="link" data-close>Close</button></div><div id="pfBox"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  try{
+    const [p,s,posts]=await Promise.all([API.profile(uid),API.stats(uid),API.posts({userId:uid,limit:20})]);
+    if(!p){o.querySelector('#pfBox').innerHTML='<p class="empty">This account no longer exists.</p>';return}
+    cachePosts(posts);
+    const box=o.querySelector('#pfBox');
+    const paint=()=>{box.innerHTML=`<div class="stack"><div class="prof"><div class="prof-top">${avatarHTML(p,64)}<div><h2>${nameOf(p)}</h2><span class="muted">@${esc(p.username)}</span> ${coachTag(p)}</div></div>
+      ${p.bio?`<p style="font-size:14px">${esc(p.bio)}</p>`:''}
+      <div class="prof-stats"><div><b>${s.posts}</b><span class="eyebrow">Posts</span></div><div><b>${s.followers}</b><span class="eyebrow">Followers</span></div><div><b>${s.following}</b><span class="eyebrow">Following</span></div></div>
+      <div style="display:flex;gap:8px">${s.blocked?'<button class="secondary" id="pfUnblock" style="flex:1">Unblock</button>':`<button class="${s.i_follow?'secondary':'primary'}" id="pfFollow" style="flex:1;min-height:46px">${s.i_follow?'Following':'Follow'}</button><button class="secondary danger" id="pfBlock">Block</button>`}</div></div>
+      ${s.blocked?'<p class="empty">You blocked this person.</p>':posts.length?posts.map(postHTML).join(''):'<p class="empty">No posts yet.</p>'}</div>`;
+      const f=box.querySelector('#pfFollow');if(f)f.onclick=async()=>{const on=!s.i_follow;try{await API.follow(uid,on);s.i_follow=on;s.followers+=on?1:-1;paint()}catch(e){toast(errMsg(e))}};
+      const b=box.querySelector('#pfBlock');if(b)confirmBtn(b,'Tap again',async()=>{try{await API.block(uid,true);s.blocked=true;FEED.posts=FEED.posts.filter(x=>x.user_id!==uid);paint();paintFeed();toast('Blocked')}catch(e){toast(errMsg(e))}});
+      const ub=box.querySelector('#pfUnblock');if(ub)ub.onclick=async()=>{try{await API.block(uid,false);s.blocked=false;paint();toast('Unblocked')}catch(e){toast(errMsg(e))}};
+    };
+    paint();
+  }catch(e){o.querySelector('#pfBox').innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`}
+}
+let PROFILE_SUB=LS.get('profileSub','history'),myPosts=null,myStats=null;
+function profileHTML(){
+  const p=ME.profile||{username:'you',display_name:'You'},s=myStats;
+  const sub=PROFILE_SUB;
+  const body=sub==='history'?historyHTML():sub==='exercises'?exercisesHTML():(myPosts==null?'<div class="spinner"></div>':myPosts.length?myPosts.map(postHTML).join(''):'<p class="empty">You haven’t posted yet. Share a lift from your history or an exercise page.</p>');
+  return `<div class="prof"><div class="prof-top">${avatarHTML(p,64)}<div><h2>${nameOf(p)}</h2><span class="muted">@${esc(p.username||'')}</span> ${coachTag(p)}</div></div>
+    ${p.bio?`<p style="font-size:14px">${esc(p.bio)}</p>`:''}
+    <div class="prof-stats"><div><b>${s?s.posts:'–'}</b><span class="eyebrow">Posts</span></div><div><b>${s?s.followers:'–'}</b><span class="eyebrow">Followers</span></div><div><b>${s?s.following:'–'}</b><span class="eyebrow">Following</span></div></div>
+    <button class="secondary" data-act="edit-profile">Edit profile</button></div>
+    <div class="seg wide"><button data-act="prof-sub" data-sub="history" aria-pressed="${sub==='history'}">History</button><button data-act="prof-sub" data-sub="posts" aria-pressed="${sub==='posts'}">Posts</button><button data-act="prof-sub" data-sub="exercises" aria-pressed="${sub==='exercises'}">Exercises</button></div>
+    ${body}`;
+}
+async function loadMine(){
+  if(!ME.user)return;
+  try{const [s,posts]=await Promise.all([API.stats(ME.user.id),PROFILE_SUB==='posts'?API.posts({userId:ME.user.id,limit:30}):Promise.resolve(myPosts)]);myStats=s;if(posts){myPosts=posts;cachePosts(posts)}if(ST.tab==='profile')softRender()}catch(e){}
+}
+function openEditProfile(){
+  const p=Object.assign({},ME.profile||{});let avatarFile=null;
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>Edit profile</h2><button class="link" id="epSave">Save</button></div>
+    <div style="display:flex;align-items:center;gap:14px"><span id="epAv">${avatarHTML(p,72)}</span><label class="secondary" style="display:inline-flex;align-items:center;cursor:pointer">Change photo<input type="file" id="epFile" accept="image/*" hidden></label></div>
+    <div class="field"><label for="epName">Name</label><input class="input" id="epName" maxlength="40" value="${esc(p.display_name||'')}"></div>
+    <div class="field"><label for="epUser">Username</label><input class="input" id="epUser" maxlength="20" autocapitalize="none" value="${esc(p.username||'')}"></div>
+    <div class="field"><label for="epBio">Bio</label><textarea class="textarea" id="epBio" maxlength="200" style="min-height:80px" placeholder="Your goals, your gym, your PRs">${esc(p.bio||'')}</textarea></div>
+    <p class="g-err" id="epErr"></p>`,{modal:true});
+  o.querySelector('#epFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{avatarFile=await prepMedia(f);o.querySelector('#epAv').innerHTML=`<span class="av" style="width:72px;height:72px"><img src="${avatarFile.preview}" alt=""></span>`}catch(err){toast(errMsg(err))}};
+  o.querySelector('#epSave').onclick=async e=>{
+    const b=e.currentTarget,err=o.querySelector('#epErr');
+    const f={display_name:o.querySelector('#epName').value.trim(),username:o.querySelector('#epUser').value.trim().toLowerCase().replace(/^@/,''),bio:o.querySelector('#epBio').value.trim()};
+    if(!/^[a-z0-9_]{3,20}$/.test(f.username)){err.textContent='Usernames use 3–20 lowercase letters, numbers or underscores.';return}
+    if(!isAdmin()&&(isReserved(f.username)||isReserved(f.display_name))){err.textContent=RESERVED_MSG;return}
+    b.disabled=true;b.textContent='Saving…';
+    try{if(avatarFile)f.avatar_url=await API.upload(avatarFile.blob,avatarFile.ext,avatarFile.mime);ME.profile=await API.updateProfile(f);o.close();toast('Profile saved');render()}
+    catch(x){err.textContent=errMsg(x);b.disabled=false;b.textContent='Save'}
+  };
+}
+
+/* ---------- programs ---------- */
+const PROG={list:null,err:''};
+async function loadPrograms(){try{PROG.list=await API.catalog();PROG.err=''}catch(e){PROG.err=errMsg(e)}if(ST.tab==='programs')softRender()}
+function progMeta(p){return [p.level,p.days_per_week?`${p.days_per_week} days/week`:'',p.weeks?`${p.weeks} weeks`:''].filter(Boolean).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
+function progCard(p){
+  const cover=safeURL(p.cover_url);
+  return `<button class="prog ${p.premium?'premium':''}" data-act="open-program" data-id="${esc(p.id)}">
+    ${cover?`<div class="prog-cover" style="background-image:url('${esc(cover)}')"></div>`:''}
+    <div class="prog-meta">${p.premium?'<span class="badge">Pro</span>':''}${p.goal?`<span class="badge teal">${esc(p.goal)}</span>`:''}</div>
+    <h3>${esc(p.title)}</h3>${p.summary?`<p class="muted" style="font-size:14px">${esc(p.summary)}</p>`:''}
+    <div class="prog-meta">${progMeta(p)}</div>
+    ${p.premium&&!p.unlocked?'<span class="plock">🔒 Unlock with Pro</span>':''}</button>`;
+}
+function programsHTML(){
+  if(PROG.list==null)return'<div class="spinner"></div>';
+  if(PROG.err)return `<div class="card"><p class="muted">${esc(PROG.err)}</p><button class="secondary" data-act="prog-refresh">Try again</button></div>`;
+  const free=PROG.list.filter(p=>!p.premium),pro=PROG.list.filter(p=>p.premium);
+  return `<section class="hero"><span class="eyebrow">Programs</span><h2>Train with a <span class="m">plan</span>.</h2><p class="muted" style="font-size:14px">Pick a program, start any day as a workout, or save it to your routines.</p></section>
+    <div class="stack"><div class="section-h"><h2>${esc(COACH)}’s Pro programs</h2>${isAdmin()?'<button class="link" data-act="new-program" data-premium="1">+ New</button>':''}</div>
+      ${pro.length?pro.map(progCard).join(''):`<div class="card"><h3>${isAdmin()?'Add your first Pro program':'Coming soon'}</h3><p class="muted" style="font-size:14px">${isAdmin()?'Build the workouts as routines first, then create a program and add them.':`Detailed programs from ${esc(COACH)} are on the way.`}</p></div>`}
+      ${lvl()<2&&pro.length?'<button class="primary" data-act="upgrade">Unlock Pro programs</button>':''}</div>
+    <div class="stack"><div class="section-h"><h2>Recommended</h2>${isAdmin()?'<button class="link" data-act="new-program">+ New</button>':''}</div>${free.map(progCard).join('')||'<p class="empty">No programs yet.</p>'}</div>`;
+}
+function routineSummary(r){return (r.exercises||[]).map(e=>{const ex=EXMAP[e.exId],n=(e.sets||[]).filter(s=>s.kind!=='w').length,reps=(e.sets||[]).find(s=>s.kind!=='w');const tgt=reps?(reps.r?`${n} × ${reps.r}`:reps.t?`${n} × ${clock(reps.t)}`:`${n} sets`):`${(e.sets||[]).length} sets`;return `<span>${esc(ex?ex.name:'Exercise')}<em>${tgt}</em></span>`}).join('')}
+async function openProgram(id){
+  const meta=(PROG.list||[]).find(p=>p.id===id);
+  if(meta&&meta.premium&&!meta.unlocked){openUpsell(meta);return}
+  const o=sheet(`<div class="sheet-h"><h2>${esc(meta?meta.title:'Program')}</h2><button class="link" data-close>Close</button></div><div id="pgBox"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  let p;try{p=await API.program(id)}catch(e){o.querySelector('#pgBox').innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`;return}
+  if(!p){o.close();if(meta)openUpsell(meta);return}
+  const cover=safeURL(p.cover_url);
+  o.querySelector('#pgBox').innerHTML=`<div class="stack">
+    ${cover?`<div class="prog-cover" style="margin:0;border-radius:16px;background-image:url('${esc(cover)}')"></div>`:''}
+    <div class="prog-meta">${p.premium?'<span class="badge">Pro</span>':''}${p.goal?`<span class="badge teal">${esc(p.goal)}</span>`:''}${progMeta(p)}</div>
+    ${p.summary?`<p style="font-weight:600">${esc(p.summary)}</p>`:''}
+    <div class="prog-body">${String(p.body||'').split(/\n{2,}/).filter(Boolean).map(t=>`<p>${esc(t).replace(/\n/g,'<br>')}</p>`).join('')}</div>
+    ${(p.routines||[]).map((r,i)=>`<div class="card"><div class="row"><h3>${esc(r.name)}</h3><span class="eyebrow">Day ${i+1}</span></div><div class="att-lines">${routineSummary(r)}</div>
+      <div style="display:flex;gap:8px"><button class="primary" data-start="${i}" style="flex:1;min-height:46px">Start</button><button class="secondary" data-save="${i}">Save</button></div></div>`).join('')}
+    ${(p.routines||[]).length>1?'<button class="outline" id="pgAll">Save all days to my routines</button>':''}
+    ${isAdmin()?'<button class="secondary" id="pgEdit">Edit program</button>':''}</div>`;
+  const toRoutine=r=>({id:'r-'+newId(),name:`${p.title} · ${r.name}`,exercises:clone(r.exercises||[]).filter(e=>EXMAP[e.exId])});
+  o.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{const r=p.routines[+b.dataset.start];if(ST.active){toast('Finish or discard your current workout first.');return}o.close();startWorkout({name:`${p.title} · ${r.name}`,exercises:r.exercises})});
+  o.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{putItem('routines',toRoutine(p.routines[+b.dataset.save]));toast('Saved to your routines')});
+  const all=o.querySelector('#pgAll');if(all)all.onclick=()=>{p.routines.forEach(r=>putItem('routines',toRoutine(r)));toast(`Saved ${p.routines.length} routines`)};
+  const ed=o.querySelector('#pgEdit');if(ed)ed.onclick=()=>{o.close();openProgramEditor(p)};
+}
+function openUpsell(meta){
+  const o=sheet(`<span class="badge" style="align-self:flex-start">Pro</span><h2>${esc(meta.title)}</h2>
+    ${meta.summary?`<p class="muted">${esc(meta.summary)}</p>`:''}<div class="prog-meta">${progMeta(meta)}</div>
+    <div class="card"><b>Pro includes</b><div class="lines"><span>✓ Every one of ${esc(COACH)}’s detailed programs</span><span>✓ ${meta.routine_count||'Ready-made'} workouts you can start with one tap</span><span>✓ New programs as they’re added</span><span>✓ Everything in Member</span></div></div>
+    <button class="primary" id="upGo">Upgrade to Pro · ${PRICE.pro.month}/month</button><button class="secondary" data-close>Not now</button>`);
+  o.querySelector('#upGo').onclick=()=>{o.close();upgrade('pro')};
+}
+async function upgrade(plan='pro',interval='month'){
+  try{
+    const url=await API.billing({action:'checkout',plan,interval});
+    if(url){location.href=url;return}
+    ME.access=await API.access();PROG.list=null;loadPrograms();render();
+  }catch(e){toast(errMsg(e))}
+}
+function openProgramEditor(src){
+  const d=src?clone(src):{title:'',summary:'',body:'',level:'Intermediate',goal:'',days_per_week:3,weeks:8,premium:false,published:true,routines:[],cover_url:null,sort:100};
+  let coverFile=null;
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>${src?'Edit program':'New program'}</h2><button class="link" id="peSave">Save</button></div><div class="re-body" id="peBody"></div>`,{full:true,modal:true});
+  const body=o.querySelector('#peBody');
+  const draw=()=>{body.innerHTML=`
+    <div class="field"><label for="peTitle">Title</label><input class="input" id="peTitle" maxlength="80" value="${esc(d.title)}"></div>
+    <div class="field"><label for="peSum">Short description</label><textarea class="textarea" id="peSum" maxlength="300" style="min-height:70px">${esc(d.summary||'')}</textarea></div>
+    <label class="toggle"><span>Pro only (paid)</span><input type="checkbox" id="pePrem" ${d.premium?'checked':''}></label>
+    <label class="toggle"><span>Published (visible to members)</span><input type="checkbox" id="pePub" ${d.published!==false?'checked':''}></label>
+    <div class="field"><label>Level</label><div class="seg" id="peLvl">${['Beginner','Intermediate','Advanced'].map(l=>`<button data-l="${l}" aria-pressed="${d.level===l}">${l}</button>`).join('')}</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="field"><label for="peGoal">Goal</label><input class="input" id="peGoal" maxlength="40" value="${esc(d.goal||'')}" placeholder="Bigger bench"></div>
+      <div class="field"><label for="peDays">Days/week</label><input class="input" id="peDays" inputmode="numeric" value="${d.days_per_week||''}"></div>
+      <div class="field"><label for="peWeeks">Weeks</label><input class="input" id="peWeeks" inputmode="numeric" value="${d.weeks||''}"></div></div>
+    <div class="field"><label>Cover photo</label><div style="display:flex;gap:8px;align-items:center"><label class="secondary" style="display:inline-flex;align-items:center;cursor:pointer">${d.cover_url||coverFile?'Change photo':'Add photo'}<input type="file" id="peCover" accept="image/*" hidden></label>${coverFile?'<span class="muted">New photo ready</span>':d.cover_url?'<span class="muted">Photo added</span>':''}</div></div>
+    <div class="field"><label for="peBodyT">Program details</label><textarea class="textarea" id="peBodyT" maxlength="20000" style="min-height:180px" placeholder="How to run it, how to progress, technique cues, what to eat… Leave a blank line between paragraphs.">${esc(d.body||'')}</textarea></div>
+    <div class="section-h"><h2>Workouts</h2><span class="eyebrow">${d.routines.length}</span></div>
+    ${d.routines.map((r,i)=>`<div class="card"><div class="row"><h3>${esc(r.name)}</h3><div class="re-tools">${i>0?`<button class="icon-btn" data-up="${i}" aria-label="Move up">↑</button>`:''}<button class="icon-btn danger" data-rm="${i}" aria-label="Remove">✕</button></div></div><div class="att-lines">${routineSummary(r)}</div></div>`).join('')||'<p class="muted" style="font-size:14px">Add workouts from your routines. Build them in the Workout tab first, with target sets, weights and reps.</p>'}
+    <button class="outline" id="peAdd">+ Add workouts from my routines</button>
+    ${src?'<button class="secondary danger" id="peDel">Delete program</button>':''}<p class="g-err" id="peErr"></p>`;
+    const grab=()=>{d.title=body.querySelector('#peTitle').value.trim();d.summary=body.querySelector('#peSum').value.trim();d.premium=body.querySelector('#pePrem').checked;d.published=body.querySelector('#pePub').checked;d.goal=body.querySelector('#peGoal').value.trim();d.days_per_week=parseInt(body.querySelector('#peDays').value)||null;d.weeks=parseInt(body.querySelector('#peWeeks').value)||null;d.body=body.querySelector('#peBodyT').value};
+    o.grab=grab;
+    body.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{grab();d.level=b.dataset.l;draw()});
+    body.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{grab();d.routines.splice(+b.dataset.rm,1);draw()});
+    body.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{grab();const i=+b.dataset.up;[d.routines[i-1],d.routines[i]]=[d.routines[i],d.routines[i-1]];draw()});
+    body.querySelector('#peCover').onchange=async e=>{grab();const f=e.target.files[0];if(f){try{coverFile=await prepMedia(f);draw()}catch(x){toast(errMsg(x))}}};
+    body.querySelector('#peAdd').onclick=()=>{grab();
+      if(!ST.routines.length){toast('Create routines in the Workout tab first.');return}
+      const pk=sheet(`<div class="sheet-h"><h2>Add workouts</h2><button class="link" data-close>Cancel</button></div><div class="menu">${ST.routines.map(r=>`<button data-r="${esc(r.id)}">${esc(r.name)}</button>`).join('')}</div>`);
+      pk.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=ST.routines.find(x=>x.id===b.dataset.r);if(r)d.routines.push({name:r.name,exercises:clone(r.exercises).map(e=>({exId:e.exId,rest:e.rest??null,note:e.note||'',sets:(e.sets||[]).map(s=>({kind:s.kind||'n',w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))}))});pk.close();draw()});
+    };
+    const del=body.querySelector('#peDel');if(del)confirmBtn(del,'Tap again to delete',async()=>{try{await API.deleteProgram(d.id);o.close();toast('Program deleted');PROG.list=null;loadPrograms()}catch(x){toast(errMsg(x))}});
+  };
+  draw();
+  o.querySelector('#peSave').onclick=async e=>{
+    o.grab();const b=e.currentTarget,err=body.querySelector('#peErr');
+    if(!d.title){err.textContent='Give the program a title.';return}
+    b.disabled=true;b.textContent='Saving…';
+    try{if(coverFile)d.cover_url=await API.upload(coverFile.blob,coverFile.ext,coverFile.mime);await API.saveProgram(d);o.close();toast('Program saved');PROG.list=null;loadPrograms()}
+    catch(x){err.textContent=errMsg(x);b.disabled=false;b.textContent='Save'}
+  };
+}
+
+/* ---------- account, plan and admin ---------- */
+function planLine(){
+  const a=ME.access||{},s=a.subscription,g=a.grant,d=x=>new Date(x).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+  if(a.admin&&API.live)return{title:'Owner',line:'Full access to everything'};
+  if(s&&['active','trialing','past_due'].includes(s.status)){
+    const name=s.plan==='pro'?'Pro':'Member';
+    if(s.status==='trialing')return{title:name,line:`Free trial until ${d(s.trial_end||s.current_period_end)}`};
+    if(s.status==='past_due')return{title:name,line:'Payment failed. Update your card in Manage subscription.'};
+    return{title:name,line:s.cancel_at_period_end?`Ends ${d(s.current_period_end)}`:`Renews ${d(s.current_period_end)}`};
+  }
+  if(g)return{title:g.plan==='pro'?'Pro':'Member',line:`${g.source.startsWith('promo:')?'Promo code':'Gift from '+COACH} · ${g.expires_at?'free until '+d(g.expires_at):'free forever'}`};
+  return{title:'No plan',line:''};
+}
+function accountHTML(){
+  const pl=planLine(),s=ME.access?.subscription;
+  return `<div class="card"><span class="eyebrow">Your plan</span><h3>${esc(pl.title)}</h3>${pl.line?`<span class="muted" style="font-size:14px">${esc(pl.line)}</span>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap">${s&&s.has_customer?'<button class="secondary" id="acManage">Manage subscription</button>':''}${lvl()<2?'<button class="primary" id="acUp" style="min-height:46px">Upgrade to Pro</button>':''}</div>
+    <div class="promo-row"><input class="input" id="acCode" placeholder="Promo code" autocapitalize="characters" autocomplete="off" aria-label="Promo code"><button class="secondary" id="acRedeem">Redeem</button></div></div>
+    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}<button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
+    <p class="g-note">Signed in as ${esc(ME.user?.email||'')}${!API.live?' · preview mode':''}</p>`;
+}
+function wireAccount(o){
+  const m=o.querySelector('#acManage');if(m)m.onclick=async()=>{try{const url=await API.billing({action:'portal'});if(url)location.href=url}catch(e){toast(errMsg(e))}};
+  const up=o.querySelector('#acUp');if(up)up.onclick=()=>{o.close();upgrade('pro')};
+  o.querySelector('#acRedeem').onclick=async()=>{const c=o.querySelector('#acCode').value.trim();if(!c)return;try{ME.access=await API.redeem(c);toast('Promo code applied');o.close();PROG.list=null;render()}catch(e){toast(errMsg(e))}};
+  o.querySelector('#acProfile').onclick=()=>{o.close();openEditProfile()};
+  const ad=o.querySelector('#acAdmin');if(ad)ad.onclick=()=>{o.close();openAdmin()};
+  o.querySelector('#acOut').onclick=()=>{o.close();signOut()};
+  o.querySelector('#acDel').onclick=()=>{o.close();openDeleteAccount()};
+}
+function openDeleteAccount(){
+  const s=ME.access?.subscription,live=s&&['active','trialing','past_due'].includes(s.status)&&!s.cancel_at_period_end;
+  const o=sheet(`<h2>Delete your account?</h2><p class="muted">This permanently deletes your profile, posts, photos, videos, comments and workout history. It can’t be undone.${live?' Your subscription will be canceled right away and you won’t be charged again.':''}</p>
+      <div class="field"><label for="daType">Type DELETE to confirm</label><input class="input" id="daType" autocapitalize="characters" autocomplete="off"></div>
+      <button class="secondary danger" id="daGo">Delete my account</button><button class="secondary" data-close>Keep my account</button>`);
+  const go=o.querySelector('#daGo');if(go)go.onclick=async()=>{
+    if(o.querySelector('#daType').value.trim().toUpperCase()!=='DELETE'){pulse(o.querySelector('#daType'),'shake');return}
+    go.disabled=true;go.textContent='Deleting…';
+    try{await API.deleteAccount();['workouts','routines','custom','active','owner','tab'].forEach(k=>LS.set(k,null));ST.workouts=[];ST.routines=[];ST.custom=[];ST.active=null;rebuildHistory();o.close();toast('Your account was deleted');signOut()}
+    catch(e){toast(errMsg(e));go.disabled=false;go.textContent='Delete my account'}
+  };
+}
+function openAdmin(tab='codes'){
+  const o=sheet(`<div class="sheet-h"><h2>Admin tools</h2><button class="link" data-close>Done</button></div>
+    <div class="seg wide"><button data-t="codes" aria-pressed="${tab==='codes'}">Promo codes</button><button data-t="gift" aria-pressed="${tab==='gift'}">Give access</button><button data-t="reports" aria-pressed="${tab==='reports'}">Reports</button></div><div id="adBox"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  o.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{o.close();openAdmin(b.dataset.t)});
+  const box=o.querySelector('#adBox');
+  const lengths=[[null,'Forever'],[30,'1 month'],[90,'3 months'],[365,'1 year']],uses=[[null,'Unlimited'],[1,'1 person'],[5,'5'],[10,'10'],[25,'25']];
+  if(tab==='codes'){
+    const f={plan:'pro',days:null,max:10};
+    const paint=async()=>{
+      let list=[];try{list=await API.promos()}catch(e){box.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`;return}
+      box.innerHTML=`<div class="stack"><div class="card"><h3>New promo code</h3>
+        <div class="promo-row"><input class="input" id="pcCode" maxlength="32" placeholder="FRIENDS-FREE" autocapitalize="characters" autocomplete="off"><button class="secondary" id="pcRand">Random</button></div>
+        <div class="field"><label>Unlocks</label><div class="seg">${['member','pro'].map(p=>`<button data-p="${p}" aria-pressed="${f.plan===p}">${p==='pro'?'Pro':'Member'}</button>`).join('')}</div></div>
+        <div class="field"><label>Free for</label><div class="chips">${lengths.map(([v,l])=>`<button class="chip" data-d="${v}" aria-pressed="${f.days===v}">${l}</button>`).join('')}</div></div>
+        <div class="field"><label>How many people can use it</label><div class="chips">${uses.map(([v,l])=>`<button class="chip" data-m="${v}" aria-pressed="${f.max===v}">${l}</button>`).join('')}</div></div>
+        <input class="input" id="pcNote" maxlength="120" placeholder="Note to self (optional), e.g. gym friends">
+        <p class="g-err" id="pcErr"></p><button class="primary" id="pcSave">Create code</button></div>
+        <div class="card"><h3>Your codes</h3>${list.length?list.map(c=>`<div class="admin-row"><div><b>${esc(c.code)}</b><br><span>${c.plan==='pro'?'Pro':'Member'} · ${c.duration_days?`free for ${c.duration_days} days`:'free forever'} · ${c.uses}${c.max_uses?' / '+c.max_uses:''} used${c.note?' · '+esc(c.note):''}</span></div>
+          <div style="display:flex;gap:6px"><button class="chip" data-copy="${esc(c.code)}">Copy</button><button class="chip" data-tog="${esc(c.code)}" aria-pressed="${c.active}">${c.active?'On':'Off'}</button></div></div>`).join(''):'<p class="muted" style="font-size:14px">No codes yet.</p>'}</div></div>`;
+      const code=box.querySelector('#pcCode');
+      box.querySelector('#pcRand').onclick=()=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';code.value='BW-'+Array.from({length:6},()=>a[rnd(0,a.length-1)]).join('')};
+      box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{f.plan=b.dataset.p;box.querySelectorAll('[data-p]').forEach(c=>c.setAttribute('aria-pressed',c===b))});
+      box.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{f.days=b.dataset.d==='null'?null:+b.dataset.d;box.querySelectorAll('[data-d]').forEach(c=>c.setAttribute('aria-pressed',c===b))});
+      box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{f.max=b.dataset.m==='null'?null:+b.dataset.m;box.querySelectorAll('[data-m]').forEach(c=>c.setAttribute('aria-pressed',c===b))});
+      box.querySelector('#pcSave').onclick=async()=>{
+        const c=code.value.trim().toUpperCase().replace(/\s/g,'');
+        if(!/^[A-Z0-9-]{4,32}$/.test(c)){box.querySelector('#pcErr').textContent='Codes use 4–32 letters, numbers or dashes.';return}
+        try{await API.savePromo({code:c,plan:f.plan,duration_days:f.days,max_uses:f.max,note:box.querySelector('#pcNote').value.trim()||null,active:true});toast('Code created');paint()}catch(e){box.querySelector('#pcErr').textContent=errMsg(e)}
+      };
+      box.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);toast('Copied')}catch(e){toast(b.dataset.copy)}});
+      box.querySelectorAll('[data-tog]').forEach(b=>b.onclick=async()=>{const on=b.getAttribute('aria-pressed')!=='true';try{await API.setPromoActive(b.dataset.tog,on);paint()}catch(e){toast(errMsg(e))}});
+    };
+    paint();
+  }else if(tab==='gift'){
+    const f={plan:'pro',days:null};
+    box.innerHTML=`<div class="card"><h3>Give someone free access</h3><p class="muted" style="font-size:14px">They need an account first. Ask them for their username (it’s on their Profile tab).</p>
+      <div class="field"><label for="gfUser">Username</label><input class="input" id="gfUser" autocapitalize="none" placeholder="@username"></div>
+      <div class="field"><label>Plan</label><div class="seg">${['member','pro'].map(p=>`<button data-p="${p}" aria-pressed="${f.plan===p}">${p==='pro'?'Pro':'Member'}</button>`).join('')}</div></div>
+      <div class="field"><label>Free for</label><div class="chips">${lengths.map(([v,l])=>`<button class="chip" data-d="${v}" aria-pressed="${f.days===v}">${l}</button>`).join('')}</div></div>
+      <p class="g-err" id="gfErr"></p><button class="primary" id="gfGo">Give access</button></div>`;
+    box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{f.plan=b.dataset.p;box.querySelectorAll('[data-p]').forEach(c=>c.setAttribute('aria-pressed',c===b))});
+    box.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{f.days=b.dataset.d==='null'?null:+b.dataset.d;box.querySelectorAll('[data-d]').forEach(c=>c.setAttribute('aria-pressed',c===b))});
+    box.querySelector('#gfGo').onclick=async()=>{try{const p=await API.giveAccess(box.querySelector('#gfUser').value,f.plan,f.days);toast(`@${p.username} now has ${f.plan==='pro'?'Pro':'Member'}`);box.querySelector('#gfUser').value=''}catch(e){box.querySelector('#gfErr').textContent=errMsg(e)}};
+  }else{
+    const paint=async()=>{
+      let list=[];try{list=await API.reports()}catch(e){box.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`;return}
+      box.innerHTML=list.length?`<div class="stack">${list.map(r=>`<div class="card"><span class="eyebrow">${esc(r.reason)} · by @${esc(r.who?.username||'someone')} · ${timeAgo(r.created_at)}</span>
+        <p style="font-size:14px">${r.post?esc((r.post.body||'(photo, video or lift post)').slice(0,240)):r.comment_id?'A comment':'(already deleted)'}</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${r.post&&!r.post.hidden?`<button class="secondary" data-hide="${esc(r.post.id)}" data-r="${esc(r.id)}">Hide post</button><button class="secondary danger" data-del="${esc(r.post.id)}" data-r="${esc(r.id)}">Delete post</button>`:''}<button class="secondary" data-ok="${esc(r.id)}">Dismiss</button></div></div>`).join('')}</div>`:'<p class="empty">No open reports. 🎉</p>';
+      box.querySelectorAll('[data-hide]').forEach(b=>b.onclick=async()=>{try{await API.hidePost(b.dataset.hide);await API.resolveReport(b.dataset.r);removePost(b.dataset.hide);paint()}catch(e){toast(errMsg(e))}});
+      box.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{try{await API.deletePost(b.dataset.del);await API.resolveReport(b.dataset.r).catch(()=>{});removePost(b.dataset.del);paint()}catch(e){toast(errMsg(e))}});
+      box.querySelectorAll('[data-ok]').forEach(b=>b.onclick=async()=>{try{await API.resolveReport(b.dataset.ok);paint()}catch(e){toast(errMsg(e))}});
+    };
+    paint();
+  }
+}
+function viewImage(src){const v=el(`<div class="ov viewer" role="dialog" aria-label="Photo"><img src="${esc(src)}" alt=""><button aria-label="Close">✕</button></div>`);v.onclick=()=>v.remove();document.body.appendChild(v)}
+
+/* ---------- social clicks ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const id=b.dataset.id;
+  switch(b.dataset.act){
+    case'feed-mode':FEED.mode=b.dataset.mode;document.querySelectorAll('[data-act="feed-mode"]').forEach(c=>c.setAttribute('aria-pressed',c===b));loadFeed(true);break;
+    case'feed-refresh':loadFeed(true);break;
+    case'feed-more':b.disabled=true;loadFeed(false);break;
+    case'compose':openComposer();break;
+    case'like':toggleLike(id);break;
+    case'open-post':openPost(id);break;
+    case'post-menu':openPostMenu(id);break;
+    case'open-profile':openProfile(id);break;
+    case'post-save-workout':savePostWorkout(id);break;
+    case'view-img':viewImage(b.dataset.src);break;
+    case'prof-sub':PROFILE_SUB=b.dataset.sub;LS.set('profileSub',PROFILE_SUB);softRender();if(PROFILE_SUB==='posts')loadMine();break;
+    case'edit-profile':openEditProfile();break;
+    case'open-program':openProgram(id);break;
+    case'new-program':openProgramEditor(b.dataset.premium?{title:'',summary:'',body:'',level:'Intermediate',goal:'',days_per_week:3,weeks:8,premium:true,published:true,routines:[],cover_url:null,sort:100}:null);break;
+    case'prog-refresh':PROG.list=null;softRender();loadPrograms();break;
+    case'upgrade':upgrade('pro');break;
+    case'share-workout':{const w=ST.workouts.find(x=>x.id===id);document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());if(w)openComposer({attachment:workoutAttachment(w)});break}
+    case'share-lift':{const a=liftAttachment(id);document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());if(a)openComposer({attachment:a});else toast('Log this exercise first.');break}
+  }
+});
 
 /* ================= events ================= */
 document.addEventListener('click',e=>{
@@ -1449,9 +2462,8 @@ if(ST.active){
   if(ST.active.restEnd&&ST.active.restEnd<=Date.now()){ST.active.restEnd=0}
   restFired=!ST.active.restEnd;warned=true;wake();
 }
-render();
 Cloud.init();
-if(!LS.get('welcomed',false)){
+function showWelcome(){
   const w=el(`<div class="ov welcome" role="dialog" aria-modal="true" aria-label="Welcome to Brainweight"><div class="w-in"><div class="w-logo">${LOGO_SVG}<span class="wm"><b>BRAIN</b>WEIGHT</span><span class="eyebrow">Train your muscles &amp; mind</span></div>
     <h1>Train your <span class="m">brain</span><br>between your <span class="b">weights</span>.</h1>
     <div class="w-steps">
@@ -1465,6 +2477,7 @@ if(!LS.get('welcomed',false)){
   w.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{ST.settings.unit=b.dataset.u;w.querySelectorAll('[data-u]').forEach(c=>c.setAttribute('aria-pressed',c===b));saveSettings();render()});
   w.querySelector('#wGo').onclick=()=>{LS.set('welcomed',true);ensureAudio();w.remove()};
 }
+startAccounts();
 </script>
 <script>
 if ('serviceWorker' in navigator && !window.Capacitor && location.protocol === 'https:') {
