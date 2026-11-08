@@ -1,12 +1,13 @@
 // Brainweight offline support.
 // App files: network first (so updates show right away), cached copy when offline.
 // Google Fonts: cache first.
-const VERSION = 'bw-v2';
+const VERSION = 'bw-v4';
 const SHELL = [
   './',
   'index.html',
   'manifest.json',
   'native.js',
+  'config.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
