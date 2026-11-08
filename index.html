@@ -339,6 +339,63 @@ button.card:hover{border-color:#2D3746}
 .av img{width:100%;height:100%;object-fit:cover}
 .seg.wide{display:grid;grid-template-columns:repeat(3,1fr);width:100%}
 .seg.wide button{padding:0 6px}
+.coach-strip{display:flex;flex-direction:column;gap:8px}
+.coach-strip .row{display:flex;justify-content:space-between;align-items:center}
+#pvDm button{font-size:14px;line-height:1.2}
+.coach-row{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 4px;scrollbar-width:none}
+.coach-row::-webkit-scrollbar{display:none}
+.coach-chip{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:68px;font-size:12px;font-weight:700;color:var(--fg)}
+.coach-chip .av{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--mind)}
+.coach-chip span{max-width:68px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coach-card{gap:10px}
+.setup-card{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border-color:rgba(52,227,200,.45)}
+.setup-card .muted{font-size:14px}
+.av-edit{position:relative;flex:none;border-radius:50%}
+.av-edit i{position:absolute;right:-2px;bottom:-2px;width:22px;height:22px;border-radius:50%;background:var(--mind);color:#041016;font:800 16px/22px var(--mono);font-style:normal;text-align:center;border:2px solid var(--bg)}
+.feed-top{display:flex;gap:8px;align-items:stretch}
+.feed-top .people-bar{flex:1;min-width:0}
+.inbox-btn{position:relative;flex:none;width:46px;min-height:46px;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--fg)}
+.inbox-btn svg{width:20px;height:20px}
+.nbadge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#FF4D6D;color:#fff;font:700 11px/18px var(--mono);text-align:center}
+.inbox-btn .nbadge{position:absolute;top:-6px;right:-6px}
+.tabbar .tab-badge{position:absolute;top:6px;left:calc(50% + 6px)}
+.menu .menu-badge{display:flex;justify-content:space-between;align-items:center}
+.lock-tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--muted);vertical-align:middle}
+.private-note{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:28px 12px;border:1px dashed var(--line);border-radius:16px;color:var(--muted)}
+.private-note b{color:var(--fg);font-size:16px}
+.private-note span{font-size:14px}
+.req-btns{display:flex;gap:6px;flex:none}
+.thread{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line)}
+.thread-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.thread-top{display:flex;justify-content:space-between;gap:8px}
+.thread-top b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thread-top span{flex:none;font-size:12px;color:var(--muted)}
+.thread-last{font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thread.unread .thread-last{color:var(--fg);font-weight:700}
+.thread .dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--mind);box-shadow:0 0 8px var(--mind)}
+.chat-sheet{height:92%;max-height:92%;gap:10px;overflow:hidden!important}
+.chat-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.chat-who{display:flex;align-items:center;gap:8px;min-width:0}
+.chat-who b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:4px 2px}
+.chat-time{text-align:center;font-size:11px;color:var(--muted);margin:8px 0 2px}
+.bubble{align-self:flex-start;max-width:78%;padding:9px 13px;border-radius:18px 18px 18px 6px;background:var(--surface-2);border:1px solid var(--line);font-size:15px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble.mine{align-self:flex-end;border-radius:18px 18px 6px 18px;background:linear-gradient(135deg,var(--mind),#2F86FF);color:#041016;border-color:transparent;cursor:pointer}
+.chat-form{display:flex;gap:8px;align-items:flex-end}
+.chat-form textarea{flex:1;min-width:0;resize:none;min-height:46px;max-height:120px;line-height:1.35;padding-top:12px}
+.chat-form button{flex:none;min-height:46px;padding:0 18px}
+.terms{display:flex;flex-direction:column;gap:10px;padding-left:20px;font-size:14px;line-height:1.5}
+.terms li::marker{color:var(--mind);font-weight:700}
+.terms-agree{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:14px;line-height:1.45;cursor:pointer}
+.terms-agree input{flex:none;width:22px;height:22px;margin-top:1px;accent-color:var(--mind)}
+.people-bar{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:0 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:15px;text-align:left}
+.people-bar svg{width:18px;height:18px;flex:none}
+.person{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.person-main{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;min-height:56px}
+.person-main div{min-width:0}
+.person-main b{display:block;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.person-main div>span{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.person-follow{flex:none;min-height:38px;padding:0 14px;font-size:14px}
 .compose-card{display:flex;align-items:center;gap:12px;text-align:left;padding:14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:15px}
 .post{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .post-h{display:flex;align-items:center;gap:10px;min-width:0}
@@ -417,9 +474,9 @@ button.card:hover{border-color:#2D3746}
     <div id="restdock"></div>
     <div id="minibar"></div>
     <nav class="tabbar">
-      <button data-act="tab" data-tab="feed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>Feed</button>
       <button data-act="tab" data-tab="programs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Programs</button>
       <button data-act="tab" data-tab="workout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Workout</button>
+      <button data-act="tab" data-tab="feed"><span class="nbadge tab-badge" data-badge="social" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>Feed</button>
       <button data-act="tab" data-tab="games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 3 3h0V4zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-3 3h0V4z"/></svg>Brain gym</button>
       <button data-act="tab" data-tab="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Profile</button>
     </nav>
@@ -956,11 +1013,11 @@ function render(){
   document.querySelectorAll('.tabbar button').forEach(b=>{if(b.dataset.tab===ST.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   const m=$('#main');
   if(ST.tab==='workout')m.innerHTML=ST.active?workoutHTML():startHTML();
-  else if(ST.tab==='feed'){m.innerHTML=feedHTML();if(!FEED.loaded&&!FEED.loading)loadFeed(true)}
+  else if(ST.tab==='feed'){m.innerHTML=feedHTML();if(!termsOK()){openTerms({onDecline:()=>setTab('workout')});return}if(!FEED.loaded&&!FEED.loading)loadFeed(true);if(COACHES==null)loadCoaches()}
   else if(ST.tab==='programs'){m.innerHTML=programsHTML();if(PROG.list==null&&!PROG.err)loadPrograms()}
   else if(ST.tab==='games')m.innerHTML=gamesHTML();
   else{m.innerHTML=profileHTML();if(PROFILE_SUB==='exercises')renderExList();if(!myStats||(PROFILE_SUB==='posts'&&myPosts==null))loadMine()}
-  renderDock();
+  renderDock();paintBadges();
 }
 function softRender(){const a=document.activeElement;if(a&&$('#main').contains(a)&&a.tagName==='INPUT')return;const st=$('#main').scrollTop;render();$('#main').scrollTop=st}
 
@@ -1515,7 +1572,7 @@ const sb=LIVE?window.supabase.createClient(CFG.supabaseUrl,CFG.supabaseAnonKey,{
 const ME={user:null,profile:null,access:null};
 const siteURL=()=>location.origin+location.pathname;
 const KIND={workouts:'workout',routines:'routine',custom:'exercise'};
-const AUTHOR='id,username,display_name,avatar_url,is_admin';
+const AUTHOR='id,username,display_name,avatar_url,is_admin,is_coach';
 const lvl=()=>ME.access?.level||0;
 const isAdmin=()=>!!ME.access?.admin;
 const isReserved=n=>/(brainweight|brainweigt|brainwt)/.test(String(n||'').toLowerCase().replace(/[^a-z0-9]/g,'').replace(/[013457]/g,c=>({0:'o',1:'i',3:'e',4:'a',5:'s',7:'t'})[c]));
@@ -1534,6 +1591,21 @@ const LiveAPI={
   onAuth(cb){sb.auth.onAuthStateChange((ev,s)=>setTimeout(()=>cb(ev,s),0))},
   async signUp(email,password,name,username){const {data,error}=await sb.auth.signUp({email,password,options:{data:{display_name:name,username},emailRedirectTo:siteURL()}});if(error)throw error;return {session:data.session}},
   async usernameFree(name){const {data,error}=await sb.rpc('username_available',{name});if(error)throw error;return !!data},
+  async acceptTerms(v){const {error}=await sb.rpc('accept_terms',{v});if(error)throw error},
+  async coaches(){const {data,error}=await sb.rpc('list_coaches');if(error)throw error;return data||[]},
+  async setCoach(username,on){const {data,error}=await sb.rpc('set_coach',{uname:username,on_off:on});if(error)throw error;return data},
+  async requestFollow(uid,on){const {error}=on?await sb.from('follow_requests').insert({target:uid}):await sb.from('follow_requests').delete().eq('requester',ME.user.id).eq('target',uid);if(error&&error.code!=='23505')throw error},
+  async followRequests(){const {data,error}=await sb.from('follow_requests').select(`created_at, who:profiles!follow_requests_requester_fkey(${AUTHOR})`).eq('target',ME.user.id).order('created_at',{ascending:false});if(error)throw error;return (data||[]).map(r=>r.who).filter(Boolean)},
+  async approveFollow(uid){const {error}=await sb.rpc('approve_follow',{who:uid});if(error)throw error},
+  async declineFollow(uid){const {error}=await sb.from('follow_requests').delete().eq('requester',uid).eq('target',ME.user.id);if(error)throw error},
+  async blockedList(){const {data,error}=await sb.from('blocks').select(`created_at, who:profiles!blocks_blocked_fkey(${AUTHOR})`).eq('blocker',ME.user.id).order('created_at',{ascending:false});if(error)throw error;return (data||[]).map(r=>r.who).filter(Boolean)},
+  async counts(){const [a,b]=await Promise.all([sb.rpc('dm_unread_count'),sb.rpc('pending_requests_count')]);if(a.error)throw a.error;return {unread:a.data||0,requests:b.data||0}},
+  async threads(){const {data,error}=await sb.rpc('my_threads');if(error)throw error;return data||[]},
+  async openDM(uid){const {data,error}=await sb.rpc('open_dm',{other:uid});if(error)throw error;return data},
+  async messages(t,after){let q=sb.from('dm_messages').select('id,thread_id,sender,body,created_at').eq('thread_id',t);if(after)q=q.gt('created_at',after).order('created_at',{ascending:true}).limit(100);else q=q.order('created_at',{ascending:false}).limit(100);const {data,error}=await q;if(error)throw error;return after?data:(data||[]).reverse()},
+  async sendMessage(t,body){const {data,error}=await sb.from('dm_messages').insert({thread_id:t,body}).select('id,thread_id,sender,body,created_at').single();if(error)throw error;return data},
+  async deleteMessage(id){const {error}=await sb.from('dm_messages').delete().eq('id',id);if(error)throw error},
+  async markRead(t){await sb.rpc('mark_dm_read',{t})},
   async signIn(email,password){const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error},
   async signOut(){await sb.auth.signOut()},
   async resetPassword(email){const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:siteURL()});if(error)throw error},
@@ -1550,6 +1622,7 @@ const LiveAPI={
   async profileByUsername(name){const {data,error}=await sb.from('profiles').select('*').eq('username',name).maybeSingle();if(error)throw error;return data},
   async updateProfile(f){const {data,error}=await sb.from('profiles').update(f).eq('id',ME.user.id).select().single();if(error)throw error;return data},
   async stats(id){const {data,error}=await sb.rpc('profile_stats',{uid:id});if(error)throw error;return data},
+  async searchPeople(q){const {data,error}=await sb.rpc('search_people',{q:q||''});if(error)throw error;return data||[]},
   async docs(){const {data,error}=await sb.from('user_docs').select('kind,id,data');if(error)throw error;return data},
   async putDoc(kind,id,data){const {error}=await sb.from('user_docs').upsert({user_id:ME.user.id,kind,id:String(id),data,updated_at:new Date().toISOString()});if(error)throw error},
   async delDoc(kind,id){const {error}=await sb.from('user_docs').delete().eq('kind',kind).eq('id',String(id));if(error)throw error},
@@ -1612,7 +1685,7 @@ const DemoAPI=(()=>{
   const P={
     me:{id:'me',username:'you',display_name:'You',bio:'',avatar_url:null,is_admin:true},
     jordan:{id:'jordan',username:'jordan_lifts',display_name:'Jordan (sample)',bio:'Sample account for the preview.',avatar_url:null,is_admin:false},
-    ava:{id:'ava',username:'ava.trains',display_name:'Ava (sample)',bio:'Sample account for the preview.',avatar_url:null,is_admin:false},
+    ava:{id:'ava',username:'ava.trains',display_name:'Ava (sample)',bio:'Sample coach account for the preview. Strength and mobility coach.',avatar_url:null,is_admin:false,is_coach:true},
     sam:{id:'sam',username:'sam_squats',display_name:'Sam (sample)',bio:'Sample account for the preview.',avatar_url:null,is_admin:false},
   };
   const seed=()=>({signedIn:false,level:0,sub:null,grant:null,me:P.me,
@@ -1636,6 +1709,7 @@ const DemoAPI=(()=>{
   });
   let D=LS.get('demo',null);
   if(!D||!D.posts)D=seed();
+  if(!D.threads){D.threads=[{id:'t1',other:'jordan',last_message_at:ago(12),last_body:'Nice work this week! What program are you running?',last_sender:'jordan',unread:true}];D.msgs=[{id:'m1',thread_id:'t1',sender:'jordan',body:'Nice work this week! What program are you running?',created_at:ago(12)}];D.requests=['sam'];D.requested=[]}
   D.posts.forEach(p=>{p.media=(p.media||[]).filter(m=>!String(m.url).startsWith('blob:'))});
   const save=()=>LS.set('demo',D);
   const prof=id=>id==='me'?D.me:P[id]||{id,username:'lifter',display_name:'Lifter'};
@@ -1648,6 +1722,21 @@ const DemoAPI=(()=>{
     async session(){return D.signedIn?{user:{id:'me',email:'you@example.com'}}:null},
     onAuth(cb){authCbs.push(cb)},
     async signUp(email,password,name,username){if(password.length<8)throw new Error('Password should be at least 8 characters');D.signedIn=true;D.me.display_name=name||'You';if(username)D.me.username=username;save();return {session:{user:{id:'me',email}}}},
+    async acceptTerms(v){D.me.terms_version=v;save()},
+    async coaches(){return wait([D.me].concat(Object.values(P).filter(p=>p.is_coach||(D.coaches||[]).includes(p.id))).filter(p=>!D.blocks.includes(p.id)).map(p=>Object.assign({},p,{i_follow:D.follows.includes(p.id)})))},
+    async setCoach(username,on){const p=Object.values(P).find(x=>x.username===username.replace(/^@/,'').trim().toLowerCase());if(!p)throw new Error('No one has that username.');p.is_coach=on;D.coaches=(D.coaches||[]).filter(x=>x!==p.id);if(on)D.coaches.push(p.id);save();return p},
+    async requestFollow(uid,on){D.requested=(D.requested||[]).filter(x=>x!==uid);if(on)D.requested.push(uid);save()},
+    async followRequests(){return wait((D.requests||[]).map(prof))},
+    async approveFollow(uid){D.requests=(D.requests||[]).filter(x=>x!==uid);D.followers=(D.followers||[]).concat(uid);save()},
+    async declineFollow(uid){D.requests=(D.requests||[]).filter(x=>x!==uid);save()},
+    async blockedList(){return wait(D.blocks.map(prof))},
+    async counts(){return {unread:D.threads.filter(t=>t.unread).length,requests:(D.requests||[]).length}},
+    async threads(){return wait(D.threads.filter(t=>t.last_message_at&&!D.blocks.includes(t.other)).sort((a,b)=>b.last_message_at.localeCompare(a.last_message_at)).map(t=>{const p=prof(t.other);return {id:t.id,other_id:p.id,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,is_admin:p.is_admin,last_message_at:t.last_message_at,last_body:t.last_body,last_from_me:t.last_sender==='me',unread:!!t.unread}}))},
+    async openDM(uid){let t=D.threads.find(x=>x.other===uid);if(!t){if(D.blocks.includes(uid))throw new Error('This person isn’t accepting messages from you.');t={id:'t-'+newId(),other:uid,last_message_at:null};D.threads.push(t);save()}return t.id},
+    async messages(tid,after){return wait(D.msgs.filter(m=>m.thread_id===tid&&(!after||m.created_at>after)).sort((a,b)=>a.created_at.localeCompare(b.created_at)))},
+    async sendMessage(tid,body){const m={id:'m-'+newId(),thread_id:tid,sender:'me',body,created_at:new Date().toISOString()};D.msgs.push(m);const t=D.threads.find(x=>x.id===tid);if(t){t.last_message_at=m.created_at;t.last_body=body.slice(0,140);t.last_sender='me'}save();return m},
+    async deleteMessage(id){D.msgs=D.msgs.filter(m=>m.id!==id);save()},
+    async markRead(tid){const t=D.threads.find(x=>x.id===tid);if(t&&t.unread){t.unread=false;save()}},
     async usernameFree(name){return /^[a-z0-9_]{3,20}$/.test(name)&&!isReserved(name)&&!Object.values(P).some(p=>p.username===name)},
     async signIn(email,password){if(!email||!password)throw new Error('Enter your email and password.');D.signedIn=true;save()},
     async signOut(){D.signedIn=false;save()},
@@ -1669,7 +1758,8 @@ const DemoAPI=(()=>{
     async profile(id){return wait(prof(id))},
     async profileByUsername(n){return Object.values(P).concat([D.me]).find(p=>p.username===n)||null},
     async updateProfile(f){if(f.username&&!/^[a-z0-9_]{3,20}$/.test(f.username))throw new Error('profiles_username_check');Object.assign(D.me,f);save();return D.me},
-    async stats(id){return {posts:D.posts.filter(p=>p.user_id===id).length,followers:id==='me'?3:24,following:id==='me'?D.follows.length:12,i_follow:D.follows.includes(id),blocked:D.blocks.includes(id)}},
+    async stats(id){const pr=!!prof(id).is_private,f=D.follows.includes(id);return {posts:D.posts.filter(p=>p.user_id===id).length,followers:id==='me'?3:24,following:id==='me'?D.follows.length:12,i_follow:f,blocked:D.blocks.includes(id),is_private:pr,requested:(D.requested||[]).includes(id),can_see:!pr||f||id==='me',can_message:id!=='me'&&!D.blocks.includes(id)}},
+    async searchPeople(q){q=String(q||'').replace(/^\s*@/,'').trim().toLowerCase();return wait(Object.values(P).filter(p=>p.id!=='me'&&!D.blocks.includes(p.id)&&(q?(p.username+' '+(p.display_name||'')).toLowerCase().includes(q):!D.follows.includes(p.id))).map(p=>Object.assign({},p,{i_follow:D.follows.includes(p.id)})))},
     async docs(){return []},async putDoc(){},async delDoc(){},
     async posts({mode,userId,before,limit=15}={}){
       let list=D.posts.filter(p=>!D.blocks.includes(p.user_id)&&!p.hidden).sort((a,b)=>b.created_at.localeCompare(a.created_at));
@@ -1767,6 +1857,7 @@ function gate(view,msg){
   };
   box.innerHTML=views[view];
   gateEl.scrollTop=0;
+  box.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const em=box.querySelector('#gEmail')?.value;gate(b.dataset.g);const ne=gateEl&&gateEl.querySelector('#gEmail');if(ne&&em&&!ne.value)ne.value=em});
   const go=box.querySelector('#gGo');if(go)go.onclick=()=>gateSubmit(view);
   box.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter'&&go){e.preventDefault();go.click()}}));
   if(view==='paywall')wirePaywall(box);
@@ -1864,7 +1955,7 @@ async function waitForCheckout(){
 let appEntered=false;
 async function enterApp(){
   try{await loadAccountData()}catch(e){toast('Couldn’t load your workouts. Showing what’s on this phone.')}
-  hideGate();appEntered=true;render();renderDock();
+  hideGate();appEntered=true;render();renderDock();refreshBadges();
   if(ST.active){restFired=!ST.active.restEnd;wake()}
   if(!LS.get('welcomed',false))showWelcome();
 }
@@ -1901,7 +1992,7 @@ function timeAgo(iso){
   return new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric'});
 }
 const nameOf=p=>esc((p&&(p.display_name||p.username))||'Lifter');
-const coachTag=p=>p&&p.is_admin?'<span class="badge teal">Coach</span>':'';
+const coachTag=p=>p&&(p.is_admin||p.is_coach)?'<span class="badge teal">Coach</span>':'';
 function bestSetOf(type,sets){
   const score={w:s=>e1rm(s)||(s.w||0),b:s=>s.r||0,a:s=>s.r||0,t:s=>s.t||0,wt:s=>(s.w||0)*1000+(s.t||0),d:s=>s.d||0,c:s=>s.w||0}[type]||(s=>e1rm(s));
   return sets.slice().sort((a,b)=>score(b)-score(a))[0];
@@ -1965,6 +2056,8 @@ const FEED={mode:'all',posts:[],loaded:false,loading:false,done:false,err:''};
 function feedHTML(){
   const p=ME.profile||{};
   return `${!API.live?'<p class="preview-strip">Preview mode · posts and accounts here are samples</p>':''}
+    <div class="feed-top"><button class="people-bar" data-act="people-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search people</span></button><button class="inbox-btn" data-act="inbox" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14"/><path d="M21 3 14 21l-4-7-7-4z"/></svg><span class="nbadge" data-badge="unread" hidden></span></button></div>
+    <div id="coachStrip">${coachStripHTML()}</div>
     <div class="seg wide"><button data-act="feed-mode" data-mode="all" aria-pressed="${FEED.mode==='all'}">For you</button><button data-act="feed-mode" data-mode="following" aria-pressed="${FEED.mode==='following'}">Following</button><button data-act="feed-mode" data-mode="advice" aria-pressed="${FEED.mode==='advice'}">Advice</button></div>
     <button class="compose-card" data-act="compose">${avatarHTML(p,38)}<span>Share a lift, a workout or a question</span></button>
     <div class="stack" id="feedList">${feedListHTML()}</div>`;
@@ -2054,6 +2147,7 @@ async function openPost(id){
   o.querySelector('.sheet').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&b.dataset.act==='open-profile')o.close()});
 }
 function openComposer(preset={}){
+  if(!termsOK()){openTerms({onAccept:()=>openComposer(preset)});return}
   const st={advice:!!preset.advice,attachment:preset.attachment||null,files:[],body:preset.body||''};
   const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>New post</h2><button class="link" id="cpPost">Post</button></div>
     <div class="seg" style="align-self:flex-start"><button data-k="post" aria-pressed="${!st.advice}">Share</button><button data-k="advice" aria-pressed="${st.advice}">Ask for advice</button></div>
@@ -2119,22 +2213,258 @@ function savePostWorkout(id){
 }
 
 /* ---------- profiles ---------- */
+/* ================= community guidelines ================= */
+const TERMS_V=1;
+const termsOK=()=>((ME.profile&&ME.profile.terms_version)||0)>=TERMS_V;
+const TERMS_HTML=`<p class="muted">Brainweight’s community is for lifters helping lifters. Before you post, comment or follow anyone, please read and agree to these rules.</p>
+  <h3>Community rules</h3>
+  <ol class="terms">
+    <li><b>Be respectful.</b> No harassment, bullying, hate speech, threats or body shaming. Disagree about training without attacking the person.</li>
+    <li><b>Keep it safe.</b> Don’t promote or sell steroids, illegal drugs or prescription drugs, and don’t encourage dangerous challenges, extreme dieting or self-harm.</li>
+    <li><b>Post only what’s yours.</b> Share photos and videos you took or have permission to share. Don’t post other people without their consent, especially in gyms.</li>
+    <li><b>Keep it appropriate.</b> No nudity, sexual content or graphic violence.</li>
+    <li><b>Be real.</b> No spam, scams, fake accounts, impersonation or misleading claims about lifts.</li>
+    <li><b>No selling without permission.</b> Don’t advertise products, coaching or links unless Brainweight has approved it.</li>
+    <li><b>Protect privacy.</b> Don’t share anyone’s personal information, like their address, phone number or location.</li>
+  </ol>
+  <h3>Advice and your safety</h3>
+  <p>Tips, programs and comments in Brainweight, including from other members and coaches, are for general information only. They are not medical, physical therapy, nutrition or professional fitness advice. Talk to a doctor before starting a new program, especially if you have an injury or health condition. Use good form, warm up, use a spotter or safety equipment for heavy lifts, and stop if you feel pain, dizziness or shortness of breath.</p>
+  <h3>Liability</h3>
+  <p>Lifting and exercise carry a risk of injury. You take part at your own risk. To the fullest extent allowed by law, Brainweight and its owner aren’t responsible for any injury, loss or damage that comes from using the app, following a program, or acting on anything posted by members. Members are responsible for what they post, and Brainweight doesn’t check every post before it appears.</p>
+  <h3>Your content</h3>
+  <p>You keep ownership of what you post. By posting, you let Brainweight show it in the app to other members. You can delete your posts at any time.</p>
+  <h3>Enforcement</h3>
+  <p>Use Report on any post that breaks these rules. Brainweight can remove content and suspend or delete accounts that break them, with or without warning.</p>
+  <h3>Age</h3>
+  <p>You must be at least 13 to use Brainweight. If you’re under 18, a parent or guardian must agree to these rules for you.</p>`;
+let termsOpen=false;
+function openTerms({onAccept,onDecline,readOnly}={}){
+  if(termsOpen)return;
+  if(readOnly||termsOK()){
+    sheet(`<div class="sheet-h"><h2>Community guidelines</h2><button class="link" data-close>Close</button></div>${TERMS_HTML}${termsOK()&&ME.profile?.terms_accepted_at?`<p class="g-note">You agreed on ${esc(new Date(ME.profile.terms_accepted_at).toLocaleDateString())}.</p>`:''}`,{full:true}).querySelector('.sheet').style.overflowY='auto';
+    return;
+  }
+  termsOpen=true;
+  const o=sheet(`<div class="sheet-h"><h2>Community guidelines</h2></div>${TERMS_HTML}
+    <label class="terms-agree"><input type="checkbox" id="tmChk"><span>I’m at least 13, I’ve read the community guidelines, and I agree to follow them. I understand that I lift at my own risk and that advice in Brainweight isn’t professional advice.</span></label>
+    <p class="g-err" id="tmErr"></p>
+    <button class="primary" id="tmGo" disabled>Agree and continue</button>
+    <button class="secondary" id="tmNo">Not now</button>`,{full:true,modal:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const chk=o.querySelector('#tmChk'),go=o.querySelector('#tmGo');
+  chk.onchange=()=>{go.disabled=!chk.checked};
+  const done=()=>{termsOpen=false;o.close()};
+  o.querySelector('#tmNo').onclick=()=>{done();if(onDecline)onDecline()};
+  go.onclick=async()=>{
+    go.disabled=true;go.textContent='Saving…';
+    try{
+      await API.acceptTerms(TERMS_V);
+      ME.profile=Object.assign(ME.profile||{},{terms_version:TERMS_V,terms_accepted_at:new Date().toISOString()});
+      done();toast('Welcome to the community');
+      if(ST.tab==='feed')render();
+      if(onAccept)onAccept();
+      else if(!ME.profile.avatar_url&&!ME.profile.bio)setTimeout(()=>openEditProfile(true),250);
+    }catch(e){go.disabled=false;go.textContent='Agree and continue';o.querySelector('#tmErr').textContent=errMsg(e)}
+  };
+}
+/* ================= coaches ================= */
+let COACHES=null;
+async function loadCoaches(){try{COACHES=await API.coaches()}catch(e){COACHES=[]}const b=document.getElementById('coachStrip');if(b)b.innerHTML=coachStripHTML()}
+function coachStripHTML(){
+  if(COACHES==null)return'';
+  if(!COACHES.length)return'';
+  return `<div class="coach-strip"><div class="row"><span class="eyebrow">Coaches</span><button class="link" data-act="coaches">See all</button></div>
+    <div class="coach-row">${COACHES.map(c=>`<button class="coach-chip" data-act="coach" data-id="${esc(c.id)}">${avatarHTML(c,58)}<span>${nameOf(c).split(' ')[0]}</span></button>`).join('')}</div></div>`;
+}
+function openCoaches(){
+  const o=sheet(`<div class="sheet-h"><h2>Coaches</h2><button class="link" data-close>Done</button></div><p class="muted" style="font-size:14px">Follow a coach to see their posts in your feed, or message them with questions about your training.</p><div id="coList" class="stack"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const list=o.querySelector('#coList');
+  const paint=()=>{list.innerHTML=(COACHES||[]).length?COACHES.map(c=>{const me=c.id===ME.user?.id;return `<div class="card coach-card"><button class="person-main" data-view="${esc(c.id)}">${avatarHTML(c,56)}<div><b>${nameOf(c)} ${coachTag(c)}</b><span>@${esc(c.username)}</span></div></button>
+      ${c.bio?`<p style="font-size:14px">${esc(c.bio)}</p>`:''}
+      ${me?'<p class="g-note" style="text-align:left;margin:0">This is you.</p>':`<div style="display:flex;gap:8px"><button class="${c.i_follow?'secondary':'primary'}" data-fol="${esc(c.id)}" style="flex:1;min-height:44px">${c.i_follow?'Following':'Follow'}</button><button class="secondary" data-msg="${esc(c.id)}" style="flex:1">Message</button><button class="secondary" data-view="${esc(c.id)}">Posts</button></div>`}</div>`}).join(''):'<p class="empty">No coaches yet.</p>'};
+  list.addEventListener('click',async e=>{
+    const f=e.target.closest('[data-fol]'),m=e.target.closest('[data-msg]'),v=e.target.closest('[data-view]');
+    if(f){const c=COACHES.find(x=>x.id===f.dataset.fol);f.disabled=true;try{await API.follow(c.id,!c.i_follow);c.i_follow=!c.i_follow;if(FEED.mode==='following')FEED.loaded=false;paint()}catch(err){f.disabled=false;toast(errMsg(err))}}
+    else if(m){const c=COACHES.find(x=>x.id===m.dataset.msg);o.close();messageUser(c)}
+    else if(v){o.close();if(v.dataset.view===ME.user?.id)setTab('profile');else openProfile(v.dataset.view)}
+  });
+  if(COACHES==null)loadCoaches().then(paint);else{paint();loadCoaches().then(paint)}
+}
+/* ================= badges, inbox, chat, privacy ================= */
+const BADGE={unread:0,requests:0};let badgeAt=0;
+function paintBadges(){
+  const v={unread:BADGE.unread,requests:BADGE.requests,social:BADGE.unread+BADGE.requests};
+  document.querySelectorAll('[data-badge]').forEach(n=>{const c=v[n.dataset.badge]||0;n.hidden=!c;n.textContent=c>9?'9+':String(c)});
+}
+async function refreshBadges(force){
+  if(!appEntered||!ME.user||(!force&&Date.now()-badgeAt<15000))return;badgeAt=Date.now();
+  try{Object.assign(BADGE,await API.counts());paintBadges()}catch(e){}
+}
+setInterval(()=>{if(document.visibilityState==='visible')refreshBadges()},45000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshBadges()});
+const shortAgo=iso=>{const m=Math.max(0,(Date.now()-new Date(iso))/60000);return m<1?'now':m<60?Math.floor(m)+'m':m<1440?Math.floor(m/60)+'h':m<10080?Math.floor(m/1440)+'d':new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric'})};
+
+function openInbox(){
+  const o=sheet(`<div class="sheet-h"><h2>Messages</h2><button class="link" data-close>Done</button></div>
+    <button class="primary" id="ibNew" style="min-height:46px">New message</button>
+    <div id="ibList"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const list=o.querySelector('#ibList');let rows=[];
+  const load=async()=>{
+    try{rows=await API.threads()}catch(e){list.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`;return}
+    list.innerHTML=rows.length?rows.map(t=>`<button class="thread ${t.unread?'unread':''}" data-t="${esc(t.id)}">${avatarHTML({display_name:t.display_name,username:t.username,avatar_url:t.avatar_url},48)}<div class="thread-main"><div class="thread-top"><b>${nameOf(t)}</b><span>${shortAgo(t.last_message_at)}</span></div><span class="thread-last">${t.last_from_me?'You: ':''}${esc(t.last_body||'')}</span></div>${t.unread?'<i class="dot" aria-label="Unread"></i>':''}</button>`).join('')
+      :'<p class="empty">No messages yet. Start a conversation with someone you follow.</p>';
+  };
+  list.addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;const t=rows.find(x=>x.id===b.dataset.t);if(!t)return;
+    t.unread=false;b.classList.remove('unread');b.querySelector('.dot')?.remove();
+    openChat(t.id,{id:t.other_id,username:t.username,display_name:t.display_name,avatar_url:t.avatar_url,is_admin:t.is_admin},load)});
+  o.querySelector('#ibNew').onclick=()=>openPeopleSearch({onPick:p=>messageUser(p,load)});
+  load();
+}
+async function messageUser(p,onBack){
+  try{const tid=await API.openDM(p.id);openChat(tid,p,onBack)}catch(e){toast(errMsg(e))}
+}
+function openChat(tid,other,onBack){
+  const o=sheet(`<div class="chat-h"><button class="link" data-close aria-label="Back">‹ Back</button><button class="chat-who" id="chWho">${avatarHTML(other,32)}<b>${nameOf(other)}</b></button><span style="width:52px"></span></div>
+    <div class="chat-list" id="chList"><div class="spinner"></div></div>
+    <form class="chat-form" id="chForm"><textarea class="input" id="chText" rows="1" maxlength="2000" placeholder="Message…" aria-label="Message"></textarea><button class="primary" id="chSend" type="submit">Send</button></form>`,{full:true});
+  o.querySelector('.sheet').classList.add('chat-sheet');
+  const list=o.querySelector('#chList'),ta=o.querySelector('#chText'),form=o.querySelector('#chForm');
+  let msgs=[],timer=null,closed=false,busy=false;
+  const me=ME.user?.id||'me';
+  const atBottom=()=>list.scrollHeight-list.scrollTop-list.clientHeight<80;
+  const paint=(stick)=>{
+    list.innerHTML=msgs.length?msgs.map((m,i)=>{const mine=m.sender===me||m.sender==='me';const prev=msgs[i-1];const gap=!prev||new Date(m.created_at)-new Date(prev.created_at)>36e5;
+      return `${gap?`<p class="chat-time">${esc(new Date(m.created_at).toLocaleString(undefined,{weekday:'short',hour:'numeric',minute:'2-digit'}))}</p>`:''}<div class="bubble ${mine?'mine':''}" data-m="${esc(m.id)}">${esc(m.body)}</div>`}).join('')
+      :`<p class="empty">Say hi to ${nameOf(other)}.</p>`;
+    if(stick)list.scrollTop=list.scrollHeight;
+  };
+  const poll=async()=>{
+    if(closed||busy)return;busy=true;
+    try{const last=msgs[msgs.length-1]?.created_at;const n=await API.messages(tid,last);
+      const fresh=n.filter(m=>!msgs.some(x=>x.id===m.id));
+      if(fresh.length){const stick=atBottom();msgs=msgs.concat(fresh);paint(stick);API.markRead(tid)}}catch(e){}
+    busy=false;
+  };
+  (async()=>{try{msgs=await API.messages(tid);paint(true);API.markRead(tid).then(()=>refreshBadges(true))}catch(e){list.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`}
+    timer=setInterval(poll,3000)})();
+  const grow=()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,120)+'px'};
+  ta.addEventListener('input',grow);
+  ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!/iphone|ipad|android/i.test(navigator.userAgent)){e.preventDefault();form.requestSubmit()}});
+  form.onsubmit=async e=>{
+    e.preventDefault();const body=ta.value.trim();if(!body)return;
+    const btn=o.querySelector('#chSend');btn.disabled=true;
+    try{const m=await API.sendMessage(tid,body);if(!msgs.some(x=>x.id===m.id))msgs.push(m);ta.value='';grow();paint(true)}
+    catch(err){toast(errMsg(err))}
+    btn.disabled=false;ta.focus();
+  };
+  list.addEventListener('click',e=>{const b=e.target.closest('.bubble.mine');if(!b)return;
+    const id=b.dataset.m;const mo=sheet(`<h2>Message</h2><p class="muted">${esc(msgs.find(x=>x.id===id)?.body||'')}</p><button class="secondary danger" id="mDel">Unsend</button><button class="secondary" data-close>Cancel</button>`);
+    mo.querySelector('#mDel').onclick=async()=>{try{await API.deleteMessage(id);msgs=msgs.filter(x=>x.id!==id);paint(false);mo.close()}catch(err){toast(errMsg(err))}}});
+  o.querySelector('#chWho').onclick=()=>{o.close();openProfile(other.id)};
+  const close0=o.close;o.close=()=>{closed=true;clearInterval(timer);close0();if(onBack)onBack();refreshBadges(true)};
+}
+
+function openPrivacy(){
+  const p=ME.profile||{};
+  const o=sheet(`<div class="sheet-h"><h2>Privacy &amp; messages</h2><button class="link" data-close>Done</button></div>
+    <div class="card">
+      <label class="toggle"><span>Private account</span><input type="checkbox" id="pvPrivate" ${p.is_private?'checked':''}></label>
+      <p class="g-note" style="text-align:left;margin:0">When your account is private, only people you approve can see your posts. Anyone can still see your name, photo and bio.</p>
+    </div>
+    <div class="card"><span class="eyebrow">Who can message you</span>
+      <div class="seg wide" id="pvDm"><button data-dm="everyone">Everyone</button><button data-dm="following">People I follow</button><button data-dm="nobody">No one</button></div>
+      <p class="g-note" style="text-align:left;margin:0">You can always reply to anyone who messages you first.</p>
+    </div>
+    <div class="card"><span class="eyebrow">Follow requests</span><div id="pvReq"><div class="spinner"></div></div></div>
+    <div class="card"><span class="eyebrow">Blocked accounts</span><div id="pvBlk"><div class="spinner"></div></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const save=async f=>{try{ME.profile=await API.updateProfile(f);return true}catch(e){toast(errMsg(e));return false}};
+  const pv=o.querySelector('#pvPrivate');
+  pv.onchange=async()=>{pv.disabled=true;const ok=await save({is_private:pv.checked});if(!ok)pv.checked=!pv.checked;else{toast(pv.checked?'Your account is private':'Your account is public');if(!pv.checked)loadReq()}pv.disabled=false};
+  const dmSeg=o.querySelector('#pvDm');
+  const paintDm=()=>dmSeg.querySelectorAll('[data-dm]').forEach(b=>b.setAttribute('aria-pressed',String((ME.profile?.dm_policy||'everyone')===b.dataset.dm)));
+  paintDm();
+  dmSeg.onclick=async e=>{const b=e.target.closest('[data-dm]');if(!b)return;if(await save({dm_policy:b.dataset.dm}))paintDm()};
+  const personRow=(u,btns)=>`<div class="person"><button class="person-main" data-uid="${esc(u.id)}">${avatarHTML(u,40)}<div><b>${nameOf(u)}</b><span>@${esc(u.username)}</span></div></button>${btns}</div>`;
+  const req=o.querySelector('#pvReq'),blk=o.querySelector('#pvBlk');
+  const loadReq=async()=>{try{const r=await API.followRequests();BADGE.requests=r.length;paintBadges();
+    req.innerHTML=r.length?r.map(u=>personRow(u,`<div class="req-btns"><button class="primary person-follow" data-ok="${esc(u.id)}">Confirm</button><button class="secondary person-follow" data-no="${esc(u.id)}">Delete</button></div>`)).join(''):'<p class="muted" style="font-size:14px">No pending requests.</p>'}catch(e){req.innerHTML=`<p class="muted">${esc(errMsg(e))}</p>`}};
+  const loadBlk=async()=>{try{const r=await API.blockedList();
+    blk.innerHTML=r.length?r.map(u=>personRow(u,`<button class="secondary person-follow" data-unblock="${esc(u.id)}">Unblock</button>`)).join(''):'<p class="muted" style="font-size:14px">You haven’t blocked anyone.</p>'}catch(e){blk.innerHTML=`<p class="muted">${esc(errMsg(e))}</p>`}};
+  o.addEventListener('click',async e=>{
+    const a=e.target.closest('[data-ok]'),n=e.target.closest('[data-no]'),u=e.target.closest('[data-unblock]'),m=e.target.closest('[data-uid]');
+    try{
+      if(a){a.disabled=true;await API.approveFollow(a.dataset.ok);toast('Request confirmed');loadReq()}
+      else if(n){n.disabled=true;await API.declineFollow(n.dataset.no);loadReq()}
+      else if(u){u.disabled=true;await API.block(u.dataset.unblock,false);toast('Unblocked');loadBlk()}
+      else if(m){o.close();openProfile(m.dataset.uid)}
+    }catch(err){toast(errMsg(err));loadReq();loadBlk()}
+  });
+  loadReq();loadBlk();
+}
+function openPeopleSearch(opts={}){
+  const pick=opts.onPick;
+  const o=sheet(`<div class="sheet-h"><h2>${pick?'New message':'Find people'}</h2><button class="link" data-close>Done</button></div>
+    <input class="input" id="psQ" type="search" placeholder="Search by name or @username" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+    <p class="eyebrow" id="psLabel" style="margin:4px 0 0">${pick?'Suggested':'Suggested for you'}</p><div id="psList"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const inp=o.querySelector('#psQ'),list=o.querySelector('#psList'),label=o.querySelector('#psLabel');
+  let rows=[],seq=0,timer=null;
+  const paint=q=>{
+    label.textContent=q?'People':'Suggested for you';
+    list.innerHTML=rows.length?rows.map(p=>`<div class="person"><button class="person-main" data-uid="${esc(p.id)}">${avatarHTML(p,44)}<div><b>${nameOf(p)} ${coachTag(p)}</b><span>@${esc(p.username)}</span></div></button>${pick?'':`<button class="${p.i_follow?'secondary':'primary'} person-follow" data-follow="${esc(p.id)}">${p.i_follow?'Following':'Follow'}</button>`}</div>`).join('')
+      :`<p class="empty">${q?'No one matches “'+esc(q)+'”.':'You’re following everyone here. Search to find more people.'}</p>`;
+  };
+  const run=async()=>{
+    const q=inp.value.trim(),my=++seq;
+    try{const r=await API.searchPeople(q);if(my!==seq)return;rows=r;paint(q)}
+    catch(e){if(my===seq)list.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`}
+  };
+  inp.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(run,250)});
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(timer);run();inp.blur()}});
+  list.addEventListener('click',async e=>{
+    const f=e.target.closest('[data-follow]');
+    if(f){const p=rows.find(x=>x.id===f.dataset.follow);if(!p)return;const on=!p.i_follow;f.disabled=true;
+      try{await API.follow(p.id,on);p.i_follow=on;if(FEED.mode==='following')FEED.loaded=false}catch(err){if(on&&/security|row-level|42501/i.test(String(err.message||err.code||''))){try{await API.requestFollow(p.id,true);toast('Request sent. @'+p.username+' is private.')}catch(e2){toast(errMsg(e2))}}else toast(errMsg(err))}
+      f.disabled=false;f.className=(p.i_follow?'secondary':'primary')+' person-follow';f.textContent=p.i_follow?'Following':'Follow';return}
+    const m=e.target.closest('[data-uid]');if(m){o.close();if(pick){const p=rows.find(x=>x.id===m.dataset.uid);pick(p)}else openProfile(m.dataset.uid)}
+  });
+  run();
+  setTimeout(()=>inp.focus(),50);
+}
 async function openProfile(uid){
   if(uid===ME.user?.id){setTab('profile');return}
   const o=sheet(`<div class="sheet-h"><h2>Profile</h2><button class="link" data-close>Close</button></div><div id="pfBox"><div class="spinner"></div></div>`,{full:true});
   o.querySelector('.sheet').style.overflowY='auto';
   try{
-    const [p,s,posts]=await Promise.all([API.profile(uid),API.stats(uid),API.posts({userId:uid,limit:20})]);
+    let [p,s,posts]=await Promise.all([API.profile(uid),API.stats(uid),API.posts({userId:uid,limit:20})]);
+    if(s.can_see===undefined)s.can_see=true;if(s.can_message===undefined)s.can_message=!s.blocked;
     if(!p){o.querySelector('#pfBox').innerHTML='<p class="empty">This account no longer exists.</p>';return}
     cachePosts(posts);
     const box=o.querySelector('#pfBox');
-    const paint=()=>{box.innerHTML=`<div class="stack"><div class="prof"><div class="prof-top">${avatarHTML(p,64)}<div><h2>${nameOf(p)}</h2><span class="muted">@${esc(p.username)}</span> ${coachTag(p)}</div></div>
+    const LOCK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+    const paint=()=>{
+      const followLabel=s.i_follow?'Following':s.requested?'Requested':'Follow';
+      box.innerHTML=`<div class="stack"><div class="prof"><div class="prof-top">${avatarHTML(p,64)}<div><h2>${nameOf(p)}</h2><span class="muted">@${esc(p.username)}</span> ${s.is_private?`<span class="lock-tag">${LOCK}Private</span>`:''} ${coachTag(p)}</div></div>
       ${p.bio?`<p style="font-size:14px">${esc(p.bio)}</p>`:''}
       <div class="prof-stats"><div><b>${s.posts}</b><span class="eyebrow">Posts</span></div><div><b>${s.followers}</b><span class="eyebrow">Followers</span></div><div><b>${s.following}</b><span class="eyebrow">Following</span></div></div>
-      <div style="display:flex;gap:8px">${s.blocked?'<button class="secondary" id="pfUnblock" style="flex:1">Unblock</button>':`<button class="${s.i_follow?'secondary':'primary'}" id="pfFollow" style="flex:1;min-height:46px">${s.i_follow?'Following':'Follow'}</button><button class="secondary danger" id="pfBlock">Block</button>`}</div></div>
-      ${s.blocked?'<p class="empty">You blocked this person.</p>':posts.length?posts.map(postHTML).join(''):'<p class="empty">No posts yet.</p>'}</div>`;
-      const f=box.querySelector('#pfFollow');if(f)f.onclick=async()=>{const on=!s.i_follow;try{await API.follow(uid,on);s.i_follow=on;s.followers+=on?1:-1;paint()}catch(e){toast(errMsg(e))}};
-      const b=box.querySelector('#pfBlock');if(b)confirmBtn(b,'Tap again',async()=>{try{await API.block(uid,true);s.blocked=true;FEED.posts=FEED.posts.filter(x=>x.user_id!==uid);paint();paintFeed();toast('Blocked')}catch(e){toast(errMsg(e))}});
+      <div style="display:flex;gap:8px">${s.blocked?'<button class="secondary" id="pfUnblock" style="flex:1">Unblock</button>':`<button class="${s.i_follow||s.requested?'secondary':'primary'}" id="pfFollow" style="flex:1;min-height:46px">${followLabel}</button>${s.can_message?'<button class="secondary" id="pfMsg" style="flex:1">Message</button>':''}<button class="secondary danger" id="pfBlock">Block</button>`}</div></div>
+      ${s.blocked?'<p class="empty">You blocked this person.</p>':!s.can_see?`<div class="private-note">${LOCK.replace('width="14" height="14"','width="28" height="28"')}<b>This account is private</b><span>Follow @${esc(p.username)} to see their posts.</span></div>`:posts.length?posts.map(postHTML).join(''):'<p class="empty">No posts yet.</p>'}</div>`;
+      const f=box.querySelector('#pfFollow');if(f)f.onclick=async()=>{
+        f.disabled=true;
+        try{
+          if(s.i_follow){await API.follow(uid,false);s.i_follow=false;s.followers-=1;if(s.is_private){s.can_see=false;posts=[]}}
+          else if(s.requested){await API.requestFollow(uid,false);s.requested=false}
+          else if(s.is_private){await API.requestFollow(uid,true);s.requested=true;toast('Request sent')}
+          else{await API.follow(uid,true);s.i_follow=true;s.followers+=1}
+          if(FEED.mode==='following')FEED.loaded=false;
+          paint();
+        }catch(e){f.disabled=false;toast(errMsg(e))}
+      };
+      const mg=box.querySelector('#pfMsg');if(mg)mg.onclick=()=>{o.close();messageUser(p)};
+      const b=box.querySelector('#pfBlock');if(b)confirmBtn(b,'Tap again',async()=>{try{await API.block(uid,true);s.blocked=true;s.i_follow=false;s.requested=false;FEED.posts=FEED.posts.filter(x=>x.user_id!==uid);paint();paintFeed();toast('Blocked')}catch(e){toast(errMsg(e))}});
       const ub=box.querySelector('#pfUnblock');if(ub)ub.onclick=async()=>{try{await API.block(uid,false);s.blocked=false;paint();toast('Unblocked')}catch(e){toast(errMsg(e))}};
     };
     paint();
@@ -2145,7 +2475,8 @@ function profileHTML(){
   const p=ME.profile||{username:'you',display_name:'You'},s=myStats;
   const sub=PROFILE_SUB;
   const body=sub==='history'?historyHTML():sub==='exercises'?exercisesHTML():(myPosts==null?'<div class="spinner"></div>':myPosts.length?myPosts.map(postHTML).join(''):'<p class="empty">You haven’t posted yet. Share a lift from your history or an exercise page.</p>');
-  return `<div class="prof"><div class="prof-top">${avatarHTML(p,64)}<div><h2>${nameOf(p)}</h2><span class="muted">@${esc(p.username||'')}</span> ${coachTag(p)}</div></div>
+  const needs=!p.avatar_url||!p.bio;
+  return `${needs?`<button class="card setup-card" data-act="edit-profile"><b>${!p.avatar_url&&!p.bio?'Add a profile photo and bio':!p.avatar_url?'Add a profile photo':'Add a bio'}</b><span class="muted">Help people recognize you on the feed.</span></button>`:''}<div class="prof"><div class="prof-top"><button class="av-edit" data-act="edit-profile" aria-label="Change profile photo">${avatarHTML(p,64)}<i>+</i></button><div><h2>${nameOf(p)}</h2><span class="muted">@${esc(p.username||'')}</span> ${coachTag(p)}</div></div>
     ${p.bio?`<p style="font-size:14px">${esc(p.bio)}</p>`:''}
     <div class="prof-stats"><div><b>${s?s.posts:'–'}</b><span class="eyebrow">Posts</span></div><div><b>${s?s.followers:'–'}</b><span class="eyebrow">Followers</span></div><div><b>${s?s.following:'–'}</b><span class="eyebrow">Following</span></div></div>
     <button class="secondary" data-act="edit-profile">Edit profile</button></div>
@@ -2156,9 +2487,9 @@ async function loadMine(){
   if(!ME.user)return;
   try{const [s,posts]=await Promise.all([API.stats(ME.user.id),PROFILE_SUB==='posts'?API.posts({userId:ME.user.id,limit:30}):Promise.resolve(myPosts)]);myStats=s;if(posts){myPosts=posts;cachePosts(posts)}if(ST.tab==='profile')softRender()}catch(e){}
 }
-function openEditProfile(){
+function openEditProfile(first){
   const p=Object.assign({},ME.profile||{});let avatarFile=null;
-  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>Edit profile</h2><button class="link" id="epSave">Save</button></div>
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>${first===true?'Skip':'Cancel'}</button><h2>${first===true?'Set up your profile':'Edit profile'}</h2><button class="link" id="epSave">Save</button></div>${first===true?'<p class="muted" style="font-size:14px;margin:0">Add a photo and a short bio so people know who they’re talking to.</p>':''}
     <div style="display:flex;align-items:center;gap:14px"><span id="epAv">${avatarHTML(p,72)}</span><label class="secondary" style="display:inline-flex;align-items:center;cursor:pointer">Change photo<input type="file" id="epFile" accept="image/*" hidden></label></div>
     <div class="field"><label for="epName">Name</label><input class="input" id="epName" maxlength="40" value="${esc(p.display_name||'')}"></div>
     <div class="field"><label for="epUser">Username</label><input class="input" id="epUser" maxlength="20" autocapitalize="none" value="${esc(p.username||'')}"></div>
@@ -2299,7 +2630,7 @@ function accountHTML(){
   return `<div class="card"><span class="eyebrow">Your plan</span><h3>${esc(pl.title)}</h3>${pl.line?`<span class="muted" style="font-size:14px">${esc(pl.line)}</span>`:''}
     <div style="display:flex;gap:8px;flex-wrap:wrap">${s&&s.has_customer?'<button class="secondary" id="acManage">Manage subscription</button>':''}${lvl()<2?'<button class="primary" id="acUp" style="min-height:46px">Upgrade to Pro</button>':''}</div>
     <div class="promo-row"><input class="input" id="acCode" placeholder="Promo code" autocapitalize="characters" autocomplete="off" aria-label="Promo code"><button class="secondary" id="acRedeem">Redeem</button></div></div>
-    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}<button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
+    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acTerms">Community guidelines</button><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
     <p class="g-note">Signed in as ${esc(ME.user?.email||'')}${!API.live?' · preview mode':''}</p>`;
 }
 function wireAccount(o){
@@ -2308,6 +2639,9 @@ function wireAccount(o){
   o.querySelector('#acRedeem').onclick=async()=>{const c=o.querySelector('#acCode').value.trim();if(!c)return;try{ME.access=await API.redeem(c);toast('Promo code applied');o.close();PROG.list=null;render()}catch(e){toast(errMsg(e))}};
   o.querySelector('#acProfile').onclick=()=>{o.close();openEditProfile()};
   const ad=o.querySelector('#acAdmin');if(ad)ad.onclick=()=>{o.close();openAdmin()};
+  o.querySelector('#acTerms').onclick=()=>{o.close();openTerms({readOnly:true})};
+  o.querySelector('#acPrivacy').onclick=()=>{o.close();openPrivacy()};
+  paintBadges();
   o.querySelector('#acOut').onclick=()=>{o.close();signOut()};
   o.querySelector('#acDel').onclick=()=>{o.close();openDeleteAccount()};
 }
@@ -2325,11 +2659,23 @@ function openDeleteAccount(){
 }
 function openAdmin(tab='codes'){
   const o=sheet(`<div class="sheet-h"><h2>Admin tools</h2><button class="link" data-close>Done</button></div>
-    <div class="seg wide"><button data-t="codes" aria-pressed="${tab==='codes'}">Promo codes</button><button data-t="gift" aria-pressed="${tab==='gift'}">Give access</button><button data-t="reports" aria-pressed="${tab==='reports'}">Reports</button></div><div id="adBox"><div class="spinner"></div></div>`,{full:true});
+    <div class="seg wide" style="grid-template-columns:repeat(4,1fr);font-size:13px"><button data-t="codes" aria-pressed="${tab==='codes'}">Promo codes</button><button data-t="gift" aria-pressed="${tab==='gift'}">Give access</button><button data-t="reports" aria-pressed="${tab==='reports'}">Reports</button><button data-t="coaches" aria-pressed="${tab==='coaches'}">Coaches</button></div><div id="adBox"><div class="spinner"></div></div>`,{full:true});
   o.querySelector('.sheet').style.overflowY='auto';
   o.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{o.close();openAdmin(b.dataset.t)});
   const box=o.querySelector('#adBox');
   const lengths=[[null,'Forever'],[30,'1 month'],[90,'3 months'],[365,'1 year']],uses=[[null,'Unlimited'],[1,'1 person'],[5,'5'],[10,'10'],[25,'25']];
+  if(tab==='coaches'){
+    const paint=async()=>{
+      let list=[];try{list=await API.coaches()}catch(e){box.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`;return}
+      COACHES=list;
+      box.innerHTML=`<div class="stack"><div class="card"><h3>Add a coach</h3><p class="muted" style="font-size:14px">Coaches show up in the Coaches section of the Feed with a Coach badge. Anyone can follow and message them, and they get Pro free.</p>
+        <div class="promo-row"><input class="input" id="coUser" placeholder="@username" autocapitalize="none" autocomplete="off"><button class="primary" id="coAdd" style="min-height:46px">Add</button></div><p class="g-err" id="coErr"></p></div>
+        <div class="card"><h3>Your coaches</h3>${list.map(c=>`<div class="admin-row"><div><b>${nameOf(c)}</b><br><span>@${esc(c.username)}${c.is_admin?' · owner':''}</span></div>${c.is_admin?'':`<button class="chip" data-rm="${esc(c.username)}">Remove</button>`}</div>`).join('')}</div></div>`;
+      box.querySelector('#coAdd').onclick=async()=>{const u=box.querySelector('#coUser').value.trim();if(!u)return;try{const r=await API.setCoach(u,true);toast('@'+r.username+' is now a coach');paint()}catch(e){box.querySelector('#coErr').textContent=errMsg(e)}};
+      box.querySelectorAll('[data-rm]').forEach(b=>confirmBtn(b,'Tap again',async()=>{try{await API.setCoach(b.dataset.rm,false);toast('Removed');paint()}catch(e){toast(errMsg(e))}}));
+    };
+    paint();return;
+  }
   if(tab==='codes'){
     const f={plan:'pro',days:null,max:10};
     const paint=async()=>{
@@ -2395,6 +2741,10 @@ document.addEventListener('click',e=>{
     case'open-post':openPost(id);break;
     case'post-menu':openPostMenu(id);break;
     case'open-profile':openProfile(id);break;
+    case'people-search':openPeopleSearch();break;
+    case'inbox':openInbox();break;
+    case'coaches':openCoaches();break;
+    case'coach':{if(id===ME.user?.id)setTab('profile');else openProfile(id);break}
     case'post-save-workout':savePostWorkout(id);break;
     case'view-img':viewImage(b.dataset.src);break;
     case'prof-sub':PROFILE_SUB=b.dataset.sub;LS.set('profileSub',PROFILE_SUB);softRender();if(PROFILE_SUB==='posts')loadMine();break;
