@@ -339,6 +339,22 @@ button.card:hover{border-color:#2D3746}
 .av img{width:100%;height:100%;object-fit:cover}
 .seg.wide{display:grid;grid-template-columns:repeat(3,1fr);width:100%}
 .seg.wide button{padding:0 6px}
+.plan-cta{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border-color:rgba(52,227,200,.45);background:linear-gradient(135deg,rgba(52,227,200,.10),rgba(47,134,255,.08))}
+.plan-cta .muted{font-size:14px}
+.plan-go{font-weight:800;color:var(--mind);margin-top:4px}
+.plan-card{gap:10px;border-color:rgba(52,227,200,.45)}
+.plan-next{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--surface-2)}
+.plan-ex{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.plan-ex span{min-width:0}
+.plan-ex b{flex:none;font-family:var(--mono);font-size:13px;color:var(--mind)}
+.plan-note{font-size:12px;color:var(--muted);margin:-4px 0 4px}
+.plan-weeks{display:flex;flex-direction:column;gap:8px;padding-left:20px;font-size:14px;line-height:1.45}
+.plan-weeks li.now{color:var(--mind);font-weight:700}
+.pb-best{display:flex;align-items:center;gap:8px}
+.pb-best .input{flex:1;min-width:0}
+.pb-best span{flex:none;color:var(--muted);font-weight:700}
+.choice{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left}
+.choice .muted{font-size:14px}
 .coach-strip{display:flex;flex-direction:column;gap:8px}
 .coach-strip .row{display:flex;justify-content:space-between;align-items:center}
 #pvDm button{font-size:14px;line-height:1.2}
@@ -1045,6 +1061,7 @@ function startHTML(){
   return `${hint}<section class="hero"><span class="eyebrow">${h<12?'Good morning':h<18?'Good afternoon':'Good evening'} · Train your muscles &amp; mind</span><h2>Sharp <span class="m">mind</span>.<br>Strong <span class="b">body</span>.</h2>
     <div class="hero-stats"><div><b>${wk.length}</b><span class="eyebrow">This week</span></div><div><b>${fmtVol(wk.reduce((a,w)=>a+volOf(w),0))}</b><span class="eyebrow">Volume</span></div><div><b>${ST.workouts.length}</b><span class="eyebrow">All time</span></div></div>
     <button class="primary" data-act="start-empty">Start a workout</button></section>
+  ${planCardHTML()}
   <div class="stack"><div class="section-h"><h2>My routines</h2><button class="link" data-act="new-routine">+ New routine</button></div>
   ${mine.length?mine.map(routineCard).join(''):`<button class="card" data-act="new-routine" style="text-align:left"><h3>Build your own workout</h3><span class="muted" style="font-size:14px">Pick exercises and set your target sets, weight and reps. You can also customize a template below or save any finished workout.</span></button>`}</div>
   <div class="stack"><div class="section-h"><h2>Templates</h2></div>${TEMPLATES.map(routineCard).join('')}</div>
@@ -2267,6 +2284,343 @@ function openTerms({onAccept,onDecline,readOnly}={}){
     }catch(e){go.disabled=false;go.textContent='Agree and continue';o.querySelector('#tmErr').textContent=errMsg(e)}
   };
 }
+/* ================= plan builder ================= */
+/* Builds a 4-week plan from a few answers. Everything is rule-based and runs on the phone. */
+const PLAN_SLOTS={
+  benchMain:['bench-press-barbell','bench-press-dumbbell','push-up'],
+  benchVariant:['paused-bench-press','close-grip-bench-press-barbell','floor-press-dumbbell','deficit-push-up'],
+  inclinePress:['incline-bench-press-dumbbell','incline-bench-press-barbell','decline-push-up'],
+  chestPress2:['chest-press-machine','bench-press-dumbbell','wide-push-up'],
+  chestFly:['chest-fly-cable','pec-deck','chest-fly-dumbbell','archer-push-up'],
+  dip:['chest-dip','floor-press-dumbbell','close-grip-push-up'],
+  ohp:['overhead-press-barbell','overhead-press-dumbbell','pike-push-up'],
+  ohpVariant:['seated-overhead-press-dumbbell','arnold-press','push-press-dumbbell','handstand-hold'],
+  lateral:['lateral-raise-dumbbell','lateral-raise-cable','pike-push-up'],
+  lateral2:['lateral-raise-cable','leaning-lateral-raise-dumbbell','y-raise-dumbbell','handstand-hold'],
+  rearDelt:['face-pull-cable','rear-delt-fly-dumbbell','superman'],
+  squatMain:['back-squat-barbell','goblet-squat-dumbbell','bodyweight-squat'],
+  squatVariant:['pause-squat','front-squat-dumbbell','jump-squat-bodyweight'],
+  frontSquat:['front-squat-barbell','goblet-squat-dumbbell','pistol-squat'],
+  legPress:['leg-press','hack-squat-machine','walking-lunge-dumbbell','walking-lunge-bodyweight'],
+  singleLeg:['bulgarian-split-squat-dumbbell','reverse-lunge-dumbbell','bulgarian-split-squat-bodyweight'],
+  legExt:['leg-extension','step-up-dumbbell','wall-sit'],
+  hinge:['deadlift-barbell','deadlift-dumbbell','single-leg-romanian-deadlift-bodyweight'],
+  hingeVariant:['paused-deadlift','deficit-deadlift','single-leg-romanian-deadlift-dumbbell','back-extension-bodyweight'],
+  rdl:['romanian-deadlift-barbell','romanian-deadlift-dumbbell','single-leg-romanian-deadlift-bodyweight'],
+  legCurl:['lying-leg-curl','seated-leg-curl','slider-leg-curl'],
+  backExt:['back-extension-machine','back-extension-bodyweight','superman'],
+  hipThrust:['hip-thrust-barbell','hip-thrust-dumbbell','single-leg-hip-thrust-bodyweight'],
+  glute2:['glute-kickback-cable','frog-pump-dumbbell','glute-bridge-bodyweight'],
+  glute3:['45-degree-hip-extension-machine','b-stance-hip-thrust-dumbbell','fire-hydrant-bodyweight'],
+  calf:['standing-calf-raise-machine','single-leg-calf-raise-dumbbell','single-leg-calf-raise-bodyweight'],
+  verticalPull:['pull-up','pull-up','pull-up'],
+  latPulldown:['lat-pulldown-cable','pullover-dumbbell','inverted-row-bodyweight'],
+  rowMain:['bent-over-row-barbell','bent-over-row-dumbbell','inverted-row-bodyweight'],
+  row2:['seated-row-cable','chest-supported-row-dumbbell','inverted-row-bodyweight'],
+  row3:['single-arm-row-cable','single-arm-row-dumbbell','superman'],
+  curl:['biceps-curl-ez-bar','biceps-curl-dumbbell','biceps-curl-band'],
+  curl2:['bayesian-curl','incline-curl'],
+  hammer:['hammer-curl-dumbbell','hammer-curl-cable'],
+  tricepsPush:['rope-pushdown','overhead-triceps-extension-dumbbell','diamond-push-up'],
+  tricepsOH:['overhead-triceps-extension-cable','skull-crusher-dumbbell','bench-dip'],
+  abs:['hanging-leg-raise','reverse-crunch','dead-bug','lying-leg-raise'],
+  core2:['plank','plank','plank'],
+  obliques:['pallof-press-cable','russian-twist-dumbbell','side-plank'],
+  finisher:['kettlebell-swing-dumbbell','kettlebell-swing-dumbbell','burpee'],
+};
+// What each slot is for: m = main lift, c = compound accessory, i = isolation, k = core, f = finisher
+const SLOT_KIND={benchMain:'m',squatMain:'m',hinge:'m',ohp:'m',verticalPull:'m',rowMain:'c',benchVariant:'c',inclinePress:'c',chestPress2:'c',dip:'c',ohpVariant:'c',squatVariant:'c',frontSquat:'c',legPress:'c',singleLeg:'c',hingeVariant:'c',rdl:'c',hipThrust:'c',latPulldown:'c',row2:'c',row3:'c',
+  chestFly:'i',lateral:'i',lateral2:'i',rearDelt:'i',legExt:'i',legCurl:'i',backExt:'i',glute2:'i',glute3:'i',calf:'i',curl:'i',curl2:'i',hammer:'i',tricepsPush:'i',tricepsOH:'i',abs:'k',core2:'k',obliques:'k',finisher:'f'};
+const PLAN_EQUIP={gym:null,db:['Dumbbell','Bodyweight'],bw:['Bodyweight']};
+// These need a bar to hang from, so home plans skip them unless pull-ups are the goal.
+const NEEDS_BAR=['pull-up','chin-up','hanging-leg-raise','toes-to-bar','negative-pull-up'];
+const KIND_ORDER={m:0,c:1,i:2,k:3,f:4};
+const PLAN_DAYS={
+  fullA:{name:'Full body A',type:'full',slots:['squatMain','benchMain','rowMain','rdl','lateral','abs','curl']},
+  fullB:{name:'Full body B',type:'full',slots:['hinge','ohp','latPulldown','singleLeg','tricepsPush','core2','calf']},
+  fullC:{name:'Full body C',type:'full',slots:['frontSquat','inclinePress','row2','hipThrust','rearDelt','hammer','abs']},
+  upperA:{name:'Upper A',type:'upper',slots:['benchMain','rowMain','ohp','latPulldown','tricepsPush','curl','lateral']},
+  upperB:{name:'Upper B',type:'upper',slots:['inclinePress','verticalPull','row2','lateral','tricepsOH','hammer','rearDelt']},
+  lowerA:{name:'Lower A',type:'lower',slots:['squatMain','rdl','legPress','legCurl','calf','abs','legExt']},
+  lowerB:{name:'Lower B',type:'lower',slots:['hinge','singleLeg','hipThrust','legExt','calf','core2','legCurl']},
+  push:{name:'Push',type:'push',slots:['benchMain','ohp','inclinePress','lateral','tricepsPush','tricepsOH','chestFly']},
+  pull:{name:'Pull',type:'pull',slots:['hinge','verticalPull','rowMain','row2','rearDelt','curl','hammer']},
+  legs:{name:'Legs',type:'lower',slots:['squatMain','rdl','legPress','legCurl','legExt','calf','abs']},
+  pushB:{name:'Push B',type:'push',slots:['ohp','inclinePress','chestPress2','lateral2','chestFly','tricepsOH','dip']},
+  pullB:{name:'Pull B',type:'pull',slots:['verticalPull','row2','latPulldown','row3','rearDelt','curl2','hammer']},
+  legsB:{name:'Legs B',type:'lower',slots:['hinge','frontSquat','hipThrust','singleLeg','legCurl','calf','core2']},
+};
+const PLAN_SPLITS={2:['fullA','fullB'],3:['fullA','fullB','fullC'],4:['upperA','lowerA','upperB','lowerB'],5:['push','pull','legs','upperA','lowerB'],6:['push','pull','legs','pushB','pullB','legsB']};
+const PLAN_LIFTS={
+  bench:{name:'Bench press',slot:'benchMain',variant:'benchVariant',helpers:['tricepsOH','rearDelt','inclinePress'],days:['push','upper','full']},
+  squat:{name:'Squat',slot:'squatMain',variant:'squatVariant',helpers:['singleLeg','legPress','core2'],days:['lower','full']},
+  deadlift:{name:'Deadlift',slot:'hinge',variant:'hingeVariant',helpers:['rdl','rowMain','hipThrust'],days:['lower','pull','full']},
+  ohp:{name:'Overhead press',slot:'ohp',variant:'ohpVariant',helpers:['lateral','tricepsOH','rearDelt'],days:['push','upper','full']},
+  pullup:{name:'Pull-ups',slot:'verticalPull',variant:'latPulldown',helpers:['row2','curl','rearDelt'],days:['pull','upper','full']},
+};
+const PLAN_MUSCLES={
+  chest:{name:'Chest',slots:['benchMain','inclinePress','chestFly','chestPress2','dip'],days:['push','upper','full']},
+  back:{name:'Back',slots:['verticalPull','rowMain','row2','latPulldown','row3'],days:['pull','upper','full']},
+  shoulders:{name:'Shoulders',slots:['ohp','lateral','rearDelt','lateral2','ohpVariant'],days:['push','upper','full']},
+  arms:{name:'Arms',slots:['curl','tricepsPush','hammer','tricepsOH','curl2'],days:['pull','push','upper','full']},
+  legs:{name:'Legs',slots:['squatMain','legPress','rdl','legCurl','legExt','singleLeg'],days:['lower','full']},
+  glutes:{name:'Glutes',slots:['hipThrust','glute2','singleLeg','rdl','glute3'],days:['lower','full']},
+  core:{name:'Core',slots:['abs','core2','obliques'],days:['lower','pull','full','upper','push']},
+};
+const PLAN_GOALS={lift:'Get stronger at a lift',muscle:'Hit a muscle hard',size:'Build muscle',strength:'Get stronger overall',lean:'Get lean and fit'};
+
+function planPick(slot,equip,avoid,barOK){
+  const allowed=PLAN_EQUIP[equip];
+  const list=(PLAN_SLOTS[slot]||[]).filter(id=>EXMAP[id]&&(!allowed||allowed.includes(EXMAP[id].equip))&&(equip==='gym'||barOK||!NEEDS_BAR.includes(id)));
+  return list.find(id=>!avoid.has(id))||null;
+}
+// Round a weight (in the person's units) to a plate-friendly number, then store it in kg.
+function planWeight(userUnitWeight){
+  if(!userUnitWeight||userUnitWeight<=0)return null;
+  const step=u()==='lb'?5:2.5;
+  return inW(Math.max(step,Math.round(userUnitWeight/step)*step));
+}
+function scheme(goal,kind,exp){
+  // [sets, reps, rest seconds]
+  const S={
+    strength:{m:[5,5,180],c:[3,8,120],i:[3,10,75],k:[3,12,60],f:[3,15,60]},
+    lift:{m:[4,5,180],c:[3,8,120],i:[3,10,75],k:[3,12,60],f:[3,15,60]},
+    size:{m:[4,8,120],c:[3,10,90],i:[3,12,60],k:[3,15,60],f:[3,15,60]},
+    muscle:{m:[4,8,120],c:[3,10,90],i:[3,12,60],k:[3,15,60],f:[3,15,60]},
+    lean:{m:[3,10,75],c:[3,12,60],i:[3,15,45],k:[3,15,45],f:[4,15,45]},
+  }[goal][kind];
+  let [sets,reps,rest]=S;
+  if(exp==='new')sets=Math.max(2,sets-1);
+  if(exp==='adv'&&(kind==='m'||kind==='c'))sets+=1;
+  if(exp==='new'&&kind==='m'&&goal==='strength')reps=6;
+  return [sets,reps,rest];
+}
+function buildSets(exId,sets,reps,opts={}){
+  const ex=EXMAP[exId];const t=ex?ex.type:'w';const out=[];
+  const warm=opts.warmups||0;
+  for(let i=0;i<warm;i++)out.push({kind:'w',w:opts.w?planWeight(opts.wUser*(i===0?0.5:0.7)):null,r:i===0?8:5,t:null,d:null});
+  for(let i=0;i<sets;i++){
+    if(t==='t')out.push({kind:'n',w:null,r:null,t:opts.secs||45,d:null});
+    else out.push({kind:'n',w:opts.w??null,r:reps,t:null,d:null});
+  }
+  return out;
+}
+function generatePlan(a){
+  const equip=a.equip||'gym',exp=a.exp||'mid',days=Math.min(6,Math.max(2,+a.days||3));
+  const per={30:4,45:5,60:6,75:7}[a.time]||5;
+  const goalKey=a.goal==='lift'?'lift':a.goal==='muscle'?'muscle':a.goal;
+  let split=PLAN_SPLITS[days].map(k=>Object.assign({key:k},PLAN_DAYS[k],{slots:PLAN_DAYS[k].slots.slice()}));
+  // Pull-ups need a bar. Beginners in a gym and anyone without a gym get a pulldown or row instead,
+  // unless pull-ups are the lift they asked to improve.
+  const swapPull=!(a.goal==='lift'&&a.lift==='pullup')&&(equip!=='gym'||exp==='new');
+  if(swapPull)split.forEach(d=>{d.slots=d.slots.map(s=>s==='verticalPull'?'latPulldown':s)});
+  const focusDays=types=>{const idx=[];types.forEach(t=>split.forEach((d,i)=>{if(d.type===t&&!idx.includes(i))idx.push(i)}));return idx};
+  const notes=[];let title='',weekly=[],liftInfo=null;
+  if(a.goal==='lift'){
+    const L=PLAN_LIFTS[a.lift]||PLAN_LIFTS.bench;
+    const fd=focusDays(L.days).slice(0,2);if(fd.length<2&&split.length>1)split.forEach((d,i)=>{if(fd.length<2&&!fd.includes(i))fd.push(i)});
+    fd.forEach((di,n)=>{const d=split[di];d.slots=d.slots.filter(s=>s!==L.slot&&s!==L.variant);
+      if(n===0){d.slots.unshift(L.slot);d.heavy=true;d.slots.splice(4,0,L.helpers[0])}
+      else{d.slots.unshift(L.slot);d.slots.splice(1,0,L.variant);d.volume=true;d.slots.splice(3,0,L.helpers[1])}
+      d.slots=[...new Set(d.slots)];d.name+=n===0?` · heavy ${L.name.toLowerCase()}`:` · ${L.name.toLowerCase()} volume`;});
+    // One more helper on a third day if there is one
+    const other=split.findIndex((d,i)=>!fd.includes(i)&&L.days.includes(d.type));if(other>=0){split[other].slots.splice(2,0,L.helpers[2]);split[other].slots=[...new Set(split[other].slots)]}
+    title=`${L.name} focus`;
+    const unit=u();const best=+a.bestW>0&&+a.bestR>0?{w:+a.bestW,r:Math.min(12,+a.bestR)}:null;
+    if(a.lift==='pullup'){
+      const r=best?Math.max(1,+a.bestR):(+a.bestR>0?+a.bestR:null);
+      liftInfo={name:L.name,reps:r};
+      const base=r?Math.max(2,Math.round(r*0.6)):3;
+      weekly=[`Week 1: heavy day 4×${base}, volume day 4×${Math.max(1,base-1)}`,
+        `Week 2: heavy day 4×${base+1}, add one set on volume day`,
+        `Week 3: heavy day 5×${base+1}, add weight (a vest or dumbbell between your feet) if all sets felt easy`,
+        `Week 4: lighter week. 3×${Math.max(1,base-1)}, then test your max reps at the end of the week`];
+      if(!r)notes.push('Can’t do a full pull-up yet? Use the assisted machine or a band, or do slow 5-second lowering reps (negatives).');
+    }else if(best){
+      const e1=best.w*(1+best.r/30);liftInfo={name:L.name,e1rm:e1,unit};
+      const pct=p=>{const step=unit==='lb'?5:2.5;return Math.round(e1*p/step)*step};
+      weekly=[`Week 1: heavy ${pct(.80)} ${unit} × 5 for 3 sets · volume ${pct(.70)} ${unit} × 8 for 4 sets`,
+        `Week 2: heavy ${pct(.825)} ${unit} × 4 for 4 sets · volume ${pct(.72)} ${unit} × 8 for 4 sets`,
+        `Week 3: heavy ${pct(.87)} ${unit} × 3 for 4 sets · volume ${pct(.75)} ${unit} × 6 for 4 sets`,
+        `Week 4: lighter week at ${pct(.65)} ${unit} × 5 for 3 sets, then test a new best set of ${best.r} at the end of the week`];
+      notes.push(`Your estimated max is about ${Math.round(e1)} ${unit}, based on ${best.w} ${unit} × ${best.r}. Your week 1 weights are already filled in.`);
+    }else{
+      weekly=['Week 1: heavy day 3 sets of 5 with a weight you could lift 7 times · volume day 4×8 with a weight you could lift 11 times',
+        'Week 2: add 5 lb (2.5 kg) to both days if every rep looked clean',
+        'Week 3: heavy day 4 sets of 3, a little heavier again',
+        'Week 4: lighter week, about 3×5 at an easy weight, then test a new best set'];
+      notes.push('Add your best recent set next time and the app will fill in your weights for you.');
+    }
+  }else if(a.goal==='muscle'){
+    const M=PLAN_MUSCLES[a.muscle]||PLAN_MUSCLES.chest;title=`${M.name} focus`;
+    const fd=focusDays(M.days);let k=0;
+    split.forEach((d,i)=>{
+      const extra=fd.slice(0,2).includes(i)?2:fd.includes(i)?1:0;
+      const add=[];for(let n=0;n<extra;n++){add.push(M.slots[k%M.slots.length]);k++}
+      if(add.length){
+        const comp=add.filter(x=>SLOT_KIND[x]==='m'||SLOT_KIND[x]==='c'),iso=add.filter(x=>!comp.includes(x));
+        const rest=d.slots.slice(1),firstIso=rest.findIndex(x=>KIND_ORDER[SLOT_KIND[x]]>=2);
+        const at=firstIso<0?rest.length:firstIso;
+        d.slots=[...new Set([d.slots[0],...comp,...rest.slice(0,at),...iso,...rest.slice(at)])];d.focus=true}
+    });
+    weekly=['Week 1: leave 2–3 reps in the tank on every set','Week 2: same exercises, add a rep or a little weight where you can','Week 3: push your focus exercises close to failure on the last set','Week 4: lighter week. Cut every exercise to 2 sets, then start the plan again a little heavier'];
+  }else{
+    title={size:'Build muscle',strength:'Get stronger',lean:'Lean and fit'}[a.goal]||'My plan';
+    weekly=a.goal==='strength'?['Week 1: pick weights you could lift 2 more times than the target','Week 2: add 5 lb (2.5 kg) to main lifts when every rep was clean','Week 3: add weight again on main lifts; accessories get one more rep','Week 4: lighter week at about 80% of week 3, then repeat the plan heavier']
+      :a.goal==='lean'?['Week 1: move quickly between exercises, keep rest short','Week 2: same weights, try to cut 15 seconds of rest','Week 3: add a little weight or a few reps everywhere','Week 4: lighter week, then repeat the plan. Walk 7,000+ steps on rest days']
+      :['Week 1: leave 2–3 reps in the tank on every set','Week 2: add a rep or a little weight to each exercise','Week 3: take the last set of each exercise close to failure','Week 4: lighter week. Cut every exercise to 2 sets, then repeat the plan heavier'];
+    if(a.goal==='lean')split.forEach(d=>d.slots.push('finisher'));
+  }
+  // Fill each day with real exercises, avoiding repeats inside a day and spreading variety across days.
+  const usedAll=new Set();const barOK=a.goal==='lift'&&a.lift==='pullup';
+  const out=split.map((d,di)=>{
+    const avoid=new Set();const ex=[];
+    const cap=per+((d.heavy||d.volume||d.focus)?1:0)+(a.goal==='lean'?1:0);
+    const ordered=d.slots.slice();
+    if(a.goal==='lean'){const f=ordered.indexOf('finisher');if(f>=0){ordered.splice(f,1)}}
+    for(const s of ordered){
+      if(ex.length>=cap-(a.goal==='lean'?1:0))break;
+      let id=planPick(s,equip,avoid,barOK);
+      if(!id)continue;
+      // Prefer a different variation if this exact exercise is already in another day and an alternative exists.
+      if(usedAll.has(id)&&SLOT_KIND[s]!=='m'&&!(a.goal==='lift'&&PLAN_LIFTS[a.lift]?.slot===s)){const alt=planPick(s,equip,new Set([...avoid,id]),barOK);if(alt&&!usedAll.has(alt))id=alt}
+      avoid.add(id);ex.push({slot:s,id});
+    }
+    // Home plans can run short on some days; top up with core and leg work so every day is a real workout.
+    for(const s of ['backExt','glute2','core2','obliques','abs','singleLeg','calf']){if(ex.length>=Math.min(4,cap-(a.goal==='lean'?1:0)))break;const id=planPick(s,equip,avoid,barOK);if(id){avoid.add(id);ex.push({slot:s,id})}}
+    if(a.goal==='lean'){const id=planPick('finisher',equip,avoid,barOK);if(id)ex.push({slot:'finisher',id})}
+    ex.forEach(e=>usedAll.add(e.id));
+    const L=a.goal==='lift'?PLAN_LIFTS[a.lift]||PLAN_LIFTS.bench:null;
+    const M=a.goal==='muscle'?PLAN_MUSCLES[a.muscle]||PLAN_MUSCLES.chest:null;
+    const exercises=ex.map(({slot,id})=>{
+      const kind=SLOT_KIND[slot]||'c';let [sets,reps,rest]=scheme(goalKey==='lift'||goalKey==='muscle'?(goalKey==='lift'?'lift':'size'):goalKey,kind,exp);
+      let opts={},note='';
+      if(M&&M.slots.includes(slot)&&kind!=='m')sets=Math.max(sets,4);
+      if(L&&slot===L.slot){
+        if(d.heavy){sets=exp==='new'?3:4;reps=a.lift==='pullup'?(liftInfo&&liftInfo.reps?Math.max(2,Math.round(liftInfo.reps*.6)):3):5;rest=180;opts.warmups=a.lift==='pullup'?0:2;note='Heavy day. Leave 1–2 reps in the tank.'}
+        else{sets=4;reps=a.lift==='pullup'?(liftInfo&&liftInfo.reps?Math.max(1,Math.round(liftInfo.reps*.5)):3):8;rest=150;opts.warmups=a.lift==='pullup'?0:1;note='Volume day. Smooth, fast reps.'}
+        if(liftInfo&&liftInfo.e1rm){const w=liftInfo.e1rm*(d.heavy?.80:.70);opts.w=planWeight(w);opts.wUser=w;if(d.heavy)sets=3}
+      }
+      if(L&&slot===L.variant){sets=3;reps=6;rest=120}
+      if(EXMAP[id]&&EXMAP[id].type==='t')opts.secs=kind==='k'?(exp==='new'?30:45):45;
+      // Low reps make sense with weight on the bar, not for push-ups or air squats.
+      const HARD_BW=['pull-up','chin-up','pistol-squat','archer-push-up','handstand-hold','pike-push-up','nordic-hamstring-curl'];
+      if(EXMAP[id]&&EXMAP[id].equip==='Bodyweight'&&EXMAP[id].type!=='t'&&reps<10&&!HARD_BW.includes(id)&&!(L&&slot===L.slot))reps=Math.max(reps,id==='push-up'||id==='bodyweight-squat'?12:10);
+      if(slot==='finisher'){sets=3;reps=equip==='bw'?10:15;rest=45;note='Finisher. Go hard, short rest.'}
+      return {exId:id,rest,note,sets:buildSets(id,sets,reps,opts)};
+    });
+    return {name:`Day ${di+1} · ${d.name}`,exercises};
+  });
+  const goalName=a.goal==='lift'?`Get stronger at ${(PLAN_LIFTS[a.lift]||PLAN_LIFTS.bench).name.toLowerCase()}`:a.goal==='muscle'?`Build your ${(PLAN_MUSCLES[a.muscle]||PLAN_MUSCLES.chest).name.toLowerCase()}`:PLAN_GOALS[a.goal];
+  notes.push('Warm up for 5 minutes before you start. If a set hurts (not just burns), stop and swap the exercise.');
+  if(equip!=='gym')notes.push(equip==='db'?'Built for dumbbells and a bench. Swap in anything else you have.':'Built for no equipment. For inverted rows, use a sturdy table or a low bar. A pull-up bar or bands open up more options.');
+  return {id:'plan-'+newId(),title,goal:goalName,answers:a,created:Date.now(),weeks:4,days:out,weekly,notes,minutes:+a.time||45};
+}
+
+/* ---------- plan UI ---------- */
+const PLAN_DEF={goal:'lift',lift:'bench',muscle:'chest',exp:'mid',days:4,time:60,equip:'gym',bestW:'',bestR:''};
+const myPlan=()=>ST.settings.plan||null;
+function planNextIndex(p){
+  if(!p)return 0;const names=p.days.map(d=>`${p.title} · ${d.name}`);
+  const last=ST.workouts.find(w=>names.includes(w.name)&&w.start>=p.created);
+  return last?(names.indexOf(last.name)+1)%names.length:0;
+}
+function planWeek(p){return Math.min(p.weeks,Math.floor((Date.now()-p.created)/(7*864e5))+1)}
+function planCardHTML(){
+  const p=myPlan();
+  if(!p)return `<button class="card plan-cta" data-act="plan-build"><span class="eyebrow">New</span><h3>Build it for me</h3><span class="muted">Tell us your goal, like a bigger bench or a stronger back, and get a 4-week plan in seconds.</span><span class="plan-go">Build my plan →</span></button>`;
+  const i=planNextIndex(p),d=p.days[i],wk=planWeek(p);
+  return `<div class="card plan-card"><div class="row"><span class="eyebrow">My plan · week ${wk} of ${p.weeks}</span><button class="link" data-act="plan-view">View</button></div>
+    <h3>${esc(p.title)}</h3><span class="muted" style="font-size:14px">${esc(p.weekly[wk-1]||'')}</span>
+    <div class="plan-next"><span class="eyebrow">Up next</span><b>${esc(d.name)}</b></div>
+    <button class="primary" data-act="plan-start" data-i="${i}">Start ${esc(d.name.split(' · ')[0])}</button></div>`;
+}
+function planDayHTML(d,i){
+  const lines=d.exercises.map(e=>{const ex=EXMAP[e.exId];const work=e.sets.filter(s=>s.kind!=='w');const s0=work[0]||{};
+    const tgt=s0.t?`${work.length} × ${clock(s0.t)}`:`${work.length} × ${s0.r||''}${s0.w!=null?` @ ${dispW(s0.w)} ${u()}`:''}`;
+    return `<div class="plan-ex"><span>${esc(ex?ex.name:'Exercise')}</span><b>${tgt}</b></div>${e.note?`<p class="plan-note">${esc(e.note)}</p>`:''}`}).join('');
+  return `<div class="card"><div class="row"><h3>${esc(d.name)}</h3></div>${lines}</div>`;
+}
+function openPlanBuilder(prefill){
+  const a=Object.assign({},PLAN_DEF,(myPlan()&&myPlan().answers)||{},prefill||{});
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>Build my plan</h2><span style="width:52px"></span></div><div id="pbBox"></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#pbBox');
+  const chips=(key,opts)=>`<div class="chips wrap" data-k="${key}">${opts.map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${String(a[key])===String(v)}">${l}</button>`).join('')}</div>`;
+  const form=()=>{
+    box.innerHTML=`<div class="stack">
+      <div class="field"><label>What’s your goal?</label>${chips('goal',[['lift','Get stronger at a lift'],['muscle','Hit a muscle hard'],['size','Build muscle'],['strength','Get stronger overall'],['lean','Get lean and fit']])}</div>
+      ${a.goal==='lift'?`<div class="field"><label>Which lift?</label>${chips('lift',[['bench','Bench press'],['squat','Squat'],['deadlift','Deadlift'],['ohp','Overhead press'],['pullup','Pull-ups']])}</div>
+        <div class="field"><label>${a.lift==='pullup'?'Most pull-ups you can do in a row (optional)':'Your best recent set (optional)'}</label>
+          <div class="pb-best">${a.lift==='pullup'?'':`<input class="input" id="pbW" inputmode="decimal" placeholder="Weight" value="${esc(a.bestW)}"><span>${u()} ×</span>`}<input class="input" id="pbR" inputmode="numeric" placeholder="Reps" value="${esc(a.bestR)}"></div>
+          <p class="g-note" style="text-align:left;margin:4px 0 0">${a.lift==='pullup'?'We’ll build your sets from this.':'We’ll use this to fill in your weights.'}</p></div>`:''}
+      ${a.goal==='muscle'?`<div class="field"><label>Which muscle?</label>${chips('muscle',[['chest','Chest'],['back','Back'],['shoulders','Shoulders'],['arms','Arms'],['legs','Legs'],['glutes','Glutes'],['core','Core']])}</div>`:''}
+      <div class="field"><label>How long have you been lifting?</label>${chips('exp',[['new','Under 6 months'],['mid','6 months to 2 years'],['adv','2+ years']])}</div>
+      <div class="field"><label>Days per week</label>${chips('days',[[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div>
+      <div class="field"><label>Time per workout</label>${chips('time',[[30,'30 min'],[45,'45 min'],[60,'60 min'],[75,'75+ min']])}</div>
+      <div class="field"><label>Equipment</label>${chips('equip',[['gym','Full gym'],['db','Dumbbells'],['bw','No equipment']])}</div>
+      <button class="primary" id="pbGo">Build my plan</button></div>`;
+    box.querySelectorAll('[data-k]').forEach(row=>row.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;readBest();a[row.dataset.k]=isNaN(+b.dataset.v)?b.dataset.v:+b.dataset.v;form()}));
+    box.querySelector('#pbGo').onclick=()=>{readBest();preview(generatePlan(a))};
+  };
+  const readBest=()=>{const w=box.querySelector('#pbW'),r=box.querySelector('#pbR');if(w)a.bestW=w.value.trim();if(r)a.bestR=r.value.trim()};
+  const preview=p=>{
+    const had=myPlan();
+    box.innerHTML=`<div class="stack">
+      <section class="hero plan-hero"><span class="eyebrow">${esc(p.goal)}</span><h2>${esc(p.title)}</h2>
+        <div class="prog-meta"><span class="badge teal">4 weeks</span><span class="badge">${p.days.length} days a week</span><span class="badge">~${p.minutes} min</span></div></section>
+      ${p.notes.map(n=>`<p class="muted" style="font-size:14px;margin:0">${esc(n)}</p>`).join('')}
+      <div class="card"><h3>How the 4 weeks go</h3><ol class="plan-weeks">${p.weekly.map(w=>`<li>${esc(w)}</li>`).join('')}</ol></div>
+      ${p.days.map(planDayHTML).join('')}
+      ${had?`<label class="terms-agree"><input type="checkbox" id="pbReplace" checked><span>Replace my current plan (${esc(had.title)}) and remove its routines</span></label>`:''}
+      <button class="primary" id="pbSave">Save plan and start day 1</button>
+      <button class="secondary" id="pbOnly">Save plan</button>
+      <button class="outline" id="pbBack">Change my answers</button>
+      <p class="g-note" style="text-align:left">General guidance only, not medical or professional advice. Check with a doctor before starting a new program.</p></div>`;
+    o.querySelector('.sheet').scrollTop=0;
+    const save=start=>{
+      const rep=box.querySelector('#pbReplace');
+      if(had&&(!rep||rep.checked))(had.routineIds||[]).forEach(id=>{if(ST.routines.some(r=>r.id===id))delItem('routines',id)});
+      p.routineIds=p.days.map(d=>{const r={id:'r-'+newId(),name:`${p.title} · ${d.name}`,exercises:clone(d.exercises)};putItem('routines',r);return r.id});
+      ST.settings.plan=p;saveSettings();o.close();
+      toast('Plan saved to your routines');
+      if(start){if(ST.active){toast('Finish or discard your current workout first.');render();return}startWorkout({name:`${p.title} · ${p.days[0].name}`,exercises:p.days[0].exercises})}
+      else{setTab('workout');render()}
+    };
+    box.querySelector('#pbSave').onclick=()=>save(true);
+    box.querySelector('#pbOnly').onclick=()=>save(false);
+    box.querySelector('#pbBack').onclick=form;
+  };
+  form();
+}
+function openPlanView(){
+  const p=myPlan();if(!p){openPlanBuilder();return}
+  const wk=planWeek(p),next=planNextIndex(p);
+  const o=sheet(`<div class="sheet-h"><h2>${esc(p.title)}</h2><button class="link" data-close>Close</button></div>
+    <div class="prog-meta"><span class="badge teal">Week ${wk} of ${p.weeks}</span><span class="badge">${p.days.length} days a week</span></div>
+    <div class="card"><h3>How the 4 weeks go</h3><ol class="plan-weeks">${p.weekly.map((w,i)=>`<li class="${i===wk-1?'now':''}">${esc(w)}</li>`).join('')}</ol></div>
+    ${p.days.map((d,i)=>planDayHTML(d,i).replace('</h3></div>',`</h3>${i===next?'<span class="badge teal">Next</span>':''}</div>`).replace(/<\/div>$/,`<button class="secondary" data-pstart="${i}">Start</button></div>`)).join('')}
+    <button class="outline" id="pvNew">Build a new plan</button>
+    <button class="secondary danger" id="pvEnd">End this plan</button>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  o.querySelectorAll('[data-pstart]').forEach(b=>b.onclick=()=>{o.close();planStart(+b.dataset.pstart)});
+  o.querySelector('#pvNew').onclick=()=>{o.close();openPlanBuilder()};
+  confirmBtn(o.querySelector('#pvEnd'),'Tap again to end it',()=>{ST.settings.plan=null;saveSettings();o.close();render();toast('Plan ended. Its routines are still saved.')});
+}
+function planStart(i){
+  const p=myPlan();if(!p)return;const d=p.days[i];if(!d)return;
+  if(ST.active){toast('Finish or discard your current workout first.');return}
+  startWorkout({name:`${p.title} · ${d.name}`,exercises:d.exercises});
+}
+function openNewRoutineChoice(){
+  const o=sheet(`<h2>New routine</h2>
+    <button class="card choice" id="nrMe"><b>Build it myself</b><span class="muted">Pick your own exercises, sets and reps.</span></button>
+    <button class="card choice" id="nrPlan"><b>Build it for me</b><span class="muted">Answer a few questions and get a full 4-week plan, like a bigger bench or more chest.</span></button>
+    <button class="secondary" data-close>Cancel</button>`);
+  o.querySelector('#nrMe').onclick=()=>{o.close();openRoutineEditor(null)};
+  o.querySelector('#nrPlan').onclick=()=>{o.close();openPlanBuilder()};
+}
+
 /* ================= coaches ================= */
 let COACHES=null;
 async function loadCoaches(){try{COACHES=await API.coaches()}catch(e){COACHES=[]}const b=document.getElementById('coachStrip');if(b)b.innerHTML=coachStripHTML()}
@@ -2524,7 +2878,7 @@ function programsHTML(){
   if(PROG.list==null)return'<div class="spinner"></div>';
   if(PROG.err)return `<div class="card"><p class="muted">${esc(PROG.err)}</p><button class="secondary" data-act="prog-refresh">Try again</button></div>`;
   const free=PROG.list.filter(p=>!p.premium),pro=PROG.list.filter(p=>p.premium);
-  return `<section class="hero"><span class="eyebrow">Programs</span><h2>Train with a <span class="m">plan</span>.</h2><p class="muted" style="font-size:14px">Pick a program, start any day as a workout, or save it to your routines.</p></section>
+  return `<section class="hero"><span class="eyebrow">Programs</span><h2>Train with a <span class="m">plan</span>.</h2><p class="muted" style="font-size:14px">Pick a program, start any day as a workout, or save it to your routines.</p><button class="primary" data-act="plan-build">Build a plan for me</button></section>
     <div class="stack"><div class="section-h"><h2>${esc(COACH)}’s Pro programs</h2>${isAdmin()?'<button class="link" data-act="new-program" data-premium="1">+ New</button>':''}</div>
       ${pro.length?pro.map(progCard).join(''):`<div class="card"><h3>${isAdmin()?'Add your first Pro program':'Coming soon'}</h3><p class="muted" style="font-size:14px">${isAdmin()?'Build the workouts as routines first, then create a program and add them.':`Detailed programs from ${esc(COACH)} are on the way.`}</p></div>`}
       ${lvl()<2&&pro.length?'<button class="primary" data-act="upgrade">Unlock Pro programs</button>':''}</div>
@@ -2768,7 +3122,10 @@ document.addEventListener('click',e=>{
     case'settings':openSettings();break;
     case'start-empty':startWorkout(null);break;
     case'start-routine':{const r=ST.routines.find(x=>x.id===b.dataset.id)||TEMPLATES.find(x=>x.id===b.dataset.id);if(r)startWorkout(r);break}
-    case'new-routine':openRoutineEditor(null);break;
+    case'new-routine':openNewRoutineChoice();break;
+    case'plan-build':openPlanBuilder();break;
+    case'plan-view':openPlanView();break;
+    case'plan-start':planStart(+b.dataset.i);break;
     case'edit-routine':{const r=ST.routines.find(x=>x.id===b.dataset.id)||TEMPLATES.find(x=>x.id===b.dataset.id);if(r)openRoutineEditor(r);break}
     case'add-ex':openPicker({onDone:ids=>{ids.forEach(id=>A.exercises.push(newEx(id)));saveActive();render();const last=document.querySelectorAll('.ex');last[last.length-1]&&last[last.length-1].scrollIntoView({block:'start'})}});break;
     case'ex-menu':openExMenu(i);break;
