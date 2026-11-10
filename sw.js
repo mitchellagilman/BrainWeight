@@ -1,7 +1,7 @@
 // Brainweight offline support.
 // App files: network first (so updates show right away), cached copy when offline.
 // Google Fonts: cache first.
-const VERSION = 'bw-v6';
+const VERSION = 'bw-v8';
 const SHELL = [
   './',
   'index.html',
@@ -24,6 +24,31 @@ self.addEventListener('activate', (event) => {
       .then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
+});
+
+// Notifications: rest timer, messages, followers, comments and workout reminders.
+self.addEventListener('push', (event) => {
+  let d = {};
+  try { d = event.data ? event.data.json() : {}; } catch (e) { d = { title: 'Brainweight', body: event.data ? event.data.text() : '' }; }
+  event.waitUntil(self.registration.showNotification(d.title || 'Brainweight', {
+    body: d.body || '',
+    tag: d.tag || undefined,
+    renotify: !!d.tag,
+    icon: 'icons/icon-192.png',
+    badge: 'icons/favicon-64.png',
+    data: { url: d.url || '#' },
+  }));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const hash = (event.notification.data && event.notification.data.url) || '#';
+  event.waitUntil((async () => {
+    const all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const app = all.find((c) => new URL(c.url).origin === self.location.origin);
+    if (app) { await app.focus(); app.postMessage({ type: 'open', url: hash }); return; }
+    await self.clients.openWindow(new URL('./' + hash, self.registration.scope).href);
+  })());
 });
 
 self.addEventListener('fetch', (event) => {
