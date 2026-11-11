@@ -339,6 +339,59 @@ button.card:hover{border-color:#2D3746}
 .av img{width:100%;height:100%;object-fit:cover}
 .seg.wide{display:grid;grid-template-columns:repeat(3,1fr);width:100%}
 .seg.wide button{padding:0 6px}
+.coach-tile{display:flex;flex-direction:row;gap:12px;align-items:stretch;text-align:left;padding:12px;width:100%}
+.cc-photo{flex:none;width:96px;height:118px;border-radius:14px;object-fit:cover;background:var(--surface-2)}
+.cc-ph{display:grid;place-items:center}
+.cc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.cc-top{display:flex;align-items:center;gap:6px}
+.cc-top b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-head{font-size:13px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cc-tags{display:flex;flex-wrap:wrap;gap:4px}
+.cc-tags span{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--fg)}
+.cc-tags.big span{font-size:13px;padding:5px 10px}
+.cc-foot{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:auto;flex-wrap:wrap}
+.cc-price{font-size:13px;color:var(--muted)}
+.cc-price b{font:700 18px var(--display);color:var(--fg)}
+.cc-mine{font-size:12px;font-weight:800;color:var(--mind)}
+.apply-cta,.coach-cta{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;width:100%}
+.coach-cta{border-color:rgba(47,134,255,.45);background:linear-gradient(135deg,rgba(47,134,255,.10),rgba(52,227,200,.06))}
+.mine-card{border-color:rgba(52,227,200,.5)}
+.cd-gallery{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:18px}
+.cd-gallery::-webkit-scrollbar{display:none}
+.cd-gallery img{flex:none;width:100%;aspect-ratio:4/5;max-height:440px;object-fit:cover;border-radius:18px;scroll-snap-align:center;background:var(--surface-2)}
+.cd-head{display:flex;align-items:center;gap:12px;min-width:0}
+.cd-head>div{min-width:0}
+.cd-head h2{margin:0;font-size:22px}
+.cd-headline{font:600 17px/1.4 var(--body-font,inherit);margin:0}
+.cd-about{white-space:pre-wrap;font-size:15px;line-height:1.6;margin:0}
+.cprog{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cprog>div:not(.cd-head){display:flex;flex-direction:column;gap:2px;min-width:0}
+.client-row{display:flex;flex-direction:row;justify-content:space-between;align-items:center;gap:10px;text-align:left;width:100%}
+.intake-row{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-bottom:1px solid var(--line)}
+.intake-row:last-child{border-bottom:none}
+.intake-row span{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.intake-row p{margin:0;white-space:pre-wrap;font-size:15px}
+.check-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line);font-weight:600}
+.check-row i{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:13px;color:#041016}
+.check-row i.on{background:var(--mind);border-color:var(--mind)}
+.check-row span{flex:1}
+.check-row b{color:var(--mind)}
+.tag-edit{display:flex;flex-wrap:wrap;gap:6px}
+.tag,.field .promo-row .input{text-transform:none;letter-spacing:normal;font-family:inherit}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:6px 6px 6px 12px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);font-size:14px;font-weight:600}
+.tag button{width:24px;height:24px;border-radius:50%;color:var(--muted);font-size:16px;line-height:1}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ph{position:relative;aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph>button[data-rmp]{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:16px}
+.ph-first,.ph-cover{position:absolute;left:4px;bottom:4px;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;font-weight:700}
+.ph-cover{background:var(--mind);color:#041016}
+.ph.add{display:grid;place-items:center;font-size:32px;color:var(--muted);cursor:pointer;border-style:dashed}
+.pay-checks{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.pay-checks span::before{content:'○';display:inline-block;width:22px;color:var(--muted)}
+.pay-checks span.on::before{content:'✓';color:var(--mind);font-weight:800}
+.app-card{gap:8px}
+.link.danger,.danger.link{color:#FF6B81}
 .menu .menu-link{display:flex;align-items:center;min-height:52px;border-bottom:1px solid var(--line);font-weight:600;padding:0 16px;color:var(--fg);text-decoration:none}
 .seg.admin-seg{display:flex;overflow-x:auto;scrollbar-width:none;font-size:13px}
 .seg.admin-seg button{flex:none;padding:0 14px}
@@ -1683,6 +1736,30 @@ const LiveAPI={
   async removePushSub(endpoint){await sb.from('push_subscriptions').delete().eq('endpoint',endpoint)},
   async scheduleRest(seconds){await sb.rpc('schedule_rest',{seconds})},
   async cancelRest(){await sb.rpc('cancel_rest')},
+  async billingJSON(body){const {data,error}=await sb.functions.invoke('billing',{body:Object.assign({return_url:siteURL()},body)});if(error){let m='Something went wrong. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
+  async coachMarket(){const {data,error}=await sb.rpc('coach_market');if(error)throw error;return data||[]},
+  async coachDetail(id){const {data,error}=await sb.rpc('coach_detail',{uid:id});if(error)throw error;return data},
+  async ensureCoachProfile(){await sb.rpc('ensure_coach_profile')},
+  async myCoachProfile(){const {data,error}=await sb.from('coach_profiles').select('*').eq('user_id',ME.user.id).maybeSingle();if(error)throw error;return data||{headline:'',about:'',specialties:[],achievements:[],certifications:[],photos:[],price_cents:9900,accepting:false,max_clients:30}},
+  async saveCoachProfile(f){const {data,error}=await sb.from('coach_profiles').update(Object.assign({},f,{updated_at:new Date().toISOString()})).eq('user_id',ME.user.id).select().single();if(error)throw error;return data},
+  async requestCoaching(coach,intake){const {data,error}=await sb.rpc('request_coaching',{p_coach:coach,p_intake:intake});if(error)throw error;return data},
+  async coachCheckout(id){const d=await this.billingJSON({action:'coach_checkout',coaching_id:id});return d.url},
+  async coachConnect(){const d=await this.billingJSON({action:'coach_connect'});return d.url},
+  async coachStatus(){return await this.billingJSON({action:'coach_status'})},
+  async coachDashboard(){const d=await this.billingJSON({action:'coach_dashboard'});return d.url},
+  async coachCancel(id){await this.billingJSON({action:'coach_cancel',coaching_id:id})},
+  async myClients(){const {data,error}=await sb.rpc('my_clients');if(error)throw error;return data||[]},
+  async setClientNotes(id,notes){const {error}=await sb.rpc('set_client_notes',{p_id:id,p_notes:notes});if(error)throw error},
+  async myCoaching(){const {data,error}=await sb.rpc('my_coaching');if(error)throw error;return data||[]},
+  async coachPrograms(){const {data,error}=await sb.from('coach_programs').select('*').eq('coach_id',ME.user.id).order('updated_at',{ascending:false});if(error)throw error;return data||[]},
+  async clientPrograms(){const {data,error}=await sb.from('coach_programs').select('*').eq('client_id',ME.user.id).order('updated_at',{ascending:false});if(error)throw error;return data||[]},
+  async saveCoachProgram(p){const row={title:p.title,description:p.description||null,weeks:p.weeks||null,days:p.days||[],client_id:p.client_id||null,updated_at:new Date().toISOString()};
+    const q=p.id?sb.from('coach_programs').update(row).eq('id',p.id):sb.from('coach_programs').insert(row);const {error}=await q;if(error)throw error},
+  async deleteCoachProgram(id){const {error}=await sb.from('coach_programs').delete().eq('id',id);if(error)throw error},
+  async applyCoach(f){const {error}=await sb.from('coach_applications').insert(f);if(error)throw /row-level/.test(error.message)?new Error('You already have an application waiting.'):error},
+  async myApplication(){const {data,error}=await sb.from('coach_applications').select('*').eq('user_id',ME.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle();if(error)throw error;return data},
+  async adminApplications(){const {data,error}=await sb.rpc('coach_applications_admin');if(error)throw error;return data||[]},
+  async reviewApplication(id,ok){const {error}=await sb.rpc('review_coach_application',{p_id:id,p_approve:ok});if(error)throw error},
   async coaches(){const {data,error}=await sb.rpc('list_coaches');if(error)throw error;return data||[]},
   async setCoach(username,on){const {data,error}=await sb.rpc('set_coach',{uname:username,on_off:on});if(error)throw error;return data},
   async requestFollow(uid,on){const {error}=on?await sb.from('follow_requests').insert({target:uid}):await sb.from('follow_requests').delete().eq('requester',ME.user.id).eq('target',uid);if(error&&error.code!=='23505')throw error},
@@ -1826,6 +1903,28 @@ const DemoAPI=(()=>{
     async adminStats(){return wait({users:42,new_7d:9,new_30d:31,active_7d:18,active_30d:27,workouts_7d:64,trialing:6,paying_member:11,paying_pro:5,canceled:2,ever_trialed:20,converted:13,free_access:8,referrals:7,posts_7d:23,messages_7d:88,games_7d:310,push_devices:15,signups_14d:[1,2,0,3,1,4,2,2,5,1,3,2,4,3]})},
     async pushKey(){throw new Error('Notifications work in the live app.')},
     async savePushSub(){},async removePushSub(){},async scheduleRest(){},async cancelRest(){},
+    async coachMarket(){const k=D.coaching||[];const mk=(p,cp,ready)=>Object.assign({},p,{headline:cp.headline,specialties:cp.specialties,price_cents:cp.price_cents,accepting:cp.accepting,ready,photo:(cp.photos||[])[0]||null,years_exp:cp.years_exp,clients:p.id==='ava'?7:0,full_up:false,i_follow:D.follows.includes(p.id),my_status:(k.find(x=>x.coach_id===p.id)||{}).status||null});
+      return wait([mk(P.ava,demoCoach(),true),mk(D.me,D.coachProfile||demoMyCoach(),!!D.payoutsOn)])},
+    async coachDetail(id){const m=(await this.coachMarket()).find(x=>x.id===id);if(!m)return null;const cp=id==='ava'?demoCoach():(D.coachProfile||demoMyCoach());const k=(D.coaching||[]).find(x=>x.coach_id===id);
+      return Object.assign({},m,cp,{bio:m.bio||'',mine:k?{id:k.id,status:k.status,current_period_end:new Date(Date.now()+30*864e5).toISOString(),cancel_at_period_end:false}:null})},
+    async ensureCoachProfile(){if(!D.coachProfile){D.coachProfile=demoMyCoach();save()}},
+    async myCoachProfile(){return clone(D.coachProfile||demoMyCoach())},
+    async saveCoachProfile(f){D.coachProfile=Object.assign(D.coachProfile||demoMyCoach(),f);save();return clone(D.coachProfile)},
+    async requestCoaching(coach,intake){D.coaching=(D.coaching||[]).filter(x=>x.coach_id!==coach);const k={id:'k'+newId(),coach_id:coach,status:'active',intake,price_cents:coach==='ava'?14900:9900};D.coaching.push(k);save();return k.id},
+    async coachCheckout(){return null},async coachConnect(){D.payoutsOn=true;save();return null},
+    async coachStatus(){return D.payoutsOn?{connected:true,charges_enabled:true,payouts_enabled:true,details_submitted:true}:{connected:false}},
+    async coachDashboard(){throw new Error('The Stripe dashboard opens in the live app.')},
+    async coachCancel(id){const k=(D.coaching||[]).find(x=>x.id===id);if(k){k.status='canceled'}save()},
+    async myClients(){return wait([{id:'c1',client_id:'jordan',username:'jordan_lifts',display_name:'Jordan (sample)',avatar_url:null,status:'active',price_cents:(D.coachProfile||demoMyCoach()).price_cents,current_period_end:new Date(Date.now()+20*864e5).toISOString(),cancel_at_period_end:false,intake:{goal:'Bench 275 by spring',experience:'6 months to 2 years',days_per_week:4,injuries:'Tight left shoulder',notes:'Trains at 6am before work'},coach_notes:D.notes_c1||'',started_at:new Date(Date.now()-40*864e5).toISOString()}])},
+    async setClientNotes(id,n){D.notes_c1=n;save()},
+    async myCoaching(){return wait((D.coaching||[]).map(k=>{const p=prof(k.coach_id);return Object.assign({},p,{id:k.id,coach_id:k.coach_id,headline:k.coach_id==='ava'?demoCoach().headline:'',status:k.status,price_cents:k.price_cents,current_period_end:new Date(Date.now()+30*864e5).toISOString(),cancel_at_period_end:false,started_at:new Date().toISOString()})}))},
+    async coachPrograms(){return wait(clone(D.cprogs||[]))},
+    async clientPrograms(){return wait((D.coaching||[]).some(k=>k.coach_id==='ava')?[{id:'cpx',coach_id:'ava',title:'4-week strength start',weeks:4,description:'Run these 3 days a week. Add 5 lb when you hit every rep.',days:generatePlan({goal:'strength',exp:'mid',days:3,time:45,equip:'gym'}).days}]:[])},
+    async saveCoachProgram(p){D.cprogs=D.cprogs||[];if(p.id){const i=D.cprogs.findIndex(x=>x.id===p.id);D.cprogs[i]=p}else D.cprogs.unshift(Object.assign({id:'cp'+newId()},p));save()},
+    async deleteCoachProgram(id){D.cprogs=(D.cprogs||[]).filter(x=>x.id!==id);save()},
+    async applyCoach(){D.app={status:'pending'};save()},async myApplication(){return D.app||null},
+    async adminApplications(){return [{id:1,user_id:'sam',username:'sam_squats',display_name:'Sam (sample)',avatar_url:null,years_exp:4,certifications:'NASM-CPT',specialties:'Hypertrophy, Beginners',about:'Sample application. I coach beginners to build muscle and confidence in the gym.',links:'@sam_squats'}]},
+    async reviewApplication(){},
     async coaches(){return wait([D.me].concat(Object.values(P).filter(p=>p.is_coach||(D.coaches||[]).includes(p.id))).filter(p=>!D.blocks.includes(p.id)).map(p=>Object.assign({},p,{i_follow:D.follows.includes(p.id)})))},
     async setCoach(username,on){const p=Object.values(P).find(x=>x.username===username.replace(/^@/,'').trim().toLowerCase());if(!p)throw new Error('No one has that username.');p.is_coach=on;D.coaches=(D.coaches||[]).filter(x=>x!==p.id);if(on)D.coaches.push(p.id);save();return p},
     async requestFollow(uid,on){D.requested=(D.requested||[]).filter(x=>x!==uid);if(on)D.requested.push(uid);save()},
@@ -3316,10 +3415,370 @@ function routeHash(h){
   else if(h==='#workout')setTab('workout');
   else if(h==='#profile')setTab('profile');
   else if(h.startsWith('#post-')){setTab('feed');openPost(h.slice(6))}
+  else if(h==='#coach-portal')openCoachPortal();
+  else if(h==='#coach-payouts')openCoachPortal('payouts');
+  else if(h==='#my-coaching'){setTab('programs');openMyCoaching()}
+  else if(h==='#coaching-booked'){setTab('programs');toast('You’re booked! Confirming your payment…');
+    let n=0;const poll=async()=>{const ks=await loadMyCoaching();if(ks.some(k=>k.status==='active')||++n>8){softRender();openMyCoaching()}else setTimeout(poll,2500)};poll()}
   else if(h.startsWith('#play-')){const g=h.slice(6);if(GAMES.some(x=>x.id===g)){setTab('games');openGame(true,g)}}
 }
 window.addEventListener('hashchange',()=>routeHash());
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='open')routeHash(e.data.url)});
+
+/* ================= coach marketplace ================= */
+const demoCoach=()=>({headline:'Strength and mobility coach for busy lifters',about:'Sample coach for the preview.\n\nI help lifters get strong without living in the gym: 3–4 focused sessions a week, smart progressions, and mobility that actually fixes things. Every client gets a program built around their schedule and weekly check-ins.',specialties:['Strength','Mobility','Busy schedules'],achievements:['Coached 120+ lifters to new PRs','Former D1 strength intern','Ran a 4-person powerlifting team to state'],certifications:['NSCA-CSCS','Precision Nutrition L1'],years_exp:8,photos:[],price_cents:14900,accepting:true,max_clients:30});
+const demoMyCoach=()=>({headline:'',about:'',specialties:[],achievements:[],certifications:[],years_exp:null,photos:[],price_cents:9900,accepting:false,max_clients:30});
+/* Browse coaches, book monthly coaching (paid through Stripe, coach gets 90%),
+   coach portal (profile, photos, clients, programs, payouts), applications. */
+const money=c=>'$'+(c/100).toFixed(c%100?2:0);
+const isCoachMe=()=>!!(ME.profile&&(ME.profile.is_coach||ME.profile.is_admin));
+const COACH_STATUS={active:'Active',past_due:'Payment issue',canceled:'Ended',pending:'Not paid yet'};
+let MARKET=null;
+
+/* ---------- marketplace ---------- */
+function coachCardHTML(c){
+  const img=c.photo?`<img class="cc-photo" src="${esc(c.photo)}" alt="" loading="lazy">`:`<div class="cc-photo cc-ph">${avatarHTML(c,72)}</div>`;
+  const avail=!c.ready?'<span class="badge">Not booking yet</span>':c.full_up?'<span class="badge">Full</span>':c.accepting?'<span class="badge teal">Taking clients</span>':'<span class="badge">Waitlist</span>';
+  return `<button class="card coach-tile" data-coach="${esc(c.id)}">${img}
+    <div class="cc-main"><div class="cc-top"><b>${nameOf(c)}</b>${c.id===ME.user?.id?'<span class="badge">You</span>':''}</div>
+      <span class="cc-head">${esc(c.headline||'Strength coach')}</span>
+      ${c.specialties&&c.specialties.length?`<div class="cc-tags">${c.specialties.slice(0,3).map(s=>`<span>${esc(s)}</span>`).join('')}</div>`:''}
+      <div class="cc-foot"><span class="cc-price"><b>${money(c.price_cents)}</b>/month</span>${avail}</div>
+      ${c.my_status==='active'||c.my_status==='past_due'?'<span class="cc-mine">Your coach</span>':''}</div></button>`;
+}
+async function openCoaches(){
+  const o=sheet(`<div class="sheet-h"><h2>Coaches</h2><button class="link" data-close>Done</button></div>
+    <p class="muted" style="font-size:14px;margin:0">1:1 coaching with a real coach. They build your program, check in, and answer your questions. Billed monthly, cancel anytime.</p>
+    <div id="mkList" class="stack"><div class="spinner"></div></div>
+    <div id="mkApply"></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const list=o.querySelector('#mkList');
+  try{MARKET=await API.coachMarket();
+    list.innerHTML=MARKET.length?MARKET.map(coachCardHTML).join(''):'<p class="empty">No coaches yet.</p>';
+  }catch(e){list.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`}
+  list.addEventListener('click',e=>{const b=e.target.closest('[data-coach]');if(b){openCoachDetail(b.dataset.coach)}});
+  if(!isCoachMe())o.querySelector('#mkApply').innerHTML=`<div class="card apply-cta"><b>Are you a coach?</b><span class="muted" style="font-size:14px">Apply to coach on Brainweight. Set your own monthly price and keep 90%.</span><button class="secondary" data-act="coach-apply">Apply to coach</button></div>`;
+  else o.querySelector('#mkApply').innerHTML=`<button class="secondary" data-act="coach-portal">Open my Coach portal</button>`;
+}
+async function openCoachDetail(id){
+  if(id===undefined)return;
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>‹ Back</button><span></span><span style="width:52px"></span></div><div id="cdBox"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#cdBox');
+  let c;try{c=await API.coachDetail(id)}catch(e){box.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`;return}
+  if(!c){box.innerHTML='<p class="empty">This coach isn’t available.</p>';return}
+  const me=c.id===ME.user?.id,mine=c.mine&&['active','past_due'].includes(c.mine.status)?c.mine:null;
+  const photos=(c.photos||[]).length?c.photos:[];
+  const canBook=!me&&!mine&&c.ready&&c.accepting&&!c.full_up;
+  const why=me?'':mine?'':!c.ready?'This coach is still setting up payments.':c.full_up?'This coach is full right now.':!c.accepting?'This coach isn’t taking new clients right now.':'';
+  const list=(t,arr)=>arr&&arr.length?`<div class="card"><span class="eyebrow">${t}</span><ul class="cues">${arr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:'';
+  box.innerHTML=`<div class="stack">
+    ${photos.length?`<div class="cd-gallery">${photos.map(p=>`<img src="${esc(p)}" alt="${esc(nameOf(c))}" loading="lazy">`).join('')}</div>${photos.length>1?`<p class="muted" style="font-size:12px;text-align:center;margin:-6px 0 0">Swipe for more photos</p>`:''}`:''}
+    <div class="cd-head">${avatarHTML(c,64)}<div><h2>${nameOf(c)} ${coachTag(c)}</h2><span class="muted">@${esc(c.username)}</span></div></div>
+    ${c.headline?`<p class="cd-headline">${esc(c.headline)}</p>`:''}
+    <div class="tiles"><div class="tile"><b>${money(c.price_cents)}</b><span>per month</span></div><div class="tile"><b>${c.years_exp!=null?c.years_exp+' yr':'—'}</b><span>Coaching</span></div><div class="tile"><b>${c.clients}</b><span>Clients now</span></div></div>
+    ${mine?`<div class="card mine-card"><b>${mine.status==='active'?'You’re coached by '+esc(nameOf(c)):'There’s a problem with your payment'}</b><span class="muted" style="font-size:14px">${mine.cancel_at_period_end?'Ends':'Renews'} ${mine.current_period_end?new Date(mine.current_period_end).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'soon'}</span><button class="secondary" data-act="my-coaching">Open my coaching</button></div>`:''}
+    ${canBook?`<button class="primary" id="cdBook">Book coaching · ${money(c.price_cents)}/month</button><p class="muted" style="font-size:12px;margin:-4px 0 0;text-align:center">Billed monthly. Cancel anytime.</p>`:why?`<p class="muted" style="font-size:14px;text-align:center">${why}</p>`:''}
+    ${me?'':`<div style="display:flex;gap:8px"><button class="secondary" id="cdMsg" style="flex:1">Message</button><button class="secondary" id="cdFol" style="flex:1">${c.i_follow?'Following':'Follow'}</button><button class="secondary" id="cdPosts">Posts</button></div>`}
+    ${me?'<button class="secondary" data-act="coach-portal">Edit in Coach portal</button>':''}
+    ${c.specialties&&c.specialties.length?`<div class="cc-tags big">${c.specialties.map(s=>`<span>${esc(s)}</span>`).join('')}</div>`:''}
+    ${c.about?`<div class="card"><span class="eyebrow">About</span><p class="cd-about">${esc(c.about)}</p></div>`:c.bio?`<div class="card"><span class="eyebrow">About</span><p class="cd-about">${esc(c.bio)}</p></div>`:''}
+    ${list('Achievements',c.achievements)}
+    ${list('Certifications',c.certifications)}
+    <div class="card"><span class="eyebrow">How coaching works</span><ul class="cues"><li>Answer a few questions about your goals when you book.</li><li>Your coach builds programs for you right in the app.</li><li>Message your coach anytime.</li><li>Billed monthly. Cancel anytime, and you keep coaching until the end of the month you paid for.</li></ul></div>
+  </div>`;
+  const bk=box.querySelector('#cdBook');if(bk)bk.onclick=()=>openBookCoach(c);
+  const ms=box.querySelector('#cdMsg');if(ms)ms.onclick=()=>{o.close();messageUser(c)};
+  const fo=box.querySelector('#cdFol');if(fo)fo.onclick=async()=>{fo.disabled=true;try{await API.follow(c.id,!c.i_follow);c.i_follow=!c.i_follow;fo.textContent=c.i_follow?'Following':'Follow'}catch(e){toast(errMsg(e))}fo.disabled=false};
+  const ps=box.querySelector('#cdPosts');if(ps)ps.onclick=()=>{o.close();openProfile(c.id)};
+}
+function openBookCoach(c){
+  const st={goal:'',exp:'mid',days:'4',injuries:'',notes:''};
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>Book coaching</h2><span style="width:52px"></span></div>
+    <div class="cd-head">${avatarHTML(c,44)}<div><b>${nameOf(c)}</b><br><span class="muted" style="font-size:14px">${money(c.price_cents)} per month</span></div></div>
+    <p class="muted" style="font-size:14px;margin:0">Tell ${esc(nameOf(c).split(' ')[0])} about you. Only your coach sees these answers.</p>
+    <div class="field"><label for="bkGoal">What’s your main goal?</label><textarea class="textarea" id="bkGoal" maxlength="600" placeholder="e.g. Bench 315 by summer, or lose 15 lb and get stronger" style="min-height:80px"></textarea></div>
+    <div class="field"><label>How long have you been lifting?</label><div class="chips wrap" id="bkExp">${[['new','Under 6 months'],['mid','6 months to 2 years'],['adv','2+ years']].map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${v===st.exp}">${l}</button>`).join('')}</div></div>
+    <div class="field"><label>Days per week you can train</label><div class="chips" id="bkDays">${['2','3','4','5','6'].map(v=>`<button class="chip" data-v="${v}" aria-pressed="${v===st.days}">${v}</button>`).join('')}</div></div>
+    <div class="field"><label for="bkInj">Injuries or limits (optional)</label><textarea class="textarea" id="bkInj" maxlength="600" placeholder="e.g. Old shoulder injury, avoid overhead pressing" style="min-height:60px"></textarea></div>
+    <div class="field"><label for="bkNotes">Anything else? (optional)</label><textarea class="textarea" id="bkNotes" maxlength="800" placeholder="Equipment, schedule, what you’ve tried before" style="min-height:60px"></textarea></div>
+    <p class="g-err" id="bkErr"></p>
+    <button class="primary" id="bkGo">Continue to payment</button>
+    <p class="muted" style="font-size:12px;margin:0;text-align:center">${money(c.price_cents)} billed today, then monthly. Cancel anytime. By booking you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a>.</p>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const pick=(id,key)=>o.querySelector(id).addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;st[key]=b.dataset.v;o.querySelectorAll(id+' [data-v]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
+  pick('#bkExp','exp');pick('#bkDays','days');
+  o.querySelector('#bkGo').onclick=async()=>{
+    const goal=o.querySelector('#bkGoal').value.trim();const err=o.querySelector('#bkErr');
+    if(goal.length<3){err.textContent='Add your main goal so your coach knows where to start.';return}
+    const intake={goal,experience:{new:'Under 6 months',mid:'6 months to 2 years',adv:'2+ years'}[st.exp],days_per_week:+st.days,injuries:o.querySelector('#bkInj').value.trim(),notes:o.querySelector('#bkNotes').value.trim()};
+    const b=o.querySelector('#bkGo');b.disabled=true;b.textContent='Opening secure checkout…';err.textContent='';
+    try{const id=await API.requestCoaching(c.id,intake);const url=await API.coachCheckout(id);if(url){location.href=url;return}
+      o.close();toast('Preview: coaching booked. No payment was taken.');openMyCoaching()}
+    catch(e){err.textContent=errMsg(e);b.disabled=false;b.textContent='Continue to payment'}
+  };
+}
+
+/* ---------- client: my coaching ---------- */
+let MYCOACH=null;
+async function loadMyCoaching(){try{MYCOACH=await API.myCoaching()}catch(e){MYCOACH=[]}return MYCOACH}
+function myCoachingCardHTML(){
+  if(!MYCOACH||!MYCOACH.length)return `<button class="card coach-cta" data-act="coaches"><span class="eyebrow">1:1 coaching</span><h3>Work with a coach</h3><span class="muted" style="font-size:14px">Get a program built for you and someone to keep you on track.</span><span class="plan-go">Browse coaches →</span></button>`;
+  const k=MYCOACH[0];
+  return `<button class="card coach-cta mine-card" data-act="my-coaching"><span class="eyebrow">My coach</span><div class="cd-head">${avatarHTML(k,44)}<div><b>${nameOf(k)}</b><br><span class="muted" style="font-size:13px">${esc(COACH_STATUS[k.status]||k.status)}${k.cancel_at_period_end&&k.status!=='canceled'?' · ending soon':''}</span></div></div><span class="plan-go">Programs and messages →</span></button>`;
+}
+async function openMyCoaching(){
+  const o=sheet(`<div class="sheet-h"><h2>My coaching</h2><button class="link" data-close>Done</button></div><div id="mcBox"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#mcBox');
+  const paint=async()=>{
+    const [ks,progs]=await Promise.all([loadMyCoaching(),API.clientPrograms().catch(()=>[])]);
+    if(!ks.length){box.innerHTML=`<p class="empty">You’re not working with a coach yet.</p><button class="primary" data-act="coaches">Browse coaches</button>`;return}
+    box.innerHTML=`<div class="stack">${ks.map(k=>{
+      const pr=progs.filter(p=>p.coach_id===k.coach_id);
+      const when=k.current_period_end?new Date(k.current_period_end).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'';
+      return `<div class="card"><div class="cd-head">${avatarHTML(k,48)}<div><b>${nameOf(k)}</b> ${coachTag(k)}<br><span class="muted" style="font-size:13px">${esc(k.headline||'')}</span></div></div>
+        <div class="tiles"><div class="tile"><b>${esc(COACH_STATUS[k.status]||k.status)}</b><span>Status</span></div><div class="tile"><b>${money(k.price_cents)}</b><span>per month</span></div><div class="tile"><b>${when||'—'}</b><span>${k.cancel_at_period_end||k.status==='canceled'?'Ends':'Renews'}</span></div></div>
+        ${k.status==='past_due'?'<p class="g-err" style="text-align:left">Your last payment didn’t go through. Update your card in Profile → settings → Manage subscription.</p>':''}
+        <div style="display:flex;gap:8px"><button class="primary" data-msgcoach="${esc(k.coach_id)}" style="flex:1">Message coach</button><button class="secondary" data-viewcoach="${esc(k.coach_id)}">Profile</button></div>
+        <span class="eyebrow">Programs from your coach</span>
+        ${pr.length?pr.map(p=>`<div class="cprog"><div><b>${esc(p.title)}</b><span class="muted" style="font-size:13px">${p.weeks?p.weeks+' weeks · ':''}${(p.days||[]).length} workouts</span></div><button class="chip" data-openprog="${esc(p.id)}">Open</button></div>`).join(''):'<p class="muted" style="font-size:14px;margin:0">Your coach hasn’t sent a program yet. You’ll get a notification when they do.</p>'}
+        ${k.status!=='canceled'&&!k.cancel_at_period_end?`<button class="link danger" data-endcoach="${esc(k.id)}" style="align-self:flex-start">Cancel coaching</button>`:''}
+      </div>`}).join('')}</div>`;
+    box.querySelectorAll('[data-msgcoach]').forEach(b=>b.onclick=()=>{const k=ks.find(x=>x.coach_id===b.dataset.msgcoach);o.close();messageUser({id:k.coach_id,username:k.username,display_name:k.display_name,avatar_url:k.avatar_url,is_admin:k.is_admin,is_coach:k.is_coach})});
+    box.querySelectorAll('[data-viewcoach]').forEach(b=>b.onclick=()=>openCoachDetail(b.dataset.viewcoach));
+    box.querySelectorAll('[data-openprog]').forEach(b=>b.onclick=()=>openCoachProgramView(progs.find(p=>p.id===b.dataset.openprog)));
+    box.querySelectorAll('[data-endcoach]').forEach(b=>confirmBtn(b,'Tap again to cancel at the end of this month',async()=>{try{await API.coachCancel(b.dataset.endcoach);toast('Coaching will end at the end of this month');paint()}catch(e){toast(errMsg(e))}}));
+  };
+  paint();
+}
+function openCoachProgramView(p){
+  if(!p)return;
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>‹ Back</button><span></span><span style="width:52px"></span></div>
+    <span class="eyebrow">From your coach</span><h2>${esc(p.title)}</h2>${p.weeks?`<span class="badge teal">${p.weeks} weeks</span>`:''}
+    ${p.description?`<div class="card"><p class="cd-about">${esc(p.description)}</p></div>`:''}
+    ${(p.days||[]).map((d,i)=>planDayHTML(d,i).replace(/<\/div>$/,`<div style="display:flex;gap:8px"><button class="primary" data-start="${i}" style="flex:1">Start</button><button class="secondary" data-save="${i}">Save</button></div></div>`)).join('')}
+    ${(p.days||[]).length?'<button class="secondary" id="cpAll">Save all workouts to my routines</button>':'<p class="muted">No workouts in this program yet.</p>'}`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const saveDay=d=>putItem('routines',{id:'r-'+newId(),name:`${p.title} · ${d.name}`,exercises:clone(d.exercises||[])});
+  o.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{const d=p.days[+b.dataset.start];if(ST.active){toast('Finish or discard your current workout first.');return}o.close();document.querySelectorAll('.sheet-ov').forEach(x=>x.remove());startWorkout({name:`${p.title} · ${d.name}`,exercises:clone(d.exercises||[])})});
+  o.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{saveDay(p.days[+b.dataset.save]);toast('Saved to your routines')});
+  const all=o.querySelector('#cpAll');if(all)all.onclick=()=>{p.days.forEach(saveDay);toast('All workouts saved to your routines')};
+}
+
+/* ---------- applying to coach ---------- */
+async function openCoachApply(){
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>Apply to coach</h2><span style="width:52px"></span></div><div id="apBox"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#apBox');
+  let app=null;try{app=await API.myApplication()}catch(e){}
+  if(app&&app.status==='pending'){box.innerHTML=`<div class="card"><h3>Application received</h3><p class="muted" style="font-size:14px">We’re reviewing your application. You’ll get a notification when there’s an answer.</p></div>`;return}
+  box.innerHTML=`<div class="stack">
+    ${app&&app.status==='declined'?'<p class="muted" style="font-size:14px">Your last application wasn’t approved. You’re welcome to apply again.</p>':''}
+    <section class="hero"><span class="eyebrow">Coach on Brainweight</span><h2>Get paid to coach.</h2>
+      <p class="muted" style="font-size:14px">Set your own monthly price. Clients pay in the app and you keep 90%, paid out to your bank by Stripe. Build programs for clients and message them right here.</p></section>
+    <div class="field"><label for="apYears">Years coaching</label><input class="input" id="apYears" inputmode="numeric" maxlength="2" placeholder="5"></div>
+    <div class="field"><label for="apCerts">Certifications (separate with commas)</label><input class="input" id="apCerts" maxlength="1000" placeholder="NASM-CPT, CSCS"></div>
+    <div class="field"><label for="apSpec">What you specialize in (separate with commas)</label><input class="input" id="apSpec" maxlength="300" placeholder="Powerlifting, Hypertrophy, Beginners"></div>
+    <div class="field"><label for="apAbout">About you and how you coach</label><textarea class="textarea" id="apAbout" maxlength="3000" style="min-height:120px" placeholder="Your background, results you’ve helped clients get, and what working with you looks like."></textarea></div>
+    <div class="field"><label for="apLinks">Instagram or website (optional)</label><input class="input" id="apLinks" maxlength="500" placeholder="@yourhandle"></div>
+    <label class="terms-agree"><input type="checkbox" id="apOk"><span>The information above is true. I’m an independent coach responsible for the advice I give, and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a>, including Brainweight’s 10% fee on coaching payments.</span></label>
+    <p class="g-err" id="apErr"></p>
+    <button class="primary" id="apGo">Submit application</button></div>`;
+  box.querySelector('#apGo').onclick=async()=>{
+    const err=box.querySelector('#apErr'),about=box.querySelector('#apAbout').value.trim(),yrs=parseInt(box.querySelector('#apYears').value,10);
+    if(!box.querySelector('#apOk').checked){err.textContent='Please confirm the statement above.';return}
+    if(about.length<40){err.textContent='Tell us a bit more about how you coach (at least a couple of sentences).';return}
+    const b=box.querySelector('#apGo');b.disabled=true;
+    try{await API.applyCoach({years_exp:isNaN(yrs)?null:Math.max(0,Math.min(60,yrs)),certifications:box.querySelector('#apCerts').value.trim(),specialties:box.querySelector('#apSpec').value.trim(),about,links:box.querySelector('#apLinks').value.trim()});
+      box.innerHTML=`<div class="card"><h3>Application sent</h3><p class="muted" style="font-size:14px">Thank you. We’ll review it and send you a notification when there’s an answer.</p></div>`}
+    catch(e){err.textContent=errMsg(e);b.disabled=false}
+  };
+}
+
+/* ---------- coach portal ---------- */
+async function openCoachPortal(tab='overview'){
+  if(!isCoachMe()){openCoachApply();return}
+  const o=sheet(`<div class="sheet-h"><h2>Coach portal</h2><button class="link" data-close>Done</button></div>
+    <div class="seg wide admin-seg" id="cpSeg">${[['overview','Overview'],['profile','Profile'],['clients','Clients'],['programs','Programs'],['payouts','Payouts']].map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('')}</div>
+    <div id="cpBox"><div class="spinner"></div></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#cpBox'),seg=o.querySelector('#cpSeg');
+  try{await API.ensureCoachProfile()}catch(e){}
+  const go=t=>{tab=t;seg.querySelectorAll('[data-t]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===t)));box.innerHTML='<div class="spinner"></div>';
+    ({overview:cpOverview,profile:cpProfile,clients:cpClients,programs:cpPrograms,payouts:cpPayouts}[t])(box,go).catch(e=>{box.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`})};
+  seg.onclick=e=>{const b=e.target.closest('[data-t]');if(b)go(b.dataset.t)};
+  go(tab);
+}
+async function cpOverview(box,go){
+  const [cp,pay,clients]=await Promise.all([API.myCoachProfile(),API.coachStatus().catch(()=>({})),API.myClients().catch(()=>[])]);
+  const act=clients.filter(c=>c.status==='active'||c.status==='past_due');
+  const monthly=act.reduce((s,c)=>s+c.price_cents,0);
+  const checks=[[!!cp.headline,'Add a headline','profile'],[(cp.photos||[]).length>0,'Add at least one photo','profile'],[(cp.about||'').length>=80,'Write your About section','profile'],[!!pay.charges_enabled,'Set up payouts with Stripe','payouts'],[!!cp.accepting,'Turn on “Taking new clients”','profile']];
+  const left=checks.filter(c=>!c[0]);
+  box.innerHTML=`<div class="stack">
+    <div class="tiles"><div class="tile"><b>${act.length}</b><span>Active clients</span></div><div class="tile"><b>${money(Math.round(monthly*.9))}</b><span>Your monthly take</span></div><div class="tile"><b>${money(cp.price_cents)}</b><span>Your price</span></div></div>
+    <p class="muted" style="font-size:12px;margin:0">Your take is after Brainweight’s 10%. Stripe’s card processing fee also comes out of each payment.</p>
+    ${left.length?`<div class="card"><span class="eyebrow">Get ready to book clients</span>${checks.map(([ok,l,t])=>`<button class="check-row" data-go="${t}"><i class="${ok?'on':''}">${ok?'✓':''}</i><span>${l}</span>${ok?'':'<b>→</b>'}</button>`).join('')}</div>`
+      :`<div class="card"><b>You’re live in the Coaches section.</b><span class="muted" style="font-size:14px">Clients can find and book you now.</span></div>`}
+    <button class="secondary" id="ovPrev">See your public profile</button>
+    <div class="card"><span class="eyebrow">Recent clients</span>${act.length?act.slice(0,5).map(c=>`<div class="cprog"><div class="cd-head">${avatarHTML(c,36)}<div><b>${nameOf(c)}</b><br><span class="muted" style="font-size:12px">${esc(COACH_STATUS[c.status])}</span></div></div></div>`).join(''):'<p class="muted" style="font-size:14px;margin:0">No clients yet.</p>'}</div></div>`;
+  box.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+  box.querySelector('#ovPrev').onclick=()=>openCoachDetail(ME.user.id);
+}
+async function cpProfile(box){
+  const cp=await API.myCoachProfile();const st=clone(cp);st.photos=st.photos||[];
+  const listEditor=(id,label,arr,ph,max)=>`<div class="field"><label>${label}</label><div class="tag-edit" id="${id}">${arr.map((x,i)=>`<span class="tag">${esc(x)}<button data-rm="${i}" aria-label="Remove ${esc(x)}">×</button></span>`).join('')}</div>
+    ${arr.length<max?`<div class="promo-row"><input class="input" data-add-in="${id}" maxlength="120" placeholder="${ph}"><button class="secondary" data-add="${id}" style="min-height:46px">Add</button></div>`:''}</div>`;
+  const paint=()=>{
+    box.innerHTML=`<div class="stack">
+      <div class="field"><label>Photos (up to 6). The first one is your cover.</label><div class="photo-grid">${st.photos.map((p,i)=>`<div class="ph"><img src="${esc(p)}" alt=""><button data-rmp="${i}" aria-label="Remove photo">×</button>${i?`<button class="ph-first" data-first="${i}">Make cover</button>`:'<span class="ph-cover">Cover</span>'}</div>`).join('')}
+        ${st.photos.length<6?`<label class="ph add">+<input type="file" accept="image/*" id="cpPh" hidden multiple></label>`:''}</div></div>
+      <div class="field"><label for="cpHead">Headline</label><input class="input" id="cpHead" maxlength="120" value="${esc(st.headline||'')}" placeholder="Strength coach for busy lifters"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="field"><label for="cpPrice">Price per month ($)</label><input class="input" id="cpPrice" inputmode="decimal" value="${(st.price_cents/100).toFixed(st.price_cents%100?2:0)}"></div>
+        <div class="field"><label for="cpYears">Years coaching</label><input class="input" id="cpYears" inputmode="numeric" value="${st.years_exp??''}"></div></div>
+      <label class="toggle"><span>Taking new clients</span><input type="checkbox" id="cpAcc" ${st.accepting?'checked':''}></label>
+      <div class="field"><label for="cpMax">Most clients at once</label><input class="input" id="cpMax" inputmode="numeric" value="${st.max_clients}"></div>
+      ${listEditor('cpSpec','Specialties',st.specialties||[],'e.g. Powerlifting',8)}
+      <div class="field"><label for="cpAbout">About</label><textarea class="textarea" id="cpAbout" maxlength="4000" style="min-height:160px" placeholder="Your story, how you coach, what clients can expect each week.">${esc(st.about||'')}</textarea></div>
+      ${listEditor('cpAch','Achievements',st.achievements||[],'e.g. 2x state powerlifting champion',12)}
+      ${listEditor('cpCert','Certifications',st.certifications||[],'e.g. NASM-CPT',10)}
+      <p class="g-err" id="cpErr"></p>
+      <button class="primary" id="cpSave">Save profile</button>
+      <button class="secondary" id="cpPrev">Preview public profile</button></div>`;
+    const grab=()=>{st.headline=box.querySelector('#cpHead').value.trim();st.about=box.querySelector('#cpAbout').value.trim();st.accepting=box.querySelector('#cpAcc').checked;
+      const pr=parseFloat(box.querySelector('#cpPrice').value);st.price_cents=isNaN(pr)?st.price_cents:Math.round(pr*100);
+      const y=parseInt(box.querySelector('#cpYears').value,10);st.years_exp=isNaN(y)?null:y;const m=parseInt(box.querySelector('#cpMax').value,10);st.max_clients=isNaN(m)?st.max_clients:m};
+    const keyOf={cpSpec:'specialties',cpAch:'achievements',cpCert:'certifications'};
+    box.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{grab();const id=b.dataset.add,inp=box.querySelector(`[data-add-in="${id}"]`),v=inp.value.trim();if(!v)return;(st[keyOf[id]]=st[keyOf[id]]||[]).push(v);paint();const n=box.querySelector(`[data-add-in="${id}"]`);if(n)n.focus()});
+    box.querySelectorAll('[data-add-in]').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();box.querySelector(`[data-add="${i.dataset.addIn}"]`).click()}}));
+    box.querySelectorAll('.tag-edit').forEach(t=>t.addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(!b)return;grab();st[keyOf[t.id]].splice(+b.dataset.rm,1);paint()}));
+    box.querySelectorAll('[data-rmp]').forEach(b=>b.onclick=()=>{grab();st.photos.splice(+b.dataset.rmp,1);paint()});
+    box.querySelectorAll('[data-first]').forEach(b=>b.onclick=()=>{grab();const i=+b.dataset.first;st.photos.unshift(st.photos.splice(i,1)[0]);paint()});
+    const ph=box.querySelector('#cpPh');if(ph)ph.onchange=async e=>{grab();const files=[...e.target.files].slice(0,6-st.photos.length);
+      for(const f of files){try{toast('Uploading photo…');const m=await prepMedia(f);if(m.type!=='image')throw new Error('Photos only here.');st.photos.push(await API.upload(m.blob,m.ext,m.mime))}catch(x){toast(errMsg(x))}}paint()};
+    box.querySelector('#cpSave').onclick=async()=>{grab();const err=box.querySelector('#cpErr');err.textContent='';
+      if(st.price_cents<500||st.price_cents>100000){err.textContent='Set a monthly price between $5 and $1,000.';return}
+      if(st.max_clients<1||st.max_clients>500){err.textContent='Most clients at once should be between 1 and 500.';return}
+      if(st.years_exp!=null&&(st.years_exp<0||st.years_exp>60)){err.textContent='Years coaching should be between 0 and 60.';return}
+      const b=box.querySelector('#cpSave');b.disabled=true;
+      try{const saved=await API.saveCoachProfile({headline:st.headline,about:st.about,price_cents:st.price_cents,years_exp:st.years_exp,accepting:st.accepting,max_clients:st.max_clients,specialties:st.specialties||[],achievements:st.achievements||[],certifications:st.certifications||[],photos:st.photos});Object.assign(st,saved);toast('Profile saved');COACHES=null}
+      catch(e){err.textContent=errMsg(e)}b.disabled=false};
+    box.querySelector('#cpPrev').onclick=()=>openCoachDetail(ME.user.id);
+  };
+  paint();
+}
+async function cpClients(box){
+  const list=await API.myClients();
+  if(!list.length){box.innerHTML='<p class="empty">No clients yet. When someone books you, they show up here with their answers.</p>';return}
+  box.innerHTML=`<div class="stack">${list.map(c=>`<button class="card client-row" data-cl="${esc(c.id)}"><div class="cd-head">${avatarHTML(c,44)}<div><b>${nameOf(c)}</b><br><span class="muted" style="font-size:13px">@${esc(c.username)}</span></div></div>
+    <span class="badge ${c.status==='active'?'teal':''}">${esc(COACH_STATUS[c.status]||c.status)}${c.cancel_at_period_end&&c.status!=='canceled'?' · ending':''}</span></button>`).join('')}</div>`;
+  box.querySelectorAll('[data-cl]').forEach(b=>b.onclick=()=>openClientDetail(list.find(x=>x.id===b.dataset.cl),()=>cpClients(box)));
+}
+function openClientDetail(c,onChange){
+  const it=c.intake||{};
+  const row=(l,v)=>v||v===0?`<div class="intake-row"><span>${l}</span><p>${esc(String(v))}</p></div>`:'';
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>‹ Back</button><span></span><span style="width:52px"></span></div>
+    <div class="cd-head">${avatarHTML(c,56)}<div><h2>${nameOf(c)}</h2><span class="muted">@${esc(c.username)}</span></div></div>
+    <div class="tiles"><div class="tile"><b>${esc(COACH_STATUS[c.status]||c.status)}</b><span>Status</span></div><div class="tile"><b>${c.started_at?new Date(c.started_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'—'}</b><span>Started</span></div><div class="tile"><b>${money(Math.round(c.price_cents*.9))}</b><span>Your take / month</span></div></div>
+    <div style="display:flex;gap:8px"><button class="primary" id="clMsg" style="flex:1">Message</button><button class="secondary" id="clProg" style="flex:1">New program</button></div>
+    <div class="card"><span class="eyebrow">Their answers</span>${row('Goal',it.goal)}${row('Experience',it.experience)}${row('Days per week',it.days_per_week)}${row('Injuries or limits',it.injuries)}${row('Anything else',it.notes)}</div>
+    <div class="field"><label for="clNotes">Private notes (only you see these)</label><textarea class="textarea" id="clNotes" maxlength="10000" style="min-height:120px" placeholder="Check-in notes, numbers, what to change next block">${esc(c.coach_notes||'')}</textarea></div>
+    <button class="secondary" id="clSave">Save notes</button>
+    ${c.status!=='canceled'&&!c.cancel_at_period_end?'<button class="link danger" id="clEnd" style="align-self:flex-start">End coaching at the end of this month</button>':''}`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  o.querySelector('#clMsg').onclick=()=>{o.close();document.querySelectorAll('.sheet-ov').forEach(x=>x.remove());messageUser({id:c.client_id,username:c.username,display_name:c.display_name,avatar_url:c.avatar_url})};
+  o.querySelector('#clProg').onclick=()=>openCoachProgramEditor(null,c.client_id);
+  o.querySelector('#clSave').onclick=async()=>{try{await API.setClientNotes(c.id,o.querySelector('#clNotes').value);c.coach_notes=o.querySelector('#clNotes').value;toast('Notes saved')}catch(e){toast(errMsg(e))}};
+  const end=o.querySelector('#clEnd');if(end)confirmBtn(end,'Tap again to confirm',async()=>{try{await API.coachCancel(c.id);toast('Coaching will end at the end of their paid month');o.close();onChange&&onChange()}catch(e){toast(errMsg(e))}});
+}
+let CP_CLIENTS=null;
+async function cpPrograms(box){
+  const [progs,clients]=await Promise.all([API.coachPrograms(),API.myClients().catch(()=>[])]);CP_CLIENTS=clients;
+  const who=id=>{const c=clients.find(x=>x.client_id===id);return c?nameOf(c):'A client'};
+  box.innerHTML=`<div class="stack"><button class="primary" id="pgNew">+ New program</button>
+    ${progs.length?progs.map(p=>`<button class="card client-row" data-pg="${esc(p.id)}"><div><b>${esc(p.title)}</b><br><span class="muted" style="font-size:13px">${p.client_id?'For '+esc(who(p.client_id)):'Template'} · ${(p.days||[]).length} workouts${p.weeks?' · '+p.weeks+' weeks':''}</span></div><b>→</b></button>`).join('')
+      :'<p class="empty">No programs yet. Build one as a template, or for a specific client.</p>'}</div>`;
+  box.querySelector('#pgNew').onclick=()=>openCoachProgramEditor(null,null,()=>cpPrograms(box));
+  box.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>openCoachProgramEditor(progs.find(p=>p.id===b.dataset.pg),undefined,()=>cpPrograms(box)));
+}
+async function openCoachProgramEditor(src,clientId,onSaved){
+  const clients=CP_CLIENTS||await API.myClients().catch(()=>[]);CP_CLIENTS=clients;
+  const d=src?clone(src):{title:'',description:'',weeks:4,days:[],client_id:clientId||null};
+  if(clientId!==undefined&&clientId!==null)d.client_id=clientId;
+  const eligible=clients.filter(c=>c.status!=='pending');
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>${src?'Edit program':'New program'}</h2><button class="link" id="ceSave">Save</button></div><div id="ceBody" class="stack"></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const body=o.querySelector('#ceBody');
+  const grab=()=>{d.title=body.querySelector('#ceTitle').value.trim();d.description=body.querySelector('#ceDesc').value.trim();const w=parseInt(body.querySelector('#ceWeeks').value,10);d.weeks=isNaN(w)?null:w;const s=body.querySelector('#ceFor');d.client_id=s.value||null};
+  const draw=()=>{
+    body.innerHTML=`<div class="field"><label for="ceTitle">Title</label><input class="input" id="ceTitle" maxlength="80" value="${esc(d.title)}" placeholder="8-week bench block"></div>
+      <div class="field"><label for="ceFor">Who it’s for</label><select class="input" id="ceFor"><option value="">Template (not sent to anyone)</option>${eligible.map(c=>`<option value="${esc(c.client_id)}" ${d.client_id===c.client_id?'selected':''}>${esc(nameOf(c))} (@${esc(c.username)})</option>`).join('')}</select></div>
+      <div class="field"><label for="ceWeeks">Weeks</label><input class="input" id="ceWeeks" inputmode="numeric" value="${d.weeks??''}"></div>
+      <div class="field"><label for="ceDesc">Notes for your client</label><textarea class="textarea" id="ceDesc" maxlength="4000" style="min-height:120px" placeholder="How to run it, how to progress, technique cues, check-in schedule">${esc(d.description||'')}</textarea></div>
+      <div class="section-h"><h2>Workouts</h2><span class="eyebrow">${d.days.length}</span></div>
+      ${d.days.map((x,i)=>`<div class="card"><div class="row"><h3>${esc(x.name)}</h3><div class="re-tools">${i>0?`<button class="icon-btn" data-up="${i}" aria-label="Move up">↑</button>`:''}<button class="icon-btn" data-rmd="${i}" aria-label="Remove">✕</button></div></div><span class="muted" style="font-size:13px">${(x.exercises||[]).map(e=>EXMAP[e.exId]?.name||'Exercise').join(', ')}</span></div>`).join('')}
+      <div class="quick-row"><button class="outline" id="ceRoutine">+ From my routines</button><button class="outline" id="ceGen">+ Generate a plan</button></div>
+      <p class="muted" style="font-size:12px;margin:0">Tip: build workouts as routines in the Workout tab, then add them here. Or generate a plan and adjust it.</p>
+      ${src?'<button class="secondary danger" id="ceDel">Delete program</button>':''}<p class="g-err" id="ceErr"></p>`;
+    body.querySelectorAll('[data-rmd]').forEach(b=>b.onclick=()=>{grab();d.days.splice(+b.dataset.rmd,1);draw()});
+    body.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{grab();const i=+b.dataset.up;[d.days[i-1],d.days[i]]=[d.days[i],d.days[i-1]];draw()});
+    body.querySelector('#ceRoutine').onclick=()=>{grab();
+      if(!ST.routines.length){toast('Create routines in the Workout tab first.');return}
+      const pk=sheet(`<div class="sheet-h"><h2>Add workouts</h2><button class="link" data-close>Done</button></div><div class="menu">${ST.routines.map(r=>`<button data-r="${esc(r.id)}">${esc(r.name)}</button>`).join('')}</div>`);
+      pk.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=ST.routines.find(x=>x.id===b.dataset.r);if(r&&d.days.length<14){d.days.push({name:r.name,exercises:clone(r.exercises)});b.textContent='✓ '+r.name;b.disabled=true;draw()}});
+    };
+    body.querySelector('#ceGen').onclick=()=>{grab();
+      const gp=sheet(`<div class="sheet-h"><h2>Generate a plan</h2><button class="link" data-close>Cancel</button></div>
+        <div class="field"><label>Goal</label><div class="chips wrap" id="gGoal">${Object.entries(PLAN_GOALS).filter(([k])=>k!=='lift'&&k!=='muscle').map(([k,l])=>`<button class="chip" data-v="${k}" aria-pressed="${k==='size'}">${l}</button>`).join('')}</div></div>
+        <div class="field"><label>Days per week</label><div class="chips" id="gDays">${[2,3,4,5,6].map(n=>`<button class="chip" data-v="${n}" aria-pressed="${n===4}">${n}</button>`).join('')}</div></div>
+        <div class="field"><label>Equipment</label><div class="chips" id="gEq">${[['gym','Full gym'],['db','Dumbbells'],['bw','No equipment']].map(([k,l])=>`<button class="chip" data-v="${k}" aria-pressed="${k==='gym'}">${l}</button>`).join('')}</div></div>
+        <button class="primary" id="gGo">Add these workouts</button>`);
+      const sel={gGoal:'size',gDays:'4',gEq:'gym'};
+      ['gGoal','gDays','gEq'].forEach(id=>gp.querySelector('#'+id).addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;sel[id]=b.dataset.v;gp.querySelectorAll('#'+id+' [data-v]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))}));
+      gp.querySelector('#gGo').onclick=()=>{const pl=generatePlan({goal:sel.gGoal,exp:'mid',days:+sel.gDays,time:60,equip:sel.gEq});pl.days.forEach(x=>{if(d.days.length<14)d.days.push({name:x.name,exercises:x.exercises})});if(!d.description)d.description=pl.weekly.join('\n');gp.close();draw()};
+    };
+    const del=body.querySelector('#ceDel');if(del)confirmBtn(del,'Tap again to delete',async()=>{try{await API.deleteCoachProgram(src.id);o.close();toast('Program deleted');onSaved&&onSaved()}catch(e){toast(errMsg(e))}});
+  };
+  draw();
+  o.querySelector('#ceSave').onclick=async()=>{grab();const err=body.querySelector('#ceErr');
+    if(!d.title){err.textContent='Give the program a title.';return}
+    if(d.weeks!=null&&(d.weeks<1||d.weeks>52)){err.textContent='Weeks should be between 1 and 52.';return}
+    try{await API.saveCoachProgram(d);o.close();toast(d.client_id?'Program sent to your client':'Program saved');onSaved&&onSaved()}catch(e){err.textContent=errMsg(e)}};
+}
+async function cpPayouts(box){
+  box.innerHTML='<div class="spinner"></div>';
+  const s=await API.coachStatus();
+  const state=!s.connected?'none':s.charges_enabled&&s.payouts_enabled?'ready':s.details_submitted?'review':'started';
+  const title={none:'Set up payouts',started:'Finish payout setup',review:'Stripe is reviewing your details',ready:'Payouts are on'}[state];
+  const text={none:'Clients pay you through Brainweight. Stripe, our payment partner, sends your 90% to your bank. Setup takes about 5 minutes and asks for your name, date of birth, last 4 of your SSN and a bank account.',
+    started:'You started setting up payouts but Stripe still needs a few details.',
+    review:'This usually takes a few minutes, sometimes a day. Check back soon.',
+    ready:'Clients can book and pay you. Stripe sends your earnings to your bank automatically.'}[state];
+  box.innerHTML=`<div class="stack"><div class="card"><span class="eyebrow">Payouts</span><h3>${title}</h3><p class="muted" style="font-size:14px;margin:0">${text}</p>
+      <div class="pay-checks"><span class="${s.details_submitted?'on':''}">Details submitted</span><span class="${s.charges_enabled?'on':''}">Can take payments</span><span class="${s.payouts_enabled?'on':''}">Can receive payouts</span></div>
+      ${state!=='ready'?`<button class="primary" id="poGo">${state==='none'?'Set up payouts with Stripe':'Continue with Stripe'}</button>`:''}
+      ${s.connected?'<button class="secondary" id="poDash">Open my Stripe dashboard</button>':''}
+      <button class="link" id="poRef" style="align-self:flex-start">Refresh status</button><p class="g-err" id="poErr"></p></div>
+    <div class="card"><span class="eyebrow">How money works</span><ul class="cues"><li>Clients pay your monthly price by card.</li><li>Brainweight keeps 10%. Stripe’s card fee comes out of the rest.</li><li>Stripe pays out to your bank on a rolling schedule, usually within a few days.</li><li>Your Stripe dashboard shows every payment, payout and tax form.</li></ul></div></div>`;
+  const err=box.querySelector('#poErr');
+  const go=box.querySelector('#poGo');if(go)go.onclick=async()=>{go.disabled=true;go.textContent='Opening Stripe…';try{const url=await API.coachConnect();if(url)location.href=url;else{toast('Preview: payouts set up.');cpPayouts(box)}}catch(e){err.textContent=errMsg(e);go.disabled=false;go.textContent='Try again'}};
+  const da=box.querySelector('#poDash');if(da)da.onclick=async()=>{try{const url=await API.coachDashboard();if(url)window.open(url,'_blank','noopener')||(location.href=url)}catch(e){err.textContent=errMsg(e)}};
+  box.querySelector('#poRef').onclick=()=>cpPayouts(box);
+}
+
+/* ---------- owner: review applications ---------- */
+async function applicationsHTML(){
+  let apps=[];try{apps=await API.adminApplications()}catch(e){return `<p class="muted">${esc(errMsg(e))}</p>`}
+  if(!apps.length)return '<p class="muted" style="font-size:14px;margin:0">No applications waiting.</p>';
+  return apps.map(a=>`<div class="card app-card"><div class="cd-head">${avatarHTML(a,40)}<div><b>${nameOf(a)}</b><br><span class="muted" style="font-size:13px">@${esc(a.username)} · ${a.years_exp!=null?a.years_exp+' years':'years not given'}</span></div></div>
+    ${a.certifications?`<div class="intake-row"><span>Certifications</span><p>${esc(a.certifications)}</p></div>`:''}
+    ${a.specialties?`<div class="intake-row"><span>Specialties</span><p>${esc(a.specialties)}</p></div>`:''}
+    <div class="intake-row"><span>About</span><p>${esc(a.about||'')}</p></div>
+    ${a.links?`<div class="intake-row"><span>Links</span><p>${esc(a.links)}</p></div>`:''}
+    <div style="display:flex;gap:8px"><button class="primary" data-approve="${a.id}" style="flex:1">Approve</button><button class="secondary" data-decline="${a.id}" style="flex:1">Decline</button></div></div>`).join('');
+}
 
 /* ================= coaches ================= */
 let COACHES=null;
@@ -3329,21 +3788,6 @@ function coachStripHTML(){
   if(!COACHES.length)return'';
   return `<div class="coach-strip"><div class="row"><span class="eyebrow">Coaches</span><button class="link" data-act="coaches">See all</button></div>
     <div class="coach-row">${COACHES.map(c=>`<button class="coach-chip" data-act="coach" data-id="${esc(c.id)}">${avatarHTML(c,58)}<span>${nameOf(c).split(' ')[0]}</span></button>`).join('')}</div></div>`;
-}
-function openCoaches(){
-  const o=sheet(`<div class="sheet-h"><h2>Coaches</h2><button class="link" data-close>Done</button></div><p class="muted" style="font-size:14px">Follow a coach to see their posts in your feed, or message them with questions about your training.</p><div id="coList" class="stack"><div class="spinner"></div></div>`,{full:true});
-  o.querySelector('.sheet').style.overflowY='auto';
-  const list=o.querySelector('#coList');
-  const paint=()=>{list.innerHTML=(COACHES||[]).length?COACHES.map(c=>{const me=c.id===ME.user?.id;return `<div class="card coach-card"><button class="person-main" data-view="${esc(c.id)}">${avatarHTML(c,56)}<div><b>${nameOf(c)} ${coachTag(c)}</b><span>@${esc(c.username)}</span></div></button>
-      ${c.bio?`<p style="font-size:14px">${esc(c.bio)}</p>`:''}
-      ${me?'<p class="g-note" style="text-align:left;margin:0">This is you.</p>':`<div style="display:flex;gap:8px"><button class="${c.i_follow?'secondary':'primary'}" data-fol="${esc(c.id)}" style="flex:1;min-height:44px">${c.i_follow?'Following':'Follow'}</button><button class="secondary" data-msg="${esc(c.id)}" style="flex:1">Message</button><button class="secondary" data-view="${esc(c.id)}">Posts</button></div>`}</div>`}).join(''):'<p class="empty">No coaches yet.</p>'};
-  list.addEventListener('click',async e=>{
-    const f=e.target.closest('[data-fol]'),m=e.target.closest('[data-msg]'),v=e.target.closest('[data-view]');
-    if(f){const c=COACHES.find(x=>x.id===f.dataset.fol);f.disabled=true;try{await API.follow(c.id,!c.i_follow);c.i_follow=!c.i_follow;if(FEED.mode==='following')FEED.loaded=false;paint()}catch(err){f.disabled=false;toast(errMsg(err))}}
-    else if(m){const c=COACHES.find(x=>x.id===m.dataset.msg);o.close();messageUser(c)}
-    else if(v){o.close();if(v.dataset.view===ME.user?.id)setTab('profile');else openProfile(v.dataset.view)}
-  });
-  if(COACHES==null)loadCoaches().then(paint);else{paint();loadCoaches().then(paint)}
 }
 /* ================= badges, inbox, chat, privacy ================= */
 const BADGE={unread:0,requests:0};let badgeAt=0;
@@ -3578,7 +4022,8 @@ function programsHTML(){
   if(PROG.list==null)return'<div class="spinner"></div>';
   if(PROG.err)return `<div class="card"><p class="muted">${esc(PROG.err)}</p><button class="secondary" data-act="prog-refresh">Try again</button></div>`;
   const free=PROG.list.filter(p=>!p.premium),pro=PROG.list.filter(p=>p.premium);
-  return `<section class="hero"><span class="eyebrow">Programs</span><h2>Train with a <span class="m">plan</span>.</h2><p class="muted" style="font-size:14px">Pick a program, start any day as a workout, or save it to your routines.</p><button class="primary" data-act="plan-build">Build a plan for me</button></section>
+  if(MYCOACH==null)loadMyCoaching().then(()=>{if(ST.tab==='programs')softRender()});
+  return `${myCoachingCardHTML()}<section class="hero"><span class="eyebrow">Programs</span><h2>Train with a <span class="m">plan</span>.</h2><p class="muted" style="font-size:14px">Pick a program, start any day as a workout, or save it to your routines.</p><button class="primary" data-act="plan-build">Build a plan for me</button></section>
     <div class="stack"><div class="section-h"><h2>${esc(COACH)}’s Pro programs</h2>${isAdmin()?'<button class="link" data-act="new-program" data-premium="1">+ New</button>':''}</div>
       ${pro.length?pro.map(progCard).join(''):`<div class="card"><h3>${isAdmin()?'Add your first Pro program':'Coming soon'}</h3><p class="muted" style="font-size:14px">${isAdmin()?'Build the workouts as routines first, then create a program and add them.':`Detailed programs from ${esc(COACH)} are on the way.`}</p></div>`}
       ${lvl()<2&&pro.length?'<button class="primary" data-act="upgrade">Unlock Pro programs</button>':''}</div>
@@ -3684,7 +4129,7 @@ function accountHTML(){
   return `<div class="card"><span class="eyebrow">Your plan</span><h3>${esc(pl.title)}</h3>${pl.line?`<span class="muted" style="font-size:14px">${esc(pl.line)}</span>`:''}
     <div style="display:flex;gap:8px;flex-wrap:wrap">${s&&s.has_customer?'<button class="secondary" id="acManage">Manage subscription</button>':''}${lvl()<2?'<button class="primary" id="acUp" style="min-height:46px">Upgrade to Pro</button>':''}</div>
     <div class="promo-row"><input class="input" id="acCode" placeholder="Promo or invite code" autocapitalize="characters" autocomplete="off" aria-label="Promo or invite code"><button class="secondary" id="acRedeem">Redeem</button></div></div>
-    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
+    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}${isCoachMe()?'<button id="acCoach">Coach portal</button>':'<button id="acCoach">Become a coach</button>'}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
     <p class="g-note">Signed in as ${esc(ME.user?.email||'')}${!API.live?' · preview mode':''}</p>`;
 }
 function wireAccount(o){
@@ -3696,6 +4141,7 @@ function wireAccount(o){
   o.querySelector('#acTerms').onclick=()=>{o.close();openTerms({readOnly:true})};
   o.querySelector('#acPrivacy').onclick=()=>{o.close();openPrivacy()};
   o.querySelector('#acNotif').onclick=()=>{o.close();openNotifications()};
+  o.querySelector('#acCoach').onclick=()=>{o.close();isCoachMe()?openCoachPortal():openCoachApply()};
   o.querySelector('#acInvite').onclick=()=>{o.close();openInvite()};
   paintBadges();
   o.querySelector('#acOut').onclick=()=>{o.close();signOut()};
@@ -3725,9 +4171,11 @@ function openAdmin(tab='stats'){
     const paint=async()=>{
       let list=[];try{list=await API.coaches()}catch(e){box.innerHTML=`<p class="empty">${esc(errMsg(e))}</p>`;return}
       COACHES=list;
-      box.innerHTML=`<div class="stack"><div class="card"><h3>Add a coach</h3><p class="muted" style="font-size:14px">Coaches show up in the Coaches section of the Feed with a Coach badge. Anyone can follow and message them, and they get Pro free.</p>
+      box.innerHTML=`<div class="stack"><div class="card"><h3>Applications</h3><div id="apList" class="stack"><div class="spinner"></div></div></div><div class="card"><h3>Add a coach</h3><p class="muted" style="font-size:14px">Coaches show up in the Coaches section of the Feed with a Coach badge. Anyone can follow and message them, and they get Pro free.</p>
         <div class="promo-row"><input class="input" id="coUser" placeholder="@username" autocapitalize="none" autocomplete="off"><button class="primary" id="coAdd" style="min-height:46px">Add</button></div><p class="g-err" id="coErr"></p></div>
         <div class="card"><h3>Your coaches</h3>${list.map(c=>`<div class="admin-row"><div><b>${nameOf(c)}</b><br><span>@${esc(c.username)}${c.is_admin?' · owner':''}</span></div>${c.is_admin?'':`<button class="chip" data-rm="${esc(c.username)}">Remove</button>`}</div>`).join('')}</div></div>`;
+      applicationsHTML().then(h=>{const el=box.querySelector('#apList');if(!el)return;el.innerHTML=h;
+        el.querySelectorAll('[data-approve],[data-decline]').forEach(b=>b.onclick=async()=>{const ok=!!b.dataset.approve;b.disabled=true;try{await API.reviewApplication(+(b.dataset.approve||b.dataset.decline),ok);toast(ok?'Approved. They’re a coach now.':'Declined');paint()}catch(e){toast(errMsg(e));b.disabled=false}})});
       box.querySelector('#coAdd').onclick=async()=>{const u=box.querySelector('#coUser').value.trim();if(!u)return;try{const r=await API.setCoach(u,true);toast('@'+r.username+' is now a coach');paint()}catch(e){box.querySelector('#coErr').textContent=errMsg(e)}};
       box.querySelectorAll('[data-rm]').forEach(b=>confirmBtn(b,'Tap again',async()=>{try{await API.setCoach(b.dataset.rm,false);toast('Removed');paint()}catch(e){toast(errMsg(e))}}));
     };
@@ -3801,7 +4249,10 @@ document.addEventListener('click',e=>{
     case'people-search':openPeopleSearch();break;
     case'inbox':openInbox();break;
     case'coaches':openCoaches();break;
-    case'coach':{if(id===ME.user?.id)setTab('profile');else openProfile(id);break}
+    case'coach':openCoachDetail(id);break;
+    case'coach-apply':document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());openCoachApply();break;
+    case'coach-portal':document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());openCoachPortal();break;
+    case'my-coaching':document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());openMyCoaching();break;
     case'post-save-workout':savePostWorkout(id);break;
     case'view-img':viewImage(b.dataset.src);break;
     case'prog-lift':PROG_LIFT=id;softRender();break;
