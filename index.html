@@ -2063,7 +2063,7 @@ async function enterApp(){
   hideGate();appEntered=true;render();renderDock();refreshBadges();
   if(ST.active){restFired=!ST.active.restEnd;wake()}
   if(!LS.get('welcomed',false))showWelcome();else maybeOnboard();
-  refreshPushFlag();setTimeout(()=>routeHash(),300);
+  refreshPushFlag();setTimeout(()=>routeHash(),300);setTimeout(maybePushPrompt,1500);
 }
 async function signOut(){
   try{await API.signOut()}catch(e){}
@@ -3198,22 +3198,34 @@ const PUSH={on:false,timer:null,end:0};
 const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const isStandalone=()=>window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 const pushSupported=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+// Wait for the background service, but never forever: register it if needed and give up after a few seconds.
+async function swReady(){
+  const t=ms=>new Promise(r=>setTimeout(()=>r(null),ms));
+  let reg=await Promise.race([navigator.serviceWorker.ready,t(2500)]);
+  if(reg)return reg;
+  try{reg=await navigator.serviceWorker.getRegistration()||await navigator.serviceWorker.register('sw.js')}catch(e){reg=null}
+  if(reg&&reg.active)return reg;
+  reg=await Promise.race([navigator.serviceWorker.ready,t(6000)]);
+  return reg||null;
+}
 async function pushState(){
   if(!pushSupported())return 'unsupported';
   if(Notification.permission==='denied')return 'denied';
-  try{const reg=await navigator.serviceWorker.ready;const sub=await reg.pushManager.getSubscription();return sub&&Notification.permission==='granted'?'on':'off'}catch(e){return 'off'}
+  const reg=await swReady();if(!reg)return 'nosw';
+  try{const sub=await reg.pushManager.getSubscription();return sub&&Notification.permission==='granted'?'on':'off'}catch(e){return 'off'}
 }
 const b64ToBytes=s=>{const p='='.repeat((4-s.length%4)%4),b=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(b,c=>c.charCodeAt(0))};
 async function enablePush(){
   const perm=await Notification.requestPermission();
   if(perm!=='granted')throw new Error(perm==='denied'?'Notifications are blocked. Turn them on in your phone’s Settings for Brainweight.':'Notifications weren’t turned on.');
-  const key=await API.pushKey();const reg=await navigator.serviceWorker.ready;
+  const key=await API.pushKey();const reg=await swReady();
+  if(!reg)throw new Error('Notifications couldn’t start. Close Brainweight fully, reopen it from your Home Screen, and try again.');
   let sub=await reg.pushManager.getSubscription();
   if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToBytes(key)});
   await API.savePushSub(sub.toJSON());PUSH.on=true;
 }
 async function disablePush(){
-  try{const reg=await navigator.serviceWorker.ready;const sub=await reg.pushManager.getSubscription();if(sub){await API.removePushSub(sub.endpoint).catch(()=>{});await sub.unsubscribe()}}catch(e){}
+  try{const reg=await swReady();const sub=reg&&await reg.pushManager.getSubscription();if(sub){await API.removePushSub(sub.endpoint).catch(()=>{});await sub.unsubscribe()}}catch(e){}
   PUSH.on=false;
 }
 async function refreshPushFlag(){PUSH.on=(await pushState())==='on'}
@@ -3244,6 +3256,8 @@ function openNotifications(){
     if(st==='unsupported'){
       top=isIOS()&&!isStandalone()?`<div class="card"><h3>Add Brainweight to your Home Screen first</h3><p class="muted" style="font-size:14px">On iPhone, notifications only work from the Home Screen app. In Safari, tap the Share button, then <b>Add to Home Screen</b>. Open Brainweight from that icon and come back here.</p></div>`
         :`<div class="card"><h3>Notifications aren’t available here</h3><p class="muted" style="font-size:14px">This browser doesn’t support notifications. Try Safari on iPhone (from the Home Screen) or Chrome.</p></div>`;
+    }else if(st==='nosw'){
+      top=`<div class="card"><h3>Notifications are still starting up</h3><p class="muted" style="font-size:14px">Close Brainweight fully (swipe it away), open it again from your Home Screen, and come back here.</p></div>`;
     }else if(st==='denied'){
       top=`<div class="card"><h3>Notifications are blocked</h3><p class="muted" style="font-size:14px">Turn them on in your phone’s Settings → Notifications → Brainweight, then come back.</p></div>`;
     }else top=`<div class="card"><label class="toggle"><span>Allow notifications on this phone</span><input type="checkbox" id="ntOn" ${st==='on'?'checked':''}></label>
@@ -3268,6 +3282,21 @@ function openNotifications(){
     box.querySelector('#ntTime').onchange=saveRem;
   };
   paint();
+}
+// One-time prompt so people can say yes without digging through settings.
+let pushPromptTries=0;
+async function maybePushPrompt(){
+  if(LS.get('pushAsked',false)||!appEntered||!pushSupported())return;
+  if(document.querySelector('.sheet-ov')||document.querySelector('.ov.welcome')){if(++pushPromptTries<40)setTimeout(maybePushPrompt,3000);return}
+  const st=await pushState();if(st!=='off')return;
+  LS.set('pushAsked',true);
+  const o=sheet(`<div class="onb"><span class="onb-ic" aria-hidden="true">🔔</span><h2>Turn on notifications?</h2>
+    <p class="muted">Get a buzz when rest is over, even with your phone locked. Plus alerts for messages, comments and new followers. You can change this any time in settings.</p>
+    <p class="g-err" id="ppErr"></p>
+    <button class="primary" id="ppYes">Turn on notifications</button><button class="link" id="ppNo" style="align-self:center">Not now</button></div>`,{modal:true});
+  o.querySelector('#ppNo').onclick=()=>o.close();
+  o.querySelector('#ppYes').onclick=async()=>{const b=o.querySelector('#ppYes');b.disabled=true;b.textContent='Turning on…';
+    try{await enablePush();o.close();toast('Notifications are on')}catch(e){b.disabled=false;b.textContent='Try again';o.querySelector('#ppErr').textContent=errMsg(e)}};
 }
 async function maybeAskForPush(){
   if(LS.get('pushAsked',false)||!pushSupported())return'';
