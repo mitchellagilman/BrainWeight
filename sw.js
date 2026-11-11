@@ -1,7 +1,7 @@
 // Brainweight offline support.
 // App files: network first (so updates show right away), cached copy when offline.
 // Google Fonts: cache first.
-const VERSION = 'bw-v8';
+const VERSION = 'bw-v9';
 const SHELL = [
   './',
   'index.html',
@@ -15,7 +15,10 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  // Cache each file on its own, so one missing file never stops the app (or notifications) from working.
+  event.waitUntil(caches.open(VERSION)
+    .then((cache) => Promise.allSettled(SHELL.map((u) => cache.add(u))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
