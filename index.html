@@ -439,6 +439,12 @@ button.card:hover{border-color:#2D3746}
 .plan-top b{font:700 17px var(--display)}
 .plan-price{font:700 18px var(--mono);font-variant-numeric:tabular-nums}
 .plan-price small{font-size:12px;color:var(--muted);font-weight:500}
+.goal-bar{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.gb-track{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}.gb-track i{display:block;height:100%;background:linear-gradient(90deg,var(--mind),var(--p15));border-radius:4px}
+.sw-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line)}
+.sw-row:last-child{border-bottom:0}.sw-row>span:first-child{display:flex;flex-direction:column;min-width:0}.sw-row b{font-size:15px}.sw-row .muted{font-size:13px}
+.sw-act{color:var(--mind);font-weight:700;font-size:14px;flex:none}
+.sw-pick{text-align:left;width:100%}
 .free-alt{display:flex;flex-direction:column;gap:6px;text-align:center}
 .free-alt span{font-size:13px;color:var(--muted)}
 .plan ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
@@ -512,8 +518,8 @@ button.card:hover{border-color:#2D3746}
 .menu .menu-link{display:flex;align-items:center;min-height:52px;border-bottom:1px solid var(--line);font-weight:600;padding:0 16px;color:var(--fg);text-decoration:none}
 .seg.admin-seg{display:flex;overflow-x:auto;scrollbar-width:none;font-size:13px}
 .seg.admin-seg button{flex:none;padding:0 14px}
-.quick-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.quick-row button{min-height:48px;font-size:14px}
+.quick-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.quick-row button{min-height:48px;font-size:13px;padding:0 6px}
 .tile b.up{color:var(--good)}
 .lc{position:relative}
 .lc svg{width:100%;height:auto;display:block;touch-action:pan-y}
@@ -1290,7 +1296,7 @@ function startHTML(){
     <div class="hero-stats"><div><b>${wk.length}</b><span class="eyebrow">This week</span></div><div><b>${fmtVol(wk.reduce((a,w)=>a+volOf(w),0))}</b><span class="eyebrow">Volume</span></div><div><b>${ST.workouts.length}</b><span class="eyebrow">All time</span></div></div>
     <button class="primary" data-act="start-empty">Start a workout</button></section>
   ${planCardHTML()}
-  <div class="quick-row"><button class="secondary" data-act="tools" data-tool="plates">🧮 Calculators</button><button class="secondary" data-act="invite">🎁 Invite friends</button></div>
+  <div class="quick-row"><button class="secondary" data-act="swap-finder">🔁 Find a swap</button><button class="secondary" data-act="tools" data-tool="plates">🧮 Calculators</button><button class="secondary" data-act="invite">🎁 Invite</button></div>
   <div class="stack"><div class="section-h"><h2>My routines</h2><button class="link" data-act="new-routine">+ New routine</button></div>
   ${mine.length?mine.map(routineCard).join(''):`<button class="card" data-act="new-routine" style="text-align:left"><h3>Build your own workout</h3><span class="muted" style="font-size:14px">Pick exercises and set your target sets, weight and reps. You can also customize a template below or save any finished workout.</span></button>`}</div>
   <div class="stack"><div class="section-h"><h2>Templates</h2></div>${TEMPLATES.map(routineCard).join('')}</div>
@@ -1633,10 +1639,11 @@ function openExMenu(i){
   const opts=[[null,'Default'],[0,'Off'],[30],[45],[60],[90],[120],[180],[240],[300]];
   const o=sheet(`<div class="sheet-h"><h2>${esc(exOf(x).name)}</h2><button class="link" data-close>Done</button></div>
     <div class="field"><label>Rest timer for this exercise</label><div class="chips">${opts.map(([v,l])=>`<button class="chip" data-rest="${v}" aria-pressed="${v===cur}">${l||clock(v)}</button>`).join('')}</div></div>
-    <div class="menu"><button id="mHow">How to do it</button>${x.type==='w'?'<button id="mPlate">Plate calculator</button>':''}<button id="mRep">Replace exercise</button>${i>0?'<button id="mUp">Move up</button>':''}${i<A.exercises.length-1?'<button id="mDown">Move down</button>':''}<button id="mDel" class="danger">Remove exercise</button></div>`);
+    <div class="menu"><button id="mHow">How to do it</button>${x.type==='w'?'<button id="mPlate">Plate calculator</button>':''}<button id="mSwap">Find a swap</button><button id="mRep">Replace exercise</button>${i>0?'<button id="mUp">Move up</button>':''}${i<A.exercises.length-1?'<button id="mDown">Move down</button>':''}<button id="mDel" class="danger">Remove exercise</button></div>`);
   o.querySelectorAll('[data-rest]').forEach(b=>b.onclick=()=>{x.rest=b.dataset.rest==='null'?null:+b.dataset.rest;o.querySelectorAll('[data-rest]').forEach(c=>c.setAttribute('aria-pressed',c===b));saveActive();render()});
   o.querySelector('#mHow').onclick=()=>{o.close();openHowTo(x.exId)};
   const mp=o.querySelector('#mPlate');if(mp)mp.onclick=()=>{const s=x.sets.find(s=>!s.done&&s.w)||x.sets.find(s=>s.w);o.close();openTools('plates',s?dispW(s.w):'')};
+  o.querySelector('#mSwap').onclick=()=>{o.close();openSwapFinder({exId:x.exId,onPick:id=>{const n=newEx(id,x.sets.map(s=>newSet({kind:s.kind})));n.rest=x.rest;n.note=x.note;A.exercises[i]=n;saveActive();render();toast('Swapped')}})};
   o.querySelector('#mRep').onclick=()=>{o.close();openPicker({single:true,title:'Replace with',onDone:([id])=>{const n=newEx(id,x.sets.map(s=>newSet({kind:s.kind})));n.rest=x.rest;n.note=x.note;A.exercises[i]=n;saveActive();render()}})};
   const mv=d=>{const ex=A.exercises;[ex[i],ex[i+d]]=[ex[i+d],ex[i]];A.restAfter=null;saveActive();o.close();render()};
   o.querySelector('#mUp')&&(o.querySelector('#mUp').onclick=()=>mv(-1));
@@ -2692,8 +2699,10 @@ const PLAN_MUSCLES={
 const PLAN_GOALS={lift:'Get stronger at a lift',muscle:'Hit a muscle hard',size:'Build muscle',strength:'Get stronger overall',lean:'Get lean and fit'};
 
 function planPick(slot,equip,avoid,barOK){
-  const allowed=PLAN_EQUIP[equip];
-  const list=(PLAN_SLOTS[slot]||[]).filter(id=>EXMAP[id]&&(!allowed||allowed.includes(EXMAP[id].equip))&&(equip==='gym'||barOK||!NEEDS_BAR.includes(id)));
+  const allowed=PLAN_EQUIP[equip],lim=PLAN_LIM;
+  // With a limitation, try the gentler swaps first, then the normal list, and never anything on the skip list.
+  const base=lim&&lim.swap[slot]?lim.swap[slot].concat(PLAN_SLOTS[slot]||[]):(PLAN_SLOTS[slot]||[]);
+  const list=base.filter(id=>EXMAP[id]&&!(lim&&lim.avoid.has(id))&&(!allowed||allowed.includes(EXMAP[id].equip))&&(equip==='gym'||barOK||!NEEDS_BAR.includes(id)));
   return list.find(id=>!avoid.has(id))||null;
 }
 // Round a weight (in the person's units) to a plate-friendly number, then store it in kg.
@@ -2728,6 +2737,11 @@ function buildSets(exId,sets,reps,opts={}){
   return out;
 }
 function generatePlan(a){
+  PLAN_LIM=planLimits(a);
+  try{return generatePlanInner(a)}finally{PLAN_LIM=null}
+}
+function generatePlanInner(a){
+  const lim=PLAN_LIM;
   const equip=a.equip||'gym',exp=a.exp||'mid',days=Math.min(6,Math.max(2,+a.days||3));
   const per={30:4,45:5,60:6,75:7}[a.time]||5;
   const goalKey=a.goal==='lift'?'lift':a.goal==='muscle'?'muscle':a.goal;
@@ -2758,8 +2772,16 @@ function generatePlan(a){
         `Week 3: heavy day 5×${base+1}, add weight (a vest or dumbbell between your feet) if all sets felt easy`,
         `Week 4: lighter week. 3×${Math.max(1,base-1)}, then test your max reps at the end of the week`];
       if(!r)notes.push('Can’t do a full pull-up yet? Use the assisted machine or a band, or do slow 5-second lowering reps (negatives).');
+    }else if(best&&lim.keys.length&&(PLAN_SLOTS[L.slot]||[]).some(id=>lim.avoid.has(id))){
+      // The usual barbell lift is off the table, so percentages of the barbell max wouldn't fit.
+      const e1=best.w*(1+best.r/30);liftInfo={name:L.name,unit,goalE1:e1,swapped:true};
+      weekly=['Week 1: pick a weight you could lift 3 more times than the target on every set',
+        'Week 2: add a rep or a little weight if week 1 felt smooth and pain-free',
+        'Week 3: add a little weight again on your main lift',
+        'Week 4: lighter week. Then build your next block'];
+      notes.push(`Because of your limitations, your ${L.name.toLowerCase()} days use a gentler version of the lift. Start light, and only add weight when it feels good.`);
     }else if(best){
-      const e1=best.w*(1+best.r/30);liftInfo={name:L.name,e1rm:e1,unit};
+      const e1=best.w*(1+best.r/30);liftInfo={name:L.name,e1rm:e1,unit,goalE1:e1};
       const pct=p=>{const step=unit==='lb'?5:2.5;return Math.round(e1*p/step)*step};
       weekly=[`Week 1: heavy ${pct(.80)} ${unit} × 5 for 3 sets · volume ${pct(.70)} ${unit} × 8 for 4 sets`,
         `Week 2: heavy ${pct(.825)} ${unit} × 4 for 4 sets · volume ${pct(.72)} ${unit} × 8 for 4 sets`,
@@ -2800,8 +2822,9 @@ function generatePlan(a){
     const cap=per+((d.heavy||d.volume||d.focus)?1:0)+(a.goal==='lean'?1:0);
     const ordered=d.slots.slice();
     if(a.goal==='lean'){const f=ordered.indexOf('finisher');if(f>=0){ordered.splice(f,1)}}
+    const capMain=lim.add.length?Math.max(4,cap-1):cap; // leave room for strengthening work
     for(const s of ordered){
-      if(ex.length>=cap-(a.goal==='lean'?1:0))break;
+      if(ex.length>=capMain-(a.goal==='lean'?1:0))break;
       let id=planPick(s,equip,avoid,barOK);
       if(!id)continue;
       // Prefer a different variation if this exact exercise is already in another day and an alternative exists.
@@ -2810,11 +2833,14 @@ function generatePlan(a){
     }
     // Home plans can run short on some days; top up with core and leg work so every day is a real workout.
     for(const s of ['backExt','glute2','core2','obliques','abs','singleLeg','calf']){if(ex.length>=Math.min(4,cap-(a.goal==='lean'?1:0)))break;const id=planPick(s,equip,avoid,barOK);if(id){avoid.add(id);ex.push({slot:s,id})}}
+    // Strengthening work for each limitation, rotated across days (up to 2 per day).
+    if(lim.add.length){let added=0;for(let k=0;k<lim.add.length&&added<2;k++){const it=lim.add[(di*2+k)%lim.add.length];const e=EXMAP[it.id];
+      if(!e||avoid.has(it.id)||lim.avoid.has(it.id))continue;const allowed=PLAN_EQUIP[equip];if(allowed&&!allowed.includes(e.equip))continue;avoid.add(it.id);ex.push({slot:'prehab',id:it.id,k:it.k});added++}}
     if(a.goal==='lean'){const id=planPick('finisher',equip,avoid,barOK);if(id)ex.push({slot:'finisher',id})}
     ex.forEach(e=>usedAll.add(e.id));
     const L=a.goal==='lift'?PLAN_LIFTS[a.lift]||PLAN_LIFTS.bench:null;
     const M=a.goal==='muscle'?PLAN_MUSCLES[a.muscle]||PLAN_MUSCLES.chest:null;
-    const exercises=ex.map(({slot,id})=>{
+    const exercises=ex.map(({slot,id,k:limKey})=>{
       const kind=SLOT_KIND[slot]||'c';let [sets,reps,rest]=scheme(goalKey==='lift'||goalKey==='muscle'?(goalKey==='lift'?'lift':'size'):goalKey,kind,exp);
       let opts={},note='';
       if(M&&M.slots.includes(slot)&&kind!=='m')sets=Math.max(sets,4);
@@ -2829,18 +2855,38 @@ function generatePlan(a){
       const HARD_BW=['pull-up','chin-up','pistol-squat','archer-push-up','handstand-hold','pike-push-up','nordic-hamstring-curl'];
       if(EXMAP[id]&&EXMAP[id].equip==='Bodyweight'&&EXMAP[id].type!=='t'&&reps<10&&!HARD_BW.includes(id)&&!(L&&slot===L.slot))reps=Math.max(reps,id==='push-up'||id==='bodyweight-squat'?12:10);
       if(slot==='finisher'){sets=3;reps=equip==='bw'?10:15;rest=45;note='Finisher. Go hard, short rest.'}
+      if(slot==='prehab'){sets=2;reps=12;rest=45;opts.secs=30;note=`Strengthens your ${PLAN_LIMITS[limKey].name.toLowerCase()}. Slow and controlled.`}
+      if(lim.keys.length&&kind==='m'&&reps<6&&!(EXMAP[id]&&EXMAP[id].equip==='Bodyweight'))reps=6;
       return {exId:id,rest,note,sets:buildSets(id,sets,reps,opts)};
     });
     return {name:`Day ${di+1} · ${d.name}`,exercises};
   });
   const goalName=a.goal==='lift'?`Get stronger at ${(PLAN_LIFTS[a.lift]||PLAN_LIFTS.bench).name.toLowerCase()}`:a.goal==='muscle'?`Build your ${(PLAN_MUSCLES[a.muscle]||PLAN_MUSCLES.chest).name.toLowerCase()}`:PLAN_GOALS[a.goal];
+  lim.keys.forEach(k=>notes.push(PLAN_LIMITS[k].note));
+  if(lim.keys.length)notes.push('If something hurts (not just burns), stop and use Find a swap. Pain that sticks around is worth a visit to a physical therapist.');
   notes.push('Warm up for 5 minutes before you start. If a set hurts (not just burns), stop and swap the exercise.');
+  // Goal weight: estimate a realistic timeline from the best set and experience.
+  let target=null;
+  if(a.goal==='lift'&&a.lift!=='pullup'&&+a.target>0&&liftInfo&&liftInfo.goalE1){
+    const L=PLAN_LIFTS[a.lift],t=goalTimeline(liftInfo.goalE1,+a.target,exp,a.lift),unit=u();
+    const mainId=out.flatMap(d=>d.exercises).map(e=>e.exId).find(id=>(PLAN_SLOTS[L.slot]||[]).includes(id))||(PLAN_SLOTS[L.slot]||[])[0];
+    if(t&&t.already)notes.unshift(`${a.target} ${unit} is at or below your estimated max of ${Math.round(liftInfo.goalE1)} ${unit}. Test it this week, then set a bigger goal.`);
+    else if(t){
+      const by=+a.targetBy||0;let line=`Your goal: ${L.name.toLowerCase()} ${a.target} ${unit}, up ${Math.round(t.gain*100)}% from your estimated max of ${Math.round(liftInfo.goalE1)} ${unit}. For someone at your level, that usually takes ${fmtRange(t.lo,t.hi)}, so a realistic target is around ${goalDateText(t.mid)}.`;
+      if(by&&by<t.lo){const step=unit==='lb'?5:2.5;line+=` In ${fmtMonths(by)}, ${Math.round(t.reachBy(by)/step)*step} ${unit} is a more realistic stop along the way. Each 4-week block rebuilds from your new best, so keep going after that.`}
+      else if(by&&by<t.mid)line+=` ${fmtMonths(by)} is on the fast end, but doable if training and sleep stay consistent.`;
+      else if(by)line+=` Your ${fmtMonths(by)} timeline is realistic.`;
+      line+=` That’s about ${Math.max(1,Math.ceil(t.mid/0.92))} four-week blocks.`;
+      notes.unshift(line);
+      target={lift:L.name.toLowerCase(),weight:+a.target,unit,start:Math.round(liftInfo.goalE1),exId:mainId,eta:goalDateText(t.mid)};
+    }
+  }
   if(equip!=='gym')notes.push(equip==='db'?'Built for dumbbells and a bench. Swap in anything else you have.':'Built for no equipment. For inverted rows, use a sturdy table or a low bar. A pull-up bar or bands open up more options.');
-  return {id:'plan-'+newId(),title,goal:goalName,answers:a,created:Date.now(),weeks:4,days:out,weekly,notes,minutes:+a.time||45,e1rm:liftInfo&&liftInfo.e1rm?liftInfo.e1rm:null};
+  return {id:'plan-'+newId(),title,goal:goalName,answers:a,created:Date.now(),weeks:4,days:out,weekly,notes,minutes:+a.time||45,e1rm:liftInfo&&liftInfo.e1rm?liftInfo.e1rm:null,target,limits:lim.keys};
 }
 
 /* ---------- plan UI ---------- */
-const PLAN_DEF={goal:'lift',lift:'bench',muscle:'chest',exp:'mid',days:4,time:60,equip:'gym',bestW:'',bestR:''};
+const PLAN_DEF={goal:'lift',lift:'bench',muscle:'chest',exp:'mid',days:4,time:60,equip:'gym',bestW:'',bestR:'',target:'',targetBy:0,limits:[]};
 const myPlan=()=>ST.settings.plan||null;
 function planNextIndex(p){
   if(!p)return 0;const names=p.days.map(d=>`${p.title} · ${d.name}`);
@@ -2856,7 +2902,7 @@ function planCardHTML(){
     <span class="muted" style="font-size:14px">Nice work. Build your next block. It starts from what you lifted in this one.</span>
     <button class="primary" data-act="plan-next">Build my next 4 weeks</button><button class="secondary" data-act="plan-start" data-i="${i}">Keep going with this plan</button></div>`;
   return `<div class="card plan-card"><div class="row"><span class="eyebrow">My plan · week ${wk} of ${p.weeks}</span><button class="link" data-act="plan-view">View</button></div>
-    <h3>${esc(p.title)}</h3><span class="muted" style="font-size:14px">${esc(p.weekly[wk-1]||'')}</span>
+    <h3>${esc(p.title)}</h3><span class="muted" style="font-size:14px">${esc(p.weekly[wk-1]||'')}</span>${goalCardHTML(p)}
     <div class="plan-next"><span class="eyebrow">Up next</span><b>${esc(d.name)}</b></div>
     <button class="primary" data-act="plan-start" data-i="${i}">Start ${esc(d.name.split(' · ')[0])}</button>
     <span class="muted" style="font-size:12px">Weights update each week from what you log.</span></div>`;
@@ -2879,22 +2925,29 @@ function openPlanBuilder(prefill){
       ${a.goal==='lift'?`<div class="field"><label>Which lift?</label>${chips('lift',[['bench','Bench press'],['squat','Squat'],['deadlift','Deadlift'],['ohp','Overhead press'],['pullup','Pull-ups']])}</div>
         <div class="field"><label>${a.lift==='pullup'?'Most pull-ups you can do in a row (optional)':'Your best recent set (optional)'}</label>
           <div class="pb-best">${a.lift==='pullup'?'':`<input class="input" id="pbW" inputmode="decimal" placeholder="Weight" value="${esc(a.bestW)}"><span>${u()} ×</span>`}<input class="input" id="pbR" inputmode="numeric" placeholder="Reps" value="${esc(a.bestR)}"></div>
-          <p class="g-note" style="text-align:left;margin:4px 0 0">${a.lift==='pullup'?'We’ll build your sets from this.':'We’ll use this to fill in your weights.'}</p></div>`:''}
+          <p class="g-note" style="text-align:left;margin:4px 0 0">${a.lift==='pullup'?'We’ll build your sets from this.':'We’ll use this to fill in your weights.'}</p></div>
+        ${a.lift==='pullup'?'':`<div class="field"><label>Goal weight (optional)</label><div class="pb-best"><input class="input" id="pbT" inputmode="decimal" placeholder="e.g. ${u()==='lb'?'275':'125'}" value="${esc(a.target)}"><span>${u()}</span></div>
+          <p class="g-note" style="text-align:left;margin:4px 0 0">Add your best recent set above and we’ll tell you how long it realistically takes.</p></div>
+        <div class="field"><label>By when? (optional)</label>${chips('targetBy',[[0,'No deadline'],[3,'3 months'],[6,'6 months'],[12,'1 year']])}</div>`}`:''}
       ${a.goal==='muscle'?`<div class="field"><label>Which muscle?</label>${chips('muscle',[['chest','Chest'],['back','Back'],['shoulders','Shoulders'],['arms','Arms'],['legs','Legs'],['glutes','Glutes'],['core','Core']])}</div>`:''}
       <div class="field"><label>How long have you been lifting?</label>${chips('exp',[['new','Under 6 months'],['mid','6 months to 2 years'],['adv','2+ years']])}</div>
       <div class="field"><label>Days per week</label>${chips('days',[[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div>
       <div class="field"><label>Time per workout</label>${chips('time',[[30,'30 min'],[45,'45 min'],[60,'60 min'],[75,'75+ min']])}</div>
       <div class="field"><label>Equipment</label>${chips('equip',[['gym','Full gym'],['db','Dumbbells'],['bw','No equipment']])}</div>
+      <div class="field"><label>Any limitations or sore spots? (optional)</label>
+        <div class="chips wrap" data-multi="limits">${LIMIT_ORDER.map(k=>`<button class="chip" data-v="${k}" aria-pressed="${(a.limits||[]).includes(k)}">${PLAN_LIMITS[k].name}</button>`).join('')}</div>
+        <p class="g-note" style="text-align:left;margin:4px 0 0">We’ll skip moves that tend to irritate these areas and add exercises that strengthen them.</p></div>
       <button class="primary" id="pbGo">Build my plan</button></div>`;
     box.querySelectorAll('[data-k]').forEach(row=>row.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;readBest();a[row.dataset.k]=isNaN(+b.dataset.v)?b.dataset.v:+b.dataset.v;form()}));
+    box.querySelectorAll('[data-multi]').forEach(row=>row.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;readBest();const k=row.dataset.multi,v=b.dataset.v,cur=new Set(a[k]||[]);cur.has(v)?cur.delete(v):cur.add(v);a[k]=LIMIT_ORDER.filter(x=>cur.has(x));b.setAttribute('aria-pressed',cur.has(v))}));
     box.querySelector('#pbGo').onclick=()=>{readBest();preview(generatePlan(a))};
   };
-  const readBest=()=>{const w=box.querySelector('#pbW'),r=box.querySelector('#pbR');if(w)a.bestW=w.value.trim();if(r)a.bestR=r.value.trim()};
+  const readBest=()=>{const w=box.querySelector('#pbW'),r=box.querySelector('#pbR'),t=box.querySelector('#pbT');if(w)a.bestW=w.value.trim();if(r)a.bestR=r.value.trim();if(t)a.target=t.value.trim()};
   const preview=p=>{
     const had=myPlan();
     box.innerHTML=`<div class="stack">
       <section class="hero plan-hero"><span class="eyebrow">${esc(p.goal)}</span><h2>${esc(p.title)}</h2>
-        <div class="prog-meta"><span class="badge teal">4 weeks</span><span class="badge">${p.days.length} days a week</span><span class="badge">~${p.minutes} min</span></div></section>
+        <div class="prog-meta"><span class="badge teal">4 weeks</span><span class="badge">${p.days.length} days a week</span><span class="badge">~${p.minutes} min</span>${(p.limits||[]).map(k=>`<span class="badge">Easy on ${esc(PLAN_LIMITS[k].name.toLowerCase())}</span>`).join('')}</div>${p.target?goalCardHTML(p):''}</section>
       ${p.notes.map(n=>`<p class="muted" style="font-size:14px;margin:0">${esc(n)}</p>`).join('')}
       <div class="card"><h3>How the 4 weeks go</h3><ol class="plan-weeks">${p.weekly.map(w=>`<li>${esc(w)}</li>`).join('')}</ol></div>
       ${p.days.map(planDayHTML).join('')}
@@ -2949,6 +3002,167 @@ function openNewRoutineChoice(){
     <button class="secondary" data-close>Cancel</button>`);
   o.querySelector('#nrMe').onclick=()=>{o.close();openRoutineEditor(null)};
   o.querySelector('#nrPlan').onclick=()=>{o.close();openPlanBuilder()};
+}
+
+/* ================= limitations, goal timelines and the swap finder ================= */
+// General training guidance, not medical advice. Each limitation lists moves to skip, gentler swaps for
+// plan slots, and exercises that strengthen the area. Ids that aren't in the library are ignored.
+const PLAN_LIMITS={
+  back:{name:'Lower back',
+    avoid:['back-squat-barbell','front-squat-barbell','pause-squat','deadlift-barbell','paused-deadlift','deficit-deadlift','good-morning-barbell','good-morning-smith-machine','good-morning-safety-squat-bar','bent-over-row-barbell','bent-over-row-dumbbell','romanian-deadlift-barbell','overhead-press-barbell','push-press-dumbbell','kettlebell-swing-dumbbell','burpee','jump-squat-bodyweight','russian-twist-dumbbell','superman','back-extension-machine','back-extension-bodyweight','hanging-leg-raise','lying-leg-raise'],
+    swap:{squatMain:['belt-squat','leg-press','goblet-squat-dumbbell','split-squat-dumbbell','split-squat-bodyweight'],squatVariant:['split-squat-dumbbell','step-up-dumbbell','step-up-bodyweight'],frontSquat:['goblet-squat-dumbbell','leg-press','split-squat-bodyweight'],
+      hinge:['hip-thrust-barbell','pull-through-cable','hip-thrust-dumbbell','glute-bridge-bodyweight'],hingeVariant:['pull-through-cable','single-leg-hip-thrust-dumbbell','single-leg-hip-thrust-bodyweight'],rdl:['pull-through-cable','lying-leg-curl','single-leg-hip-thrust-bodyweight'],backExt:['bird-dog','glute-bridge-bodyweight'],
+      rowMain:['chest-supported-row-machine','chest-supported-row-dumbbell','seated-row-cable','inverted-row-bodyweight'],ohp:['seated-overhead-press-dumbbell','landmine-press','pike-push-up'],abs:['dead-bug','bird-dog','reverse-crunch'],obliques:['side-plank','pallof-press-cable','suitcase-carry-dumbbell'],finisher:['farmer-s-walk-dumbbell','sled-push','plank']},
+    add:['bird-dog','dead-bug','side-plank','glute-bridge-bodyweight'],
+    note:'Lower back: we skipped heavy barbell squats, deadlifts and bent-over rows, used supported versions instead, and added core work that helps protect your back. Brace your core and keep your back neutral on every rep.'},
+  knees:{name:'Knees',
+    avoid:['jump-squat-bodyweight','pistol-squat','walking-lunge-dumbbell','walking-lunge-bodyweight','bulgarian-split-squat-dumbbell','bulgarian-split-squat-bodyweight','burpee','deficit-push-up','leg-extension','reverse-nordic'],
+    swap:{squatMain:['box-squat','goblet-squat-dumbbell','leg-press','bodyweight-squat'],squatVariant:['box-squat','leg-press','glute-bridge-bodyweight'],frontSquat:['goblet-squat-dumbbell','leg-press','glute-bridge-bodyweight'],legPress:['leg-press','hip-thrust-dumbbell','glute-bridge-bodyweight'],
+      singleLeg:['step-up-dumbbell','reverse-lunge-dumbbell','step-up-bodyweight'],legExt:['wall-sit','step-up-bodyweight'],finisher:['farmer-s-walk-dumbbell','kettlebell-swing-dumbbell','plank']},
+    add:['wall-sit','glute-bridge-bodyweight','clamshell-bodyweight','tibialis-raise-bodyweight'],
+    note:'Knees: we skipped jumping, deep lunges and leg extensions, limited squat depth with box squats and step-ups, and added work for the muscles that support your knees. Squat only as deep as feels good.'},
+  shoulders:{name:'Shoulders',
+    avoid:['overhead-press-barbell','behind-the-neck-press-barbell','behind-the-neck-press-smith-machine','push-press-dumbbell','handstand-hold','pike-push-up','chest-dip','bench-dip','upright-row-barbell','bench-press-barbell','wide-push-up','overhead-triceps-extension-dumbbell','overhead-triceps-extension-cable','skull-crusher-dumbbell'],
+    swap:{benchMain:['floor-press-dumbbell','bench-press-dumbbell','chest-press-machine','push-up'],benchVariant:['floor-press-dumbbell','close-grip-push-up'],inclinePress:['incline-bench-press-dumbbell','incline-push-up'],dip:['floor-press-dumbbell','close-grip-push-up'],
+      ohp:['landmine-press','half-kneeling-landmine-press','lateral-raise-dumbbell','lateral-raise-cable'],ohpVariant:['half-kneeling-landmine-press','lateral-raise-cable','y-raise-dumbbell'],lateral:['lateral-raise-cable','lateral-raise-dumbbell'],tricepsOH:['rope-pushdown','triceps-pushdown-band','diamond-push-up'],verticalPull:['lat-pulldown-cable','inverted-row-bodyweight']},
+    add:['face-pull-cable','external-rotation-band','band-pull-apart','external-rotation-dumbbell'],
+    note:'Shoulders: we skipped overhead barbell pressing, dips and barbell bench, used dumbbell and landmine presses instead, and added rotator cuff and upper back work. Keep your elbows a little tucked when you press.'},
+  elbows:{name:'Elbows',
+    avoid:['skull-crusher-dumbbell','close-grip-bench-press-barbell','chest-dip','bench-dip','overhead-triceps-extension-dumbbell','overhead-triceps-extension-cable','biceps-curl-ez-bar','diamond-push-up','close-grip-push-up','chin-up'],
+    swap:{curl:['hammer-curl-dumbbell','hammer-curl-cable','biceps-curl-band'],curl2:['hammer-curl-cable','biceps-curl-dumbbell'],tricepsPush:['rope-pushdown','triceps-pushdown-band','push-up'],tricepsOH:['rope-pushdown','triceps-pushdown-band'],benchVariant:['floor-press-dumbbell','paused-bench-press'],dip:['floor-press-dumbbell','push-up']},
+    add:['reverse-wrist-curl-dumbbell','hammer-curl-dumbbell','wrist-curl-dumbbell'],
+    note:'Elbows: we skipped skull crushers, dips and straight-bar curls, used neutral-grip curls and rope pushdowns, and added slow forearm work that helps sore elbows. Use a weight you can control on the way down.'},
+  wrists:{name:'Wrists',
+    avoid:['front-squat-barbell','handstand-hold','pike-push-up','burpee','biceps-curl-ez-bar','skull-crusher-dumbbell','chest-dip','bench-dip','diamond-push-up','wide-push-up','archer-push-up'],
+    swap:{benchMain:['bench-press-dumbbell','chest-press-machine','push-up'],frontSquat:['goblet-squat-dumbbell','leg-press'],curl:['hammer-curl-dumbbell','hammer-curl-cable'],dip:['floor-press-dumbbell','push-up'],tricepsOH:['rope-pushdown','triceps-pushdown-band']},
+    add:['wrist-curl-dumbbell','reverse-wrist-curl-dumbbell','farmer-s-walk-dumbbell'],
+    note:'Wrists: we used dumbbells and neutral grips where we could and added forearm work. For push-ups, holding dumbbells or doing them on your fists keeps your wrists straight.'},
+  hips:{name:'Hips',
+    avoid:['pistol-squat','bulgarian-split-squat-dumbbell','bulgarian-split-squat-bodyweight','jump-squat-bodyweight','walking-lunge-dumbbell','walking-lunge-bodyweight','deficit-deadlift','burpee'],
+    swap:{squatMain:['box-squat','goblet-squat-dumbbell','leg-press','bodyweight-squat'],squatVariant:['box-squat','step-up-dumbbell'],singleLeg:['step-up-dumbbell','step-up-bodyweight','reverse-lunge-dumbbell'],hinge:['deadlift-trap-bar','hip-thrust-barbell','hip-thrust-dumbbell']},
+    add:['glute-bridge-bodyweight','clamshell-bodyweight','hip-abduction-band','side-plank'],
+    note:'Hips: we skipped the deepest single-leg moves and jumps, kept squats to a comfortable depth, and added glute and side-hip work that supports your hips.'},
+  neck:{name:'Neck',
+    avoid:['back-squat-barbell','pause-squat','overhead-press-barbell','behind-the-neck-press-barbell','behind-the-neck-press-smith-machine','shrug-barbell','neck-curl-plate','neck-extension-plate','burpee'],
+    swap:{squatMain:['safety-bar-squat','goblet-squat-dumbbell','leg-press','bodyweight-squat'],squatVariant:['goblet-squat-dumbbell','split-squat-dumbbell'],ohp:['seated-overhead-press-dumbbell','landmine-press','lateral-raise-dumbbell']},
+    add:['face-pull-cable','band-pull-apart','rear-delt-fly-dumbbell'],
+    note:'Neck: we kept the bar off your neck (goblet, safety bar or leg press instead of back squats), skipped heavy shrugs and overhead barbell pressing, and added upper back work. Keep your chin tucked slightly.'},
+  ankles:{name:'Ankles',
+    avoid:['jump-squat-bodyweight','burpee','pistol-squat','walking-lunge-dumbbell','walking-lunge-bodyweight','box-jump'],
+    swap:{calf:['seated-calf-raise-machine','single-leg-calf-raise-bodyweight'],finisher:['kettlebell-swing-dumbbell','farmer-s-walk-dumbbell','plank'],singleLeg:['split-squat-dumbbell','step-up-dumbbell','split-squat-bodyweight']},
+    add:['tibialis-raise-bodyweight','single-leg-calf-raise-bodyweight','seated-calf-raise-machine'],
+    note:'Ankles: we skipped jumping and walking lunges and added calf and shin work that builds ankle strength. Go slow on calf raises and use a full range.'},
+};
+const LIMIT_ORDER=['back','knees','shoulders','elbows','wrists','hips','neck','ankles'];
+let PLAN_LIM=null; // set while a plan is being built
+function planLimits(a){
+  const keys=(a.limits||[]).filter(k=>PLAN_LIMITS[k]),avoid=new Set(),swap={},add=[];
+  keys.forEach(k=>{const L=PLAN_LIMITS[k];L.avoid.forEach(x=>avoid.add(x));Object.entries(L.swap).forEach(([s,l])=>{swap[s]=(swap[s]||[]).concat(l)});L.add.forEach(id=>add.push({id,k}))});
+  return{keys,avoid,swap,add};
+}
+
+/* ---------- goal timelines ---------- */
+// Typical monthly gains in estimated max, by experience. Conservative on purpose; real progress varies a lot.
+const GOAL_RATE={new:.04,mid:.015,adv:.006},LIFT_RATE={bench:1,squat:1.2,deadlift:1.2,ohp:.8};
+function goalTimeline(e1,target,exp,lift){
+  if(!(e1>0)||!(target>0))return null;
+  if(target<=e1*1.01)return{already:true};
+  const r=(GOAL_RATE[exp]||GOAL_RATE.mid)*(LIFT_RATE[lift]||1);
+  const months=rate=>Math.log(target/e1)/Math.log(1+rate);
+  const lo=months(r*1.35),hi=months(r*.75);
+  return{lo,hi,mid:months(r),gain:target/e1-1,reachBy:m=>e1*Math.pow(1+r,m)};
+}
+function fmtMonths(m){if(m<1.5)return `${Math.max(3,Math.round(m*4.35))} weeks`;if(m<18)return `${Math.round(m)} months`;return `${(m/12).toFixed(m<30?1:0).replace(/\.0$/,'')} years`}
+function fmtRange(lo,hi){const a=fmtMonths(lo),b=fmtMonths(hi);if(a===b)return `about ${a}`;const ua=a.split(' ')[1],ub=b.split(' ')[1];return ua===ub?`about ${a.split(' ')[0]} to ${b}`:`about ${a} to ${b}`}
+function goalDateText(m){const d=new Date(Date.now()+m*30.44*864e5);return d.toLocaleDateString(undefined,{month:'long',year:'numeric'})}
+function goalBest(p){
+  if(!p||!p.target)return null;let best=0;
+  ST.workouts.forEach(w=>{if(w.start<Date.now()-120*864e5)return;w.exercises.forEach(e=>{if(e.exId!==p.target.exId)return;e.sets.forEach(s=>{if(s.kind!=='w'&&s.r&&s.r<=10){const v=e1rm(s);if(v>best)best=v}})})});
+  return best?(u()==='lb'?best*KG_LB:best):null;
+}
+function goalCardHTML(p){
+  const t=p&&p.target;if(!t)return'';
+  const now=Math.max(goalBest(p)||0,t.start),pct=Math.max(0,Math.min(100,Math.round((now-t.start)/Math.max(1,t.weight-t.start)*100)));
+  const done=now>=t.weight;
+  return `<div class="goal-bar"><div class="row" style="display:flex;justify-content:space-between;font-size:13px"><span><b>Goal:</b> ${esc(t.lift)} ${t.weight} ${t.unit}</span><span class="muted">${done?'Reached 🎉':`est. max ${Math.round(now)} ${t.unit}`}</span></div>
+    <div class="gb-track"><i style="width:${done?100:Math.max(3,pct)}%"></i></div>${t.eta?`<span class="muted" style="font-size:12px">Realistic target date: ${esc(t.eta)}</span>`:''}</div>`;
+}
+
+/* ---------- swap finder ---------- */
+const MOVE_PATTERNS=[
+  ['vpress',/overhead press|shoulder press|military|arnold|push press|landmine press|pike push|handstand|behind the neck/],
+  ['hpress',/bench press|chest press|push-up|floor press|svend|\bdip\b|dips/],
+  ['fly',/\bfly\b|pec deck|crossover/],
+  ['lraise',/lateral raise|y raise|upright row|front raise|lu raise/],
+  ['rear',/rear delt|face pull|reverse pec|pull-apart|external rotation|internal rotation/],
+  ['row',/\brow\b|rows\b/],
+  ['vpull',/pull-up|chin-up|pulldown|pullover/],
+  ['lunge',/lunge|split squat|step-up/],
+  ['squat',/squat|leg press|hack|wall sit/],
+  ['hinge',/deadlift|good morning|pull-through|swing|rack pull/],
+  ['bridge',/hip thrust|glute bridge|frog pump|hip extension|kickback|reverse hyper/],
+  ['legcurl',/leg curl|nordic/],
+  ['legext',/leg extension|sissy|reverse nordic/],
+  ['curl',/curl/],
+  ['triceps',/pushdown|triceps|skull/],
+  ['calf',/calf/],
+  ['core',/plank|crunch|leg raise|dead bug|bird dog|sit-up|rollout|ab wheel|hollow|v-up|toes-to-bar|pallof|twist|carry/],
+];
+function movePattern(e){const n=e.name.toLowerCase();const p=MOVE_PATTERNS.find(([,re])=>re.test(n));return p?p[0]:'other'}
+const SWAP_COMMON=new Set(Object.values(PLAN_SLOTS).flat().concat(Object.values(PLAN_LIMITS).flatMap(l=>Object.values(l.swap).flat().concat(l.add))));
+const SWAP_EQUIP={gym:null,db:['Dumbbell','Bodyweight','Band','Kettlebell'],bw:['Bodyweight','Band']};
+const RARE_EQUIP=new Set(['Harness','Sandbag','Farmer handles','Weighted vest','Sled','Other','Plate','Cardio machine','Foam roller']);
+function swapSuggestions(id,reason,equip){
+  const x=EXMAP[id];if(!x)return{same:[],other:[]};
+  const pat=movePattern(x),allowed=SWAP_EQUIP[equip]||null,base=x.name.replace(/\s*\(.*\)/,'').toLowerCase();
+  const score=e=>{
+    let s=0;const ep=movePattern(e);
+    if(SWAP_COMMON.has(e.id))s+=3;
+    if(RARE_EQUIP.has(e.equip))s-=4;
+    if(reason==='hurts'){if(['Machine','Cable','Band'].includes(e.equip))s+=2;if(e.equip==='Barbell')s-=2;if(/jump|explosive|plyo|clean|snatch|kipping/.test(e.name.toLowerCase()))s-=4}
+    if(reason==='busy'&&e.equip===x.equip)s-=2;
+    if(reason!=='hurts'&&/external rotation|internal rotation|pull-apart/.test(e.name.toLowerCase()))s-=3; // rehab moves, not real replacements
+    if(/lateral raise|face pull/.test(e.name.toLowerCase())&&x.muscle==='Shoulders')s+=1;
+    if(ep===pat)s+=reason==='move'?0:2;
+    return s;
+  };
+  const pool=EX.filter(e=>e.id!==id&&e.muscle===x.muscle&&e.type!=='d'&&(!allowed||allowed.includes(e.equip))
+    &&!(reason==='equip'&&e.equip===x.equip)&&!(reason==='busy'&&e.equip===x.equip&&e.equip==='Machine')
+    &&!((reason==='hurts'||reason==='move')&&e.name.replace(/\s*\(.*\)/,'').toLowerCase()===base));
+  const sorted=pool.map(e=>[e,score(e)]).sort((a,b)=>b[1]-a[1]||a[0].name.localeCompare(b[0].name)).map(p=>p[0]);
+  const same=reason==='move'?[]:sorted.filter(e=>movePattern(e)===pat).slice(0,5);
+  // Same muscle, different movement. Pulls in related muscles too (for example, shoulders without pressing).
+  const RELATED={Shoulders:['Shoulders','Upper back','Traps'],Chest:['Chest','Triceps'],Quads:['Quads','Glutes'],Hamstrings:['Hamstrings','Glutes'],'Lower back':['Lower back','Glutes','Hamstrings'],Lats:['Lats','Upper back'],'Upper back':['Upper back','Lats'],Glutes:['Glutes','Hamstrings'],Biceps:['Biceps','Forearms'],Triceps:['Triceps','Chest']}[x.muscle]||[x.muscle];
+  const other=EX.filter(e=>e.id!==id&&RELATED.includes(e.muscle)&&movePattern(e)!==pat&&e.type!=='d'&&(!allowed||allowed.includes(e.equip))&&!(reason==='equip'&&e.equip===x.equip))
+    .map(e=>[e,score(e)+(e.muscle===x.muscle?2:0)]).sort((a,b)=>b[1]-a[1]||a[0].name.localeCompare(b[0].name)).map(p=>p[0]).slice(0,reason==='move'?8:4);
+  return{same,other};
+}
+const SWAP_WHY={hurts:'It hurts or feels off',move:'I don’t want this movement',equip:'I don’t have the equipment',busy:'The machine is taken',like:'I just don’t like it'};
+function openSwapFinder({exId=null,onPick=null}={}){
+  let id=exId,reason='move',equip='gym';
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Ask Brainweight</span><h2>Find a swap</h2></div><button class="link" data-close>Done</button></div><div id="swBox" class="stack"></div>`,{full:true});
+  const box=o.querySelector('#swBox');
+  const chips=(k,opts,cur)=>`<div class="chips wrap" data-sk="${k}">${opts.map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${v===cur}">${l}</button>`).join('')}</div>`;
+  const row=e=>`<button class="sw-row" data-pick="${e.id}"><span><b>${esc(e.name)}</b><span class="muted">${esc(e.muscle)} · ${esc(e.equip)}</span></span><span class="sw-act">${onPick?'Use':'How to'}</span></button>`;
+  function draw(){
+    const x=id&&EXMAP[id];
+    let res='';
+    if(x){const r=swapSuggestions(id,reason,equip);
+      res=`${r.same.length?`<div class="card"><span class="eyebrow">Same movement, different version</span>${r.same.map(row).join('')}</div>`:''}
+        ${r.other.length?`<div class="card"><span class="eyebrow">${reason==='move'?`Works your ${esc(x.muscle.toLowerCase())} without this movement`:'Other ways to train the same muscles'}</span>${r.other.map(row).join('')}</div>`:''}
+        ${!r.same.length&&!r.other.length?'<p class="muted">No good matches with that equipment. Try a different equipment option.</p>':''}
+        ${reason==='hurts'?'<p class="g-note" style="text-align:left">If something keeps hurting, or the pain is sharp, check with a doctor or physical therapist.</p>':''}`}
+    box.innerHTML=`<div class="field"><label>Which exercise do you want to swap?</label><button class="input sw-pick" id="swEx">${x?esc(x.name):'Choose an exercise'}</button></div>
+      <div class="field"><label>Why?</label>${chips('reason',Object.entries(SWAP_WHY),reason)}</div>
+      <div class="field"><label>Equipment you have</label>${chips('equip',[['gym','Full gym'],['db','Dumbbells and bands'],['bw','No equipment']],equip)}</div>${res}`;
+  }
+  box.addEventListener('click',e=>{
+    if(e.target.closest('#swEx')){openPicker({single:true,title:'Exercise to swap',onDone:([p])=>{id=p;draw()}});return}
+    const c=e.target.closest('[data-sk] [data-v]');if(c){const k=c.closest('[data-sk]').dataset.sk;if(k==='reason')reason=c.dataset.v;else equip=c.dataset.v;draw();return}
+    const p=e.target.closest('[data-pick]');if(p){if(onPick){o.close();onPick(p.dataset.pick)}else openHowTo(p.dataset.pick)}
+  });
+  draw();
+  if(!id)setTimeout(()=>box.querySelector('#swEx')&&box.querySelector('#swEx').click(),50);
 }
 
 /* ================= growth features ================= */
@@ -3278,7 +3492,7 @@ function planAdjust(p,i){
   const L=p.answers&&p.answers.goal==='lift'?PLAN_LIFTS[p.answers.lift]:null;
   const exs=clone(d.exercises).map((x,k)=>{
     const ex=EXMAP[x.exId];if(!ex)return x;
-    const isMain=L&&k===0&&/heavy|volume/.test(d.name)&&(PLAN_SLOTS[L.slot]||[]).includes(x.exId);
+    const isMain=L&&k===0&&/heavy|volume/.test(d.name)&&(PLAN_SLOTS[L.slot]||[]).includes(x.exId)&&!(p.limits&&p.limits.some(lk=>PLAN_LIMITS[lk]&&PLAN_LIMITS[lk].avoid.includes(x.exId)));
     if(isMain&&p.e1rm&&ex.type==='w'){
       const heavy=/heavy/.test(d.name),w=wk-1;
       const pct=(heavy?HEAVY_W:VOL_W)[w],reps=(heavy?HEAVY_R:VOL_R)[w],n=(heavy?HEAVY_N:VOL_N)[w];
@@ -4927,6 +5141,7 @@ document.addEventListener('click',e=>{
     case'start-routine':{const r=ST.routines.find(x=>x.id===b.dataset.id)||TEMPLATES.find(x=>x.id===b.dataset.id);if(r)startWorkout(r);break}
     case'new-routine':openNewRoutineChoice();break;
     case'plan-build':openPlanBuilder();break;
+    case'swap-finder':openSwapFinder();break;
     case'plan-view':openPlanView();break;
     case'plan-start':planStart(+b.dataset.i);break;
     case'plan-next':{const p=myPlan();if(p)openPlanBuilder(nextBlockAnswers(p));break}
