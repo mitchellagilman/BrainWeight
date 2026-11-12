@@ -1864,6 +1864,7 @@ const LiveAPI={
   async removePushSub(endpoint){await sb.from('push_subscriptions').delete().eq('endpoint',endpoint)},
   async scheduleRest(seconds){await sb.rpc('schedule_rest',{seconds})},
   async cancelRest(){await sb.rpc('cancel_rest')},
+  async garmin(action,extra){const {data,error}=await sb.functions.invoke('garmin',{body:Object.assign({action},extra||{})});if(error){let m='Couldn’t reach Garmin. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
   async billingJSON(body){const {data,error}=await sb.functions.invoke('billing',{body:Object.assign({return_url:siteURL()},body)});if(error){let m='Something went wrong. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
   async coachMarket(){const {data,error}=await sb.rpc('coach_market');if(error)throw error;return data||[]},
   async coachDetail(id){const {data,error}=await sb.rpc('coach_detail',{uid:id});if(error)throw error;return data},
@@ -2025,6 +2026,7 @@ const DemoAPI=(()=>{
     async signUp(email,password,name,username){if(password.length<8)throw new Error('Password should be at least 8 characters');D.signedIn=true;D.me.display_name=name||'You';if(username)D.me.username=username;save();return {session:{user:{id:'me',email}}}},
     async acceptTerms(v){D.me.terms_version=v;save()},
     async logScore(){},
+    async garmin(action){if(action==='start'){D.garmin={connected:true,connected_at:new Date().toISOString()};save();toast('Preview: Garmin connected (no real sign-in).');return{url:'#garmin-connected'}}if(action==='disconnect'){D.garmin=null;save();return{connected:false}}return wait(D.garmin||{connected:false})},
     async dailySubmit(puzzle,guesses,pattern){D.daily={puzzle,guesses,pattern};save()},
     async puzzleSubmit(game,puzzle,solved,score,detail){D.pz=D.pz||{};D.pz[game]={puzzle,solved,score,detail};save()},
     async puzzleBoard(game,puzzle){const m=D.pz&&D.pz[game]&&D.pz[game].puzzle===puzzle?[Object.assign({},D.me,{user_id:'me',solved:D.pz[game].solved,score:D.pz[game].score,is_me:true})]:[];
@@ -3758,6 +3760,8 @@ function routeHash(h){
   if(!appEntered)return;
   document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());
   if(h==='#inbox'){setTab('feed');openInbox()}
+  else if(h==='#garmin-connected'){setTab('profile');toast('Garmin connected');openGarmin()}
+  else if(['#garmin-cancelled','#garmin-expired','#garmin-error'].includes(h)){setTab('profile');toast(h==='#garmin-cancelled'?'Garmin wasn’t connected.':h==='#garmin-expired'?'That took too long. Try connecting again.':'Something went wrong connecting Garmin. Try again.');openGarmin()}
   else if(h==='#requests'){setTab('profile');openPrivacy()}
   else if(h==='#workout')setTab('workout');
   else if(h==='#daily'){setTab('games');openDaily()}
@@ -4983,7 +4987,7 @@ function accountHTML(){
   return `<div class="card"><span class="eyebrow">Your plan</span><h3>${esc(pl.title)}</h3>${pl.line?`<span class="muted" style="font-size:14px">${esc(pl.line)}</span>`:''}
     <div style="display:flex;gap:8px;flex-wrap:wrap">${s&&s.has_customer?'<button class="secondary" id="acManage">Manage subscription</button>':''}${lvl()<1&&!isAdmin()?'<button class="primary" id="acMember" style="min-height:46px">Become a Member</button>':''}${lvl()<2?`<button class="${lvl()<1&&!isAdmin()?'secondary':'primary'}" id="acUp" style="min-height:46px">Upgrade to Pro</button>`:''}</div>
     <div class="promo-row"><input class="input" id="acCode" placeholder="Promo or invite code" autocapitalize="characters" autocomplete="off" aria-label="Promo or invite code"><button class="secondary" id="acRedeem">Redeem</button></div></div>
-    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}${isCoachMe()?'<button id="acCoach">Coach portal</button>':'<button id="acCoach">Become a coach</button>'}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
+    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}${isCoachMe()?'<button id="acCoach">Coach portal</button>':'<button id="acCoach">Become a coach</button>'}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acGarmin">Garmin Connect</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
     <p class="g-note">Signed in as ${esc(ME.user?.email||'')}${!API.live?' · preview mode':''}</p>`;
 }
 function wireAccount(o){
@@ -4996,6 +5000,7 @@ function wireAccount(o){
   o.querySelector('#acTerms').onclick=()=>{o.close();openTerms({readOnly:true})};
   o.querySelector('#acPrivacy').onclick=()=>{o.close();openPrivacy()};
   o.querySelector('#acNotif').onclick=()=>{o.close();openNotifications()};
+  o.querySelector('#acGarmin').onclick=()=>{o.close();openGarmin()};
   o.querySelector('#acCoach').onclick=()=>{o.close();isCoachMe()?openCoachPortal():openCoachApply()};
   o.querySelector('#acInvite').onclick=()=>{o.close();openInvite()};
   paintBadges();
@@ -5184,6 +5189,39 @@ document.addEventListener('focusout',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList.contains('fin'))e.target.blur()});
 new MutationObserver(()=>{const q=document.getElementById('xQ');if(q&&!q.dataset.w){q.dataset.w='1';wireFilters($('#main'),exFilter,'x',renderExList)}}).observe($('#main'),{childList:true});
+
+/* ================= Garmin Connect ================= */
+// Connect, see status and disconnect. Garmin's agreement requires telling people what goes to Garmin,
+// linking Garmin's privacy notice and getting a clear OK before connecting.
+async function openGarmin(){
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Connected apps</span><h2>Garmin Connect</h2></div><button class="link" data-close>Done</button></div><div id="gmBox" class="stack"><p class="muted">Loading…</p></div>`);
+  const box=o.querySelector('#gmBox');
+  let st={connected:false};
+  try{st=API.garmin?await API.garmin('status'):{connected:false}}catch(e){box.innerHTML=`<p class="muted">${esc(e.message||'Couldn’t reach Garmin right now.')}</p>`;return}
+  if(!o.isConnected)return;
+  if(st.connected){
+    box.innerHTML=`<div class="card"><div style="display:flex;align-items:center;gap:10px"><span class="pz-ok" aria-hidden="true">✓</span><div><b>Connected to Garmin Connect</b><div class="muted" style="font-size:13px">Since ${new Date(st.connected_at).toLocaleDateString()}</div></div></div></div>
+      <div class="card"><b>What happens now</b><div class="lines"><span>Strength activities you record on your Garmin device are added to Brainweight.</span><span>Soon: send your plan workouts to your watch.</span></div></div>
+      <p class="g-note" style="text-align:left">Garmin data stays private to you and is never sold or used for AI. <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a></p>
+      <button class="secondary danger" id="gmOff">Disconnect Garmin</button>`;
+    confirmBtn(box.querySelector('#gmOff'),'Tap again to disconnect',async()=>{
+      try{await API.garmin('disconnect');toast('Garmin disconnected. Your Garmin data was removed.');o.close()}catch(e){toast(e.message||'Couldn’t disconnect. Try again.')}});
+    return;
+  }
+  box.innerHTML=`<p class="muted" style="margin:0">Connect your Garmin account to bring strength activities from your watch into Brainweight, and (soon) send your plan workouts to Garmin.</p>
+    <div class="card"><b>Before you connect</b><div class="lines">
+      <span>Brainweight will send the workouts you choose (exercises, sets, reps and weights) to your Garmin Connect account, and receive your strength activities from it.</span>
+      <span>Data sent to Garmin is covered by the <a href="https://www.garmin.com/privacy/connect" target="_blank" rel="noopener">Garmin Connect privacy notice</a>.</span>
+      <span>Don’t upload data to your Garmin Connect account if you aren’t allowed to.</span>
+      <span>You can disconnect any time here or in Garmin Connect.</span></div></div>
+    <label class="terms-agree"><input type="checkbox" id="gmOk"><span>I agree to send my workout data to Garmin and receive my Garmin strength activities.</span></label>
+    <button class="primary" id="gmGo" disabled>Connect Garmin</button>
+    <p class="g-note" style="text-align:left">You’ll sign in on Garmin’s own page. Brainweight never sees your Garmin password.</p>`;
+  const ok=box.querySelector('#gmOk'),go=box.querySelector('#gmGo');
+  ok.onchange=()=>{go.disabled=!ok.checked};
+  go.onclick=async()=>{go.disabled=true;go.textContent='Opening Garmin…';
+    try{const r=await API.garmin('start');location.href=r.url}catch(e){toast(e.message||'Couldn’t reach Garmin. Try again.');go.disabled=false;go.textContent='Connect Garmin'}};
+}
 
 /* ================= free tier ================= */
 // Free accounts: workout logging, up to 3 saved routines, the feed and messages, Quick math, Reaction and the Daily word.
