@@ -439,6 +439,7 @@ button.card:hover{border-color:#2D3746}
 .plan-top b{font:700 17px var(--display)}
 .plan-price{font:700 18px var(--mono);font-variant-numeric:tabular-nums}
 .plan-price small{font-size:12px;color:var(--muted);font-weight:500}
+.im-list{display:flex;flex-direction:column;margin-top:6px}.im-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}.im-row:last-child{border-bottom:0}.im-row span:first-child{font-weight:700}.im-row span:last-child{text-align:right;color:var(--mind)}.im-row span.muted{color:var(--muted)}
 .goal-bar{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .gb-track{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}.gb-track i{display:block;height:100%;background:linear-gradient(90deg,var(--mind),var(--p15));border-radius:4px}
 .sw-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -4988,7 +4989,7 @@ function accountHTML(){
   return `<div class="card"><span class="eyebrow">Your plan</span><h3>${esc(pl.title)}</h3>${pl.line?`<span class="muted" style="font-size:14px">${esc(pl.line)}</span>`:''}
     <div style="display:flex;gap:8px;flex-wrap:wrap">${s&&s.has_customer?'<button class="secondary" id="acManage">Manage subscription</button>':''}${lvl()<1&&!isAdmin()?'<button class="primary" id="acMember" style="min-height:46px">Become a Member</button>':''}${lvl()<2?`<button class="${lvl()<1&&!isAdmin()?'secondary':'primary'}" id="acUp" style="min-height:46px">Upgrade to Pro</button>`:''}</div>
     <div class="promo-row"><input class="input" id="acCode" placeholder="Promo or invite code" autocapitalize="characters" autocomplete="off" aria-label="Promo or invite code"><button class="secondary" id="acRedeem">Redeem</button></div></div>
-    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}${isCoachMe()?'<button id="acCoach">Coach portal</button>':'<button id="acCoach">Become a coach</button>'}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acGarmin">Garmin Connect</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
+    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}${isCoachMe()?'<button id="acCoach">Coach portal</button>':'<button id="acCoach">Become a coach</button>'}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acGarmin">Garmin Connect</button><button id="acImport">Import workouts</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
     <p class="g-note">Signed in as ${esc(ME.user?.email||'')}${!API.live?' · preview mode':''}</p>`;
 }
 function wireAccount(o){
@@ -5002,6 +5003,7 @@ function wireAccount(o){
   o.querySelector('#acPrivacy').onclick=()=>{o.close();openPrivacy()};
   o.querySelector('#acNotif').onclick=()=>{o.close();openNotifications()};
   o.querySelector('#acGarmin').onclick=()=>{o.close();openGarmin()};
+  o.querySelector('#acImport').onclick=()=>{o.close();openImport()};
   o.querySelector('#acCoach').onclick=()=>{o.close();isCoachMe()?openCoachPortal():openCoachApply()};
   o.querySelector('#acInvite').onclick=()=>{o.close();openInvite()};
   paintBadges();
@@ -5252,6 +5254,113 @@ async function openGarminSend(name,exercises){
   o.querySelector('#gsGo').onclick=async e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Sending…';
     try{await API.garmin('send_workout',{workout:Object.assign(garminPayload(name,exercises),{date:when})});o.close();toast('Sent to Garmin. Sync your watch to see it.')}
     catch(err){toast(err.message||'Couldn’t send to Garmin. Try again.');b.disabled=false;b.textContent='Send to Garmin'}};
+}
+
+/* ================= import workouts from other apps ================= */
+// Reads a CSV export (Lift Track, Strong or Hevy), matches exercises to the Brainweight library,
+// adds anything it can't match as your own exercise, imports history and turns each program into a routine.
+function csvParse(text){
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===','){row.push(f);f=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f=''}else f+=c}
+  if(f||row.length){row.push(f);rows.push(row)}
+  const head=(rows.shift()||[]).map(h=>h.replace(/^﻿/,'').trim().toLowerCase());
+  return rows.filter(r=>r.length>1).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]??'').trim()])));
+}
+// Normalize every format into {key,name,start,end,exName,exCode,kind,w(kg),r,t}
+function importRows(rows){
+  if(!rows.length)return{format:null,sets:[]};
+  const h=Object.keys(rows[0]);const has=k=>h.includes(k);
+  const lb=v=>v/KG_LB;
+  if(has('workout_name')&&has('exercise_display_name')){
+    return{format:'Lift Track',sets:rows.map(r=>{const st=new Date(`${r.date}T${r.time||'00:00'}`).getTime();const w=parseFloat(r.weight)||0,unit=(r.unit||'lb').toLowerCase();
+      return{key:`${r.date} ${r.time} ${r.workout_name}`,name:r.workout_name,start:st,end:st+(parseFloat(r.workout_duration_min)||0)*60000,exName:r.exercise_display_name,exCode:/^[A-Z_]+$/.test(r.exercise_name)?r.exercise_name:'',
+        order:+r.exercise_order||0,kind:/warm/i.test(r.set_type)?'w':'n',w:w>0?(unit==='kg'?w:lb(w)):null,r:+r.reps>0?+r.reps:null,t:null}})};
+  }
+  if(has('exercise name')&&has('set order')){ // Strong
+    return{format:'Strong',sets:rows.map(r=>{const st=new Date(r.date.replace(' ','T')).getTime();const w=parseFloat(r.weight)||0;const kg=has('weight unit')&&/kg/i.test(r['weight unit']);
+      return{key:`${r.date} ${r['workout name']}`,name:r['workout name']||'Workout',start:st,end:st+((parseFloat(r.duration)||0)*60000||0),exName:r['exercise name'],exCode:'',order:0,kind:/w/i.test(r['set order'])?'w':'n',w:w>0?(kg?w:lb(w)):null,r:+r.reps>0?+r.reps:null,t:+r.seconds>0?+r.seconds:null}})};
+  }
+  if(has('exercise_title')&&has('start_time')){ // Hevy
+    return{format:'Hevy',sets:rows.map(r=>{const st=new Date(r.start_time).getTime();const kg=parseFloat(r.weight_kg)||0,lbs=parseFloat(r.weight_lbs)||0;
+      return{key:`${r.start_time} ${r.title}`,name:r.title||'Workout',start:st,end:new Date(r.end_time).getTime()||st,exName:r.exercise_title,exCode:'',order:0,kind:/warm/i.test(r.set_type)?'w':'n',w:kg>0?kg:lbs>0?lb(lbs):null,r:+r.reps>0?+r.reps:null,t:+r.duration_seconds>0?+r.duration_seconds:null}})};
+  }
+  return{format:null,sets:[]};
+}
+const IMP_SYN={dumbbells:'dumbbell',db:'dumbbell',kettlebells:'kettlebell',bands:'band',banded:'band',pulldown:'pulldown','pull-down':'pulldown',pressdown:'pushdown','press-down':'pushdown',pushdown:'pushdown',curls:'curl',raises:'raise',extensions:'extension',rows:'row',lunges:'lunge',squats:'squat',flyes:'fly',flys:'fly',flye:'fly',presses:'press',deadlifts:'deadlift',dips:'dip',crunches:'crunch',tricep:'triceps',bicep:'biceps',calves:'calf',pullover:'pullover','pull-over':'pullover',isolateral:'iso','iso-lateral':'iso'};
+const IMP_EQ={barbell:'Barbell',dumbbell:'Dumbbell',cable:'Cable',machine:'Machine',band:'Band',kettlebell:'Kettlebell',smith:'Smith machine',bodyweight:'Bodyweight'};
+function impToks(s){
+  s=s.toLowerCase().replace(/press-?down/g,'pushdown').replace(/pull-down/g,'pulldown').replace(/pull-over/g,'pullover').replace(/iso-lateral/g,'iso lateral');
+  return s.replace(/[()_,']/g,' ').replace(/-/g,' ').split(/\s+/).filter(Boolean).map(w=>IMP_SYN[w]||w).map(w=>w.length>3&&w.endsWith('s')&&!w.endsWith('ss')?w.slice(0,-1):w).filter(w=>!['the','a','with','on','to','and','of','weighted'].includes(w))}
+function matchExercise(name,code){
+  if(code){const hit=Object.entries(GARMIN_EX).find(([,g])=>g[1]===code);if(hit&&EXMAP[hit[0]])return{id:hit[0],sure:true}}
+  const t=impToks(name),eqWord=t.find(w=>IMP_EQ[w]),core=t.filter(w=>!IMP_EQ[w]);if(!core.length)return null;
+  let best=null;
+  for(const e of EX){
+    const et=impToks(e.name),ecore=et.filter(w=>!IMP_EQ[w]);
+    const inter=core.filter(w=>ecore.includes(w)).length;if(!inter)continue;
+    let s=inter/new Set([...core,...ecore]).size;
+    if(eqWord&&IMP_EQ[eqWord]===e.equip)s+=0.25;else if(eqWord)s-=0.1;
+    if(!eqWord)s+=({Machine:0.03,Dumbbell:0.02,Cable:0.015,Barbell:0.01,Bodyweight:0.01}[e.equip]||0);
+    if(!best||s>best.s)best={id:e.id,s};
+  }
+  return best&&best.s>=0.6?{id:best.id,sure:best.s>=0.85}:null;
+}
+function guessMuscle(n){const s=n.toLowerCase();return /calf/.test(s)?'Calves':/curl/.test(s)&&!/leg/.test(s)?'Biceps':/tricep|skull|pushdown|press-down|dip/.test(s)?'Triceps':/chest|bench|fly|pec/.test(s)?'Chest':/\brow\b|pulldown|pull-down|pull-up/.test(s)?'Upper back':/shoulder|delt|lateral raise|front raise/.test(s)?'Shoulders':/\blat\b/.test(s)?'Lats':/squat|leg ext|lunge|leg press/.test(s)?'Quads':/leg curl|hamstring|deadlift/.test(s)?'Hamstrings':/glute|hip thrust|abduct/.test(s)?'Glutes':/adduct/.test(s)?'Adductors':/crunch|sit|plank|leg raise|twist|heel tap|v-up|flutter|ab/.test(s)?'Abs':'Full body'}
+function guessEquip(n){const t=impToks(n);const w=t.find(x=>IMP_EQ[x]);return w?IMP_EQ[w]:/press|fly|row|curl|abduct|adduct|crunch machine/i.test(n)?'Machine':'Bodyweight'}
+function openImport(){
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Bring your training</span><h2>Import workouts</h2></div><button class="link" data-close>Cancel</button></div>
+    <div id="imBox" class="stack"><p class="muted" style="margin:0">Import your history and programs from <b>Lift Track</b>, <b>Strong</b> or <b>Hevy</b>. In that app, export your data as a CSV file, then choose it here.</p>
+    <label class="primary" style="text-align:center;cursor:pointer">Choose CSV file<input type="file" id="imFile" accept=".csv,text/csv" hidden></label></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#imBox');
+  o.querySelector('#imFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+    if(f.size>20*1024*1024){toast('That file is too big. Try exporting less history.');return}
+    box.innerHTML='<p class="muted">Reading your file…</p>';
+    try{review(importRows(csvParse(await f.text())))}catch(err){box.innerHTML='<p class="muted">Couldn’t read that file. Make sure it’s the CSV export from Lift Track, Strong or Hevy.</p>'}};
+  function review(R){
+    if(!R.format||!R.sets.length){box.innerHTML='<p class="muted">That file doesn’t look like a Lift Track, Strong or Hevy export. Send it to support@brainweight.fit and we’ll add it.</p>';return}
+    // Exercises
+    const names=new Map();R.sets.forEach(s=>{const k=s.exCode+'|'+s.exName;if(!names.has(k))names.set(k,{name:s.exName,code:s.exCode,n:0});names.get(k).n++});
+    const ex=[...names.entries()].map(([k,v])=>Object.assign(v,{k,m:matchExercise(v.name,v.code)})).sort((a,b)=>b.n-a.n);
+    // Workouts
+    const W=new Map();R.sets.forEach(s=>{if(!W.has(s.key))W.set(s.key,{name:s.name,start:s.start,end:s.end,rows:[]});W.get(s.key).rows.push(s)});
+    const workouts=[...W.values()].filter(w=>w.start>0).sort((a,b)=>a.start-b.start);
+    const have=new Set(ST.workouts.map(w=>w.id));
+    const wid=w=>'imp-'+(w.start.toString(36))+'-'+slug(w.name).slice(0,24);
+    const fresh=workouts.filter(w=>!have.has(wid(w)));
+    const programs=[...new Set(workouts.map(w=>w.name))];
+    const noReps=R.sets.filter(s=>s.kind==='n'&&!s.r&&!s.t).length/Math.max(1,R.sets.filter(s=>s.kind==='n').length);
+    const fmt=t=>new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+    box.innerHTML=`<div class="card"><span class="eyebrow">${esc(R.format)} export</span><h3>${workouts.length} workouts</h3><span class="muted" style="font-size:14px">${fmt(workouts[0].start)} to ${fmt(workouts[workouts.length-1].start)}${fresh.length<workouts.length?` · ${workouts.length-fresh.length} already imported`:''}</span></div>
+      ${noReps>0.5?'<p class="muted" style="font-size:14px;margin:0">Heads up: this export has no reps for most sets, so your history comes over with weights and sets only.</p>':''}
+      <label class="terms-agree"><input type="checkbox" id="imHist" checked><span>Import ${fresh.length} workouts into my history</span></label>
+      <label class="terms-agree"><input type="checkbox" id="imProg" checked><span>Turn my ${programs.length} programs into routines: ${programs.map(esc).join(', ')}</span></label>
+      <div class="card"><span class="eyebrow">Exercises (${ex.length})</span><div class="im-list">${ex.map(x=>`<div class="im-row"><span>${esc(x.name)}</span><span class="${x.m?'':'muted'}">${x.m?'→ '+esc(EXMAP[x.m.id].name):'Added as your own exercise'}</span></div>`).join('')}</div></div>
+      <button class="primary" id="imGo">Import</button>`;
+    box.querySelector('#imGo').onclick=()=>{
+      const doHist=box.querySelector('#imHist').checked,doProg=box.querySelector('#imProg').checked;
+      // Make custom exercises for anything unmatched.
+      const idFor={};
+      ex.forEach(x=>{if(x.m){idFor[x.k]=x.m.id;return}
+        const existing=ST.custom.find(c=>c.name.toLowerCase()===x.name.toLowerCase());
+        if(existing){idFor[x.k]=existing.id;return}
+        const c={id:'c-'+newId(),name:x.name,muscle:guessMuscle(x.name),equip:guessEquip(x.name),type:'w'};
+        ST.custom.push(c);Cloud.put('custom',c);idFor[x.k]=c.id});
+      LS.set('custom',ST.custom);rebuildEx();
+      const build=rows=>{const by=new Map();rows.slice().sort((a,b)=>a.order-b.order).forEach(s=>{const id=idFor[s.exCode+'|'+s.exName];if(!by.has(id))by.set(id,[]);by.get(id).push(s)});
+        return[...by.entries()].map(([id,ss])=>({exId:id,name:EXMAP[id]?.name||'Exercise',type:EXMAP[id]?.type||'w',rest:null,note:'',sets:ss.map(s=>({kind:s.kind,w:s.w!=null?Math.round(s.w*1000)/1000:null,r:s.r,t:s.t,d:null}))}))};
+      let nW=0,nR=0;
+      if(doHist){const add=fresh.map(w=>({id:wid(w),name:w.name,start:w.start,end:Math.max(w.end,w.start+60000),exercises:build(w.rows),prs:[],imported:R.format}));
+        ST.workouts=ST.workouts.concat(add).sort((a,b)=>b.start-a.start);LS.set('workouts',ST.workouts);add.forEach(w=>Cloud.put('workouts',w));rebuildHistory();nW=add.length}
+      if(doProg){programs.forEach(name=>{const last=workouts.filter(w=>w.name===name).pop();if(!last)return;
+        const r={id:'r-imp-'+slug(name).slice(0,40),name,exercises:build(last.rows).map(e=>({exId:e.exId,rest:null,note:'',sets:e.sets.map(s=>({kind:s.kind,w:s.w,r:s.r,t:s.t}))}))};
+        putItem('routines',r);nR++})}
+      o.close();render();
+      sheet(`<span class="eyebrow">Import complete</span><h2>Welcome to Brainweight</h2><p class="muted">${nW?`${nW} workouts added to your history. `:''}${nR?`${nR} routines ready under Programs → My routines. `:''}${ex.filter(x=>!x.m).length?`${ex.filter(x=>!x.m).length} exercises were added as your own.`:''}</p><button class="primary" data-close>Done</button>`);
+    };
+  }
 }
 
 /* ================= free tier ================= */
