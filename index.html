@@ -440,6 +440,10 @@ button.card:hover{border-color:#2D3746}
 .plan-price{font:700 18px var(--mono);font-variant-numeric:tabular-nums}
 .plan-price small{font-size:12px;color:var(--muted);font-weight:500}
 .im-list{display:flex;flex-direction:column;margin-top:6px}.im-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}.im-row:last-child{border-bottom:0}.im-row span:first-child{font-weight:700}.im-row span:last-child{text-align:right;color:var(--mind)}.im-row span.muted{color:var(--muted)}
+.pr-bigs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.pr-big{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:14px;background:var(--surface-2);text-align:left}
+.pr-big b{font:700 26px var(--display)}.pr-big b small{font-size:13px;font-weight:600;color:var(--muted)}.pr-big .muted{font-size:12px}
+.prof-tabs button{font-size:13px;padding:0 4px}
 .goal-bar{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .gb-track{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}.gb-track i{display:block;height:100%;background:linear-gradient(90deg,var(--mind),var(--p15));border-radius:4px}
 .sw-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -2923,6 +2927,8 @@ function openPlanBuilder(prefill){
   const box=o.querySelector('#pbBox');
   const chips=(key,opts)=>`<div class="chips wrap" data-k="${key}">${opts.map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${String(a[key])===String(v)}">${l}</button>`).join('')}</div>`;
   const form=()=>{
+    // Fill in the best set from the PR board when there's one with reps.
+    if(a.goal==='lift'&&a.lift!=='pullup'&&!a.bestW){const L=PLAN_LIFTS[a.lift],b=L?prBestFor((PLAN_SLOTS[L.slot]||[])[0]):null;if(b&&b.r&&b.r<=12){a.bestW=dispW(b.w);a.bestR=String(b.r)}}
     box.innerHTML=`<div class="stack">
       <div class="field"><label>What’s your goal?</label>${chips('goal',[['lift','Get stronger at a lift'],['muscle','Hit a muscle hard'],['size','Build muscle'],['strength','Get stronger overall'],['lean','Get lean and fit']])}</div>
       ${a.goal==='lift'?`<div class="field"><label>Which lift?</label>${chips('lift',[['bench','Bench press'],['squat','Squat'],['deadlift','Deadlift'],['ohp','Overhead press'],['pullup','Pull-ups']])}</div>
@@ -4832,13 +4838,13 @@ let PROFILE_SUB=LS.get('profileSub','progress'),myPosts=null,myStats=null;
 function profileHTML(){
   const p=ME.profile||{username:'you',display_name:'You'},s=myStats;
   const sub=PROFILE_SUB;
-  const body=sub==='progress'?progressHTML():sub==='history'?historyHTML():sub==='exercises'?exercisesHTML():(myPosts==null?'<div class="spinner"></div>':myPosts.length?myPosts.map(postHTML).join(''):'<p class="empty">You haven’t posted yet. Share a lift from your history or an exercise page.</p>');
+  const body=sub==='progress'?progressHTML():sub==='prs'?prsHTML():sub==='history'?historyHTML():sub==='exercises'?exercisesHTML():(myPosts==null?'<div class="spinner"></div>':myPosts.length?myPosts.map(postHTML).join(''):'<p class="empty">You haven’t posted yet. Share a lift from your history or an exercise page.</p>');
   const needs=!p.avatar_url||!p.bio;
   return `${needs?`<button class="card setup-card" data-act="edit-profile"><b>${!p.avatar_url&&!p.bio?'Add a profile photo and bio':!p.avatar_url?'Add a profile photo':'Add a bio'}</b><span class="muted">Help people recognize you on the feed.</span></button>`:''}<div class="prof"><div class="prof-top"><button class="av-edit" data-act="edit-profile" aria-label="Change profile photo">${avatarHTML(p,64)}<i>+</i></button><div><h2>${nameOf(p)}</h2><span class="muted">@${esc(p.username||'')}</span> ${coachTag(p)}</div></div>
     ${p.bio?`<p style="font-size:14px">${esc(p.bio)}</p>`:''}
     <div class="prof-stats"><div><b>${s?s.posts:'–'}</b><span class="eyebrow">Posts</span></div><div><b>${s?s.followers:'–'}</b><span class="eyebrow">Followers</span></div><div><b>${s?s.following:'–'}</b><span class="eyebrow">Following</span></div></div>
     <button class="secondary" data-act="edit-profile">Edit profile</button></div>
-    <div class="seg wide" style="grid-template-columns:repeat(4,1fr)"><button data-act="prof-sub" data-sub="progress" aria-pressed="${sub==='progress'}">Progress</button><button data-act="prof-sub" data-sub="history" aria-pressed="${sub==='history'}">History</button><button data-act="prof-sub" data-sub="posts" aria-pressed="${sub==='posts'}">Posts</button><button data-act="prof-sub" data-sub="exercises" aria-pressed="${sub==='exercises'}">Exercises</button></div>
+    <div class="seg wide prof-tabs" style="grid-template-columns:repeat(5,1fr)"><button data-act="prof-sub" data-sub="progress" aria-pressed="${sub==='progress'}">Progress</button><button data-act="prof-sub" data-sub="prs" aria-pressed="${sub==='prs'}">PRs</button><button data-act="prof-sub" data-sub="history" aria-pressed="${sub==='history'}">History</button><button data-act="prof-sub" data-sub="posts" aria-pressed="${sub==='posts'}">Posts</button><button data-act="prof-sub" data-sub="exercises" aria-pressed="${sub==='exercises'}">Exercises</button></div>
     ${body}`;
 }
 async function loadMine(){
@@ -5150,6 +5156,9 @@ document.addEventListener('click',e=>{
     case'new-routine':openNewRoutineChoice();break;
     case'plan-build':openPlanBuilder();break;
     case'swap-finder':openSwapFinder();break;
+    case'pr-add':openPRAdd(b.dataset.ex||null);break;
+    case'pr-edit':openPREdit(b.dataset.ex);break;
+    case'pr-share2':sharePRFor(b.dataset.ex);break;
     case'garmin-send':{const r=ST.routines.find(x=>x.id===b.dataset.id);if(r)openGarminSend(r.name,r.exercises);break}
     case'plan-view':openPlanView();break;
     case'plan-start':planStart(+b.dataset.i);break;
@@ -5363,6 +5372,78 @@ function openImport(){
   }
 }
 
+/* ================= PR board: automatic records from workouts + records you enter ================= */
+// Manual PRs live in settings (synced across devices): {id, exId, w (kg), r, t (date ms), note}
+// Each tile shows the best of a few close variations (the first one is used when you add a PR from the tile).
+const BIG_LIFTS=[['Bench',['bench-press-barbell']],['Squat',['back-squat-barbell','box-squat','safety-bar-squat']],['Deadlift',['deadlift-barbell','deadlift-trap-bar','sumo-deadlift']],['Overhead press',['overhead-press-barbell','seated-overhead-press-barbell']]];
+const manualPRs=()=>ST.settings.prs||[];
+const prScore=x=>x.r?e1rm(x):(x.w||0); // compare with estimated max when reps are known
+function prRecords(){
+  const by={};
+  const add=(exId,rec)=>{const e=by[exId]||(by[exId]={exId,best:null,heaviest:null,entries:0});
+    if(!e.best||prScore(rec)>prScore(e.best))e.best=rec;if(!e.heaviest||(rec.w||0)>(e.heaviest.w||0))e.heaviest=rec};
+  ST.workouts.forEach(w=>w.exercises.forEach(x=>{const ex=EXMAP[x.exId];if(!ex||ex.type!=='w')return;
+    x.sets.forEach(s=>{if(s.kind==='w'||!s.w)return;add(x.exId,{w:s.w,r:s.r||null,t:w.start,src:'logged'})})}));
+  manualPRs().forEach(p=>{add(p.exId,{w:p.w,r:p.r||null,t:p.t,src:'entered',note:p.note,id:p.id});by[p.exId].entries++});
+  return Object.values(by).filter(e=>EXMAP[e.exId]).sort((a,b)=>(b.best.t||0)-(a.best.t||0));
+}
+const prLine=rec=>`${dispW(rec.w)} ${u()}${rec.r?` × ${rec.r}`:''}`;
+function prBestFor(exId){const r=prRecords().find(x=>x.exId===exId);return r?r.best:null}
+function prsHTML(){
+  const recs=prRecords(),map=Object.fromEntries(recs.map(r=>[r.exId,r]));
+  const big=BIG_LIFTS.map(([label,ids])=>{const id=ids[0],r=ids.map(x=>map[x]).filter(Boolean).sort((x,y)=>(y.heaviest.w||0)-(x.heaviest.w||0))[0];return `<button class="pr-big" data-act="pr-add" data-ex="${r?r.exId:id}"><span class="eyebrow">${label}${r&&r.exId!==id?` · ${esc(EXMAP[r.exId].name.replace(/ \(.*\)/,'').toLowerCase())}`:''}</span><b>${r?Math.round(+dispW(r.heaviest.w)):'—'}<small> ${r?u():''}</small></b><span class="muted">${r?(r.best.r?`est. max ${Math.round(+dispW(e1rm(r.best)))}`:fmtDate(r.heaviest.t)):'Add your PR'}</span></button>`}).join('');
+  const list=recs;
+  return `<div class="stack">
+    <div class="card"><div class="row" style="display:flex;justify-content:space-between;align-items:center"><span class="eyebrow">Big lifts</span><button class="link" data-act="pr-add">+ Add a PR</button></div><div class="pr-bigs">${big}</div>
+      <p class="muted" style="font-size:12px;margin:0">Records update on their own when you log a heavier set. You can also add PRs you hit somewhere else.</p></div>
+    <div class="card"><div class="row" style="display:flex;justify-content:space-between;align-items:center"><span class="eyebrow">All records (${recs.length})</span><button class="primary" data-act="pr-add" style="min-height:36px;padding:0 14px;font-size:13px">+ Add a PR</button></div>
+      ${recs.length>6?`<input class="input" id="prFilter" placeholder="Search your records" style="margin-top:8px" autocomplete="off">`:''}
+      ${list.length?`<div class="pr-list">${list.map(r=>`<div class="pr-row" data-prn="${esc(EXMAP[r.exId].name.toLowerCase())}"><div style="min-width:0"><b>${esc(EXMAP[r.exId].name)}</b><span>${prLine(r.best)}${r.best.r?` · est. max ${Math.round(+dispW(e1rm(r.best)))} ${u()}`:''} · ${fmtDate(r.best.t)} · ${r.best.src==='entered'?'entered':'logged'}${r.best.note?` · ${esc(r.best.note)}`:''}</span></div>
+        <div style="display:flex;gap:6px;flex:none">${r.entries?`<button class="chip" data-act="pr-edit" data-ex="${r.exId}">Edit</button>`:''}<button class="chip" data-act="pr-share2" data-ex="${r.exId}">Share</button></div></div>`).join('')}</div>`
+      :`<p class="muted" style="font-size:14px">${recs.length?'No records match that search.':'Log a workout or add a PR and your records show up here.'}</p>`}</div>
+  </div>`;
+}
+function openPRAdd(exId,editId){
+  const ed=editId?manualPRs().find(p=>p.id===editId):null;
+  let ex=ed?ed.exId:exId||null;
+  const today=new Date();const ds=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Personal record</span><h2>${ed?'Edit PR':'Add a PR'}</h2></div><button class="link" data-close>Cancel</button></div>
+    <div class="field"><label>Exercise</label><button class="input sw-pick" id="paEx">${ex&&EXMAP[ex]?esc(EXMAP[ex].name):'Choose an exercise'}</button></div>
+    <div class="pb-best"><input class="input" id="paW" inputmode="decimal" placeholder="Weight" value="${ed?dispW(ed.w):''}"><span>${u()} ×</span><input class="input" id="paR" inputmode="numeric" placeholder="Reps" value="${ed?ed.r||'':'1'}"></div>
+    <div class="field"><label>Date</label><input class="input" type="date" id="paD" value="${ds(ed?new Date(ed.t):today)}" max="${ds(today)}"></div>
+    <div class="field"><label>Note (optional)</label><input class="input" id="paN" maxlength="60" placeholder="e.g. Meet, belt, paused" value="${ed?esc(ed.note||''):''}"></div>
+    <button class="primary" id="paSave">${ed?'Save changes':'Save PR'}</button>${ed?'<button class="secondary danger" id="paDel">Delete this PR</button>':''}`);
+  o.querySelector('#paEx').onclick=()=>openPicker({single:true,title:'Which lift?',onDone:([id])=>{ex=id;o.querySelector('#paEx').textContent=EXMAP[id].name}});
+  o.querySelector('#paSave').onclick=()=>{
+    const w=parseFloat(o.querySelector('#paW').value),r=parseInt(o.querySelector('#paR').value,10);
+    if(!ex){pulse(o.querySelector('#paEx'),'shake');return}
+    if(!(w>0)){pulse(o.querySelector('#paW'),'shake');return}
+    const reps=r>0&&r<=50?r:1,t=new Date(o.querySelector('#paD').value+'T12:00').getTime()||Date.now();
+    const prev=prBestFor(ex);
+    const rec={id:ed?ed.id:'pr-'+newId(),exId:ex,w:inW(w),r:reps,t,note:o.querySelector('#paN').value.trim().slice(0,60)};
+    ST.settings.prs=manualPRs().filter(p=>p.id!==rec.id).concat([rec]);saveSettings();
+    o.close();softRender();
+    const beat=!ed&&(!prev||prScore(rec)>prScore(prev));
+    if(beat&&prev){toast('New PR 🎉');openPRShare([{ex:EXMAP[ex].name,label:reps>1?'Estimated 1-rep max':'Heaviest weight',value:reps>1?`${Math.round(+dispW(e1rm(rec)))} ${u()}`:`${dispW(rec.w)} ${u()}`}])}
+    else toast(ed?'PR updated':'PR saved');
+  };
+  const del=o.querySelector('#paDel');
+  if(del)confirmBtn(del,'Tap again to delete',()=>{ST.settings.prs=manualPRs().filter(p=>p.id!==ed.id);saveSettings();o.close();softRender();toast('PR deleted')});
+}
+function openPREdit(exId){
+  const mine=manualPRs().filter(p=>p.exId===exId).sort((a,b)=>b.t-a.t);
+  if(mine.length===1){openPRAdd(null,mine[0].id);return}
+  const o=sheet(`<div class="sheet-h"><h2>${esc(EXMAP[exId].name)}</h2><button class="link" data-close>Done</button></div>
+    <p class="muted" style="margin:0">PRs you entered. Tap one to edit or delete it.</p>
+    <div class="menu">${mine.map(p=>`<button data-pid="${p.id}">${prLine(p)} · ${fmtDate(p.t)}${p.note?` · ${esc(p.note)}`:''}</button>`).join('')}</div>
+    <button class="secondary" id="peAdd">+ Add another</button>`);
+  o.querySelectorAll('[data-pid]').forEach(b=>b.onclick=()=>{o.close();openPRAdd(null,b.dataset.pid)});
+  o.querySelector('#peAdd').onclick=()=>{o.close();openPRAdd(exId)};
+}
+function sharePRFor(exId){const r=prRecords().find(x=>x.exId===exId);if(!r)return;const b=r.best;
+  openPRShare([{ex:EXMAP[exId].name,label:b.r>1?'Estimated 1-rep max':'Heaviest weight',value:b.r>1?`${Math.round(+dispW(e1rm(b)))} ${u()}`:`${dispW(b.w)} ${u()}`}])}
+
+document.addEventListener('input',e=>{if(e.target.id!=='prFilter')return;const q=e.target.value.trim().toLowerCase();document.querySelectorAll('[data-prn]').forEach(r=>r.hidden=!!q&&!r.dataset.prn.includes(q))});
 /* ================= free tier ================= */
 // Free accounts: workout logging, up to 3 saved routines, the feed and messages, Quick math, Reaction and the Daily word.
 // Member unlocks every game, unlimited routines, the plan builder, programs, progress charts and leaderboards.
