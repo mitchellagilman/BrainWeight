@@ -444,6 +444,14 @@ button.card:hover{border-color:#2D3746}
 .pr-big{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:14px;background:var(--surface-2);text-align:left}
 .pr-big b{font:700 26px var(--display)}.pr-big b small{font-size:13px;font-weight:600;color:var(--muted)}.pr-big .muted{font-size:12px}
 .prof-tabs button{font-size:13px;padding:0 4px}
+.sched-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0}
+.sched-day{display:flex;flex-direction:column;gap:3px;padding:7px 4px;border-radius:10px;background:var(--surface-2);min-width:0;text-align:center}
+.sched-day span{font:700 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sched-day b{font-size:10.5px;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
+.sched-day.rest b{color:var(--muted);font-weight:600}
+.sched-day.now{background:var(--mind-dim);outline:1px solid var(--mind)}.sched-day.now span{color:var(--mind)}
+.sched-cta{display:flex;flex-direction:column;gap:4px;text-align:left}
+.sched-row{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:10px}.sched-row span{font-weight:700;font-size:14px}
 .goal-bar{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .gb-track{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}.gb-track i{display:block;height:100%;background:linear-gradient(90deg,var(--mind),var(--p15));border-radius:4px}
 .sw-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -1301,6 +1309,7 @@ function startHTML(){
     <div class="hero-stats"><div><b>${wk.length}</b><span class="eyebrow">This week</span></div><div><b>${fmtVol(wk.reduce((a,w)=>a+volOf(w),0))}</b><span class="eyebrow">Volume</span></div><div><b>${ST.workouts.length}</b><span class="eyebrow">All time</span></div></div>
     <button class="primary" data-act="start-empty">Start a workout</button></section>
   ${planCardHTML()}
+  ${scheduleCardHTML()}
   <div class="quick-row"><button class="secondary" data-act="swap-finder">🔁 Find a swap</button><button class="secondary" data-act="tools" data-tool="plates">🧮 Calculators</button><button class="secondary" data-act="invite">🎁 Invite</button></div>
   <div class="stack"><div class="section-h"><h2>My routines</h2><button class="link" data-act="new-routine">+ New routine</button></div>
   ${mine.length?mine.map(routineCard).join(''):`<button class="card" data-act="new-routine" style="text-align:left"><h3>Build your own workout</h3><span class="muted" style="font-size:14px">Pick exercises and set your target sets, weight and reps. You can also customize a template below or save any finished workout.</span></button>`}</div>
@@ -2031,7 +2040,7 @@ const DemoAPI=(()=>{
     async signUp(email,password,name,username){if(password.length<8)throw new Error('Password should be at least 8 characters');D.signedIn=true;D.me.display_name=name||'You';if(username)D.me.username=username;save();return {session:{user:{id:'me',email}}}},
     async acceptTerms(v){D.me.terms_version=v;save()},
     async logScore(){},
-    async garmin(action){if(action==='start'){D.garmin={connected:true,connected_at:new Date().toISOString()};save();toast('Preview: Garmin connected (no real sign-in).');return{url:'#garmin-connected'}}if(action==='disconnect'){D.garmin=null;save();return{connected:false}}if(action==='send_workout'){D.garminSent=(D.garminSent||0)+1;save();return wait({workoutId:1,scheduled:true})}return wait(D.garmin||{connected:false})},
+    async garmin(action,extra){if(action==='send_schedule'){const n=(extra.items||[]).reduce((a,i)=>a+i.dates.length,0);return wait({workouts:(extra.items||[]).length,scheduled:n,failed:0})}if(action==='start'){D.garmin={connected:true,connected_at:new Date().toISOString()};save();toast('Preview: Garmin connected (no real sign-in).');return{url:'#garmin-connected'}}if(action==='disconnect'){D.garmin=null;save();return{connected:false}}if(action==='send_workout'){D.garminSent=(D.garminSent||0)+1;save();return wait({workoutId:1,scheduled:true})}return wait(D.garmin||{connected:false})},
     async dailySubmit(puzzle,guesses,pattern){D.daily={puzzle,guesses,pattern};save()},
     async puzzleSubmit(game,puzzle,solved,score,detail){D.pz=D.pz||{};D.pz[game]={puzzle,solved,score,detail};save()},
     async puzzleBoard(game,puzzle){const m=D.pz&&D.pz[game]&&D.pz[game].puzzle===puzzle?[Object.assign({},D.me,{user_id:'me',solved:D.pz[game].solved,score:D.pz[game].score,is_me:true})]:[];
@@ -2310,6 +2319,8 @@ async function enterApp(){
   if(ST.active){restFired=!ST.active.restEnd;wake()}
   if(!LS.get('welcomed',false))showWelcome();else maybeOnboard();
   refreshPushFlag();setTimeout(()=>routeHash(),300);setTimeout(maybePushPrompt,1500);
+  // Remember whether Garmin is connected so routines can show Send to Garmin.
+  if(API.live&&API.garmin)API.garmin('status').then(st=>{const on=!!(st&&st.connected);if(on!==LS.get('garminOn',false)){LS.set('garminOn',on);softRender()}}).catch(()=>{});
 }
 async function signOut(){
   try{await API.signOut()}catch(e){}
@@ -5156,6 +5167,7 @@ document.addEventListener('click',e=>{
     case'new-routine':openNewRoutineChoice();break;
     case'plan-build':openPlanBuilder();break;
     case'swap-finder':openSwapFinder();break;
+    case'schedule':openSchedule();break;
     case'pr-add':openPRAdd(b.dataset.ex||null);break;
     case'pr-edit':openPREdit(b.dataset.ex);break;
     case'pr-share2':sharePRFor(b.dataset.ex);break;
@@ -5211,7 +5223,7 @@ async function openGarmin(){
   const box=o.querySelector('#gmBox');
   let st={connected:false};
   try{st=API.garmin?await API.garmin('status'):{connected:false}}catch(e){box.innerHTML=`<p class="muted">${esc(e.message||'Couldn’t reach Garmin right now.')}</p>`;return}
-  LS.set('garminOn',!!st.connected);
+  if(!!st.connected!==LS.get('garminOn',false)){LS.set('garminOn',!!st.connected);try{softRender()}catch(e){}}
   if(!o.isConnected)return;
   if(st.connected){
     box.innerHTML=`<div class="card"><div style="display:flex;align-items:center;gap:10px"><span class="pz-ok" aria-hidden="true">✓</span><div><b>Connected to Garmin Connect</b><div class="muted" style="font-size:13px">Since ${new Date(st.connected_at).toLocaleDateString()}</div></div></div></div>
@@ -5444,6 +5456,54 @@ function sharePRFor(exId){const r=prRecords().find(x=>x.exId===exId);if(!r)retur
   openPRShare([{ex:EXMAP[exId].name,label:b.r>1?'Estimated 1-rep max':'Heaviest weight',value:b.r>1?`${Math.round(+dispW(e1rm(b)))} ${u()}`:`${dispW(b.w)} ${u()}`}])}
 
 document.addEventListener('input',e=>{if(e.target.id!=='prFilter')return;const q=e.target.value.trim().toLowerCase();document.querySelectorAll('[data-prn]').forEach(r=>r.hidden=!!q&&!r.dataset.prn.includes(q))});
+/* ================= weekly schedule ================= */
+// Assign a routine to each weekday. The Workout tab shows today's workout, and the whole schedule
+// can be sent to Garmin for the next several weeks in one go.
+const WEEK_ORDER=[1,2,3,4,5,6,0],DOW_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],DOW_LONG=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const mySchedule=()=>ST.settings.schedule||{days:{}};
+const schedRoutine=dow=>{const id=mySchedule().days[dow];return id?ST.routines.find(r=>r.id===id)||null:null};
+const hasSchedule=()=>WEEK_ORDER.some(d=>schedRoutine(d));
+function scheduleCardHTML(){
+  if(!hasSchedule())return `<button class="card sched-cta" data-act="schedule"><span class="eyebrow">New</span><b>Set your weekly schedule</b><span class="muted" style="font-size:14px">Pick a routine for each day, like Push on Monday and Legs on Wednesday, and send it all to your Garmin.</span></button>`;
+  const today=new Date().getDay(),r=schedRoutine(today),sent=mySchedule().garminUntil;
+  return `<div class="card sched-card"><div class="row" style="display:flex;justify-content:space-between;align-items:center"><span class="eyebrow">This week</span><button class="link" data-act="schedule">Edit</button></div>
+    <div class="sched-week">${WEEK_ORDER.map(d=>{const x=schedRoutine(d);return `<div class="sched-day${d===today?' now':''}${x?'':' rest'}"><span>${DOW_SHORT[d]}</span><b>${x?esc(x.name):'Rest'}</b></div>`}).join('')}</div>
+    ${r?`<button class="primary" data-act="start-routine" data-id="${r.id}">Start today: ${esc(r.name)}</button>`:'<p class="muted" style="font-size:14px;margin:0">Rest day today. Recover well.</p>'}
+    ${sent?`<span class="muted" style="font-size:12px">On your Garmin calendar through ${new Date(sent+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>`:''}</div>`;
+}
+function scheduleDates(dow,weeks){const out=[];const d=new Date();d.setHours(12,0,0,0);for(let i=0;i<weeks*7;i++){const x=new Date(d.getTime()+i*864e5);if(x.getDay()===dow)out.push(localDate(x))}return out}
+function openSchedule(){
+  const S=clone(mySchedule());S.days=S.days||{};
+  const mine=ST.routines.filter(r=>!r.template);
+  let weeks=S.weeks||8;
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Weekly schedule</span><h2>Plan your week</h2></div><button class="link" data-close>Cancel</button></div>
+    ${mine.length?'':'<p class="muted">Save a routine first (Workout → + New routine), then add it to your schedule.</p>'}
+    <div class="stack" style="gap:8px">${WEEK_ORDER.map(d=>`<label class="sched-row"><span>${DOW_LONG[d]}</span><select class="input" data-dow="${d}"><option value="">Rest</option>${mine.map(r=>`<option value="${r.id}" ${S.days[d]===r.id?'selected':''}>${esc(r.name)}</option>`).join('')}</select></label>`).join('')}</div>
+    <button class="primary" id="scSave">Save schedule</button>
+    <div class="card"><span class="eyebrow">⌚ Garmin</span><b>Send this schedule to Garmin</b>
+      <p class="muted" style="font-size:13px;margin:0">Each workout goes on your Garmin Connect calendar on its day, starting today, and syncs to your watch. Sending again replaces what Brainweight sent before.</p>
+      <div class="chips" id="scWeeks">${[4,8,12].map(n=>`<button class="chip" data-w="${n}" aria-pressed="${n===weeks}">${n} weeks</button>`).join('')}</div>
+      <button class="secondary" id="scGarmin">Save and send to Garmin</button></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const read=()=>{o.querySelectorAll('[data-dow]').forEach(s=>{if(s.value)S.days[s.dataset.dow]=s.value;else delete S.days[s.dataset.dow]})};
+  const save=()=>{read();S.weeks=weeks;ST.settings.schedule=S;saveSettings();softRender()};
+  o.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{weeks=+b.dataset.w;o.querySelectorAll('[data-w]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+  o.querySelector('#scSave').onclick=()=>{save();o.close();toast('Schedule saved')};
+  o.querySelector('#scGarmin').onclick=async e=>{
+    const b=e.currentTarget;save();if(!hasSchedule()){toast('Pick a routine for at least one day');return}
+    let st={connected:LS.get('garminOn',false)};try{st=await API.garmin('status');LS.set('garminOn',!!st.connected)}catch(err){}
+    if(!st.connected){o.close();toast('Connect Garmin first');openGarmin();return}
+    b.disabled=true;b.textContent='Sending to Garmin…';
+    const groups={};WEEK_ORDER.forEach(d=>{const r=schedRoutine(d);if(r)(groups[r.id]=groups[r.id]||{r,dates:[]}).dates.push(...scheduleDates(d,weeks))});
+    const items=Object.values(groups).map(g=>({workout:garminPayload(g.r.name,g.r.exercises),dates:g.dates}));
+    try{
+      const res=await API.garmin('send_schedule',{items,replace:true});
+      const last=items.flatMap(i=>i.dates).sort().pop();ST.settings.schedule.garminUntil=last;saveSettings();softRender();o.close();
+      toast(res.failed?`Sent ${res.scheduled} workouts. ${res.failed} didn’t go through, try again.`:`Sent ${res.scheduled} workouts to your Garmin calendar. Sync your watch.`);
+    }catch(err){toast(err.message||'Couldn’t send to Garmin. Try again.');b.disabled=false;b.textContent='Save and send to Garmin'}
+  };
+}
+
 /* ================= free tier ================= */
 // Free accounts: workout logging, up to 3 saved routines, the feed and messages, Quick math, Reaction and the Daily word.
 // Member unlocks every game, unlimited routines, the plan builder, programs, progress charts and leaderboards.
