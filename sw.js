@@ -1,7 +1,7 @@
 // Brainweight offline support.
 // App files: network first (so updates show right away), cached copy when offline.
 // Google Fonts: cache first.
-const VERSION = 'bw-v22';
+const VERSION = 'bw-v23';
 const SHELL = [
   './',
   'index.html',
