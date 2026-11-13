@@ -2717,10 +2717,12 @@ const PLAN_MUSCLES={
 const PLAN_GOALS={lift:'Get stronger at a lift',muscle:'Hit a muscle hard',size:'Build muscle',strength:'Get stronger overall',lean:'Get lean and fit'};
 
 function planPick(slot,equip,avoid,barOK){
-  const allowed=PLAN_EQUIP[equip],lim=PLAN_LIM;
-  // With a limitation, try the gentler swaps first, then the normal list, and never anything on the skip list.
-  const base=lim&&lim.swap[slot]?lim.swap[slot].concat(PLAN_SLOTS[slot]||[]):(PLAN_SLOTS[slot]||[]);
-  const list=base.filter(id=>EXMAP[id]&&!(lim&&lim.avoid.has(id))&&(!allowed||allowed.includes(EXMAP[id].equip))&&(equip==='gym'||barOK||!NEEDS_BAR.includes(id)));
+  const allowed=PLAN_EQUIP[equip],lim=PLAN_LIM,sp=PLAN_SPORT;
+  // With a limitation, try the gentler swaps first, then any sport preference, then the normal list,
+  // and never anything on a skip list.
+  const pre=[...((lim&&lim.swap[slot])||[]),...((sp&&sp.swap[slot])||[])];
+  const base=pre.concat(PLAN_SLOTS[slot]||[]);
+  const list=base.filter(id=>EXMAP[id]&&!(lim&&lim.avoid.has(id))&&!(sp&&sp.avoid.has(id))&&(!allowed||allowed.includes(EXMAP[id].equip))&&(equip==='gym'||barOK||!NEEDS_BAR.includes(id)));
   return list.find(id=>!avoid.has(id))||null;
 }
 // Round a weight (in the person's units) to a plate-friendly number, then store it in kg.
@@ -2755,11 +2757,11 @@ function buildSets(exId,sets,reps,opts={}){
   return out;
 }
 function generatePlan(a){
-  PLAN_LIM=planLimits(a);
-  try{return generatePlanInner(a)}finally{PLAN_LIM=null}
+  PLAN_LIM=planLimits(a);PLAN_SPORT=planSport(a,PLAN_LIM);
+  try{return generatePlanInner(a)}finally{PLAN_LIM=null;PLAN_SPORT=null}
 }
 function generatePlanInner(a){
-  const lim=PLAN_LIM;
+  const lim=PLAN_LIM,sp=PLAN_SPORT;
   const equip=a.equip||'gym',exp=a.exp||'mid',days=Math.min(6,Math.max(2,+a.days||3));
   const per={30:4,45:5,60:6,75:7}[a.time]||5;
   const goalKey=a.goal==='lift'?'lift':a.goal==='muscle'?'muscle':a.goal;
@@ -2840,7 +2842,9 @@ function generatePlanInner(a){
     const cap=per+((d.heavy||d.volume||d.focus)?1:0)+(a.goal==='lean'?1:0);
     const ordered=d.slots.slice();
     if(a.goal==='lean'){const f=ordered.indexOf('finisher');if(f>=0){ordered.splice(f,1)}}
-    const capMain=lim.add.length?Math.max(4,cap-1):cap; // leave room for strengthening work
+    let capMain=lim.add.length?Math.max(4,cap-1):cap; // leave room for strengthening work
+    const spAdd=sp?(per>=5?Math.min(2,per-4):0):0; // sport work: one explosive move every day, plus 1-2 sport exercises on longer days
+    if(sp)capMain=Math.max(3,capMain-1-spAdd);
     for(const s of ordered){
       if(ex.length>=capMain-(a.goal==='lean'?1:0))break;
       let id=planPick(s,equip,avoid,barOK);
@@ -2850,7 +2854,14 @@ function generatePlanInner(a){
       avoid.add(id);ex.push({slot:s,id});
     }
     // Home plans can run short on some days; top up with core and leg work so every day is a real workout.
-    for(const s of ['backExt','glute2','core2','obliques','abs','singleLeg','calf']){if(ex.length>=Math.min(4,cap-(a.goal==='lean'?1:0)))break;const id=planPick(s,equip,avoid,barOK);if(id){avoid.add(id);ex.push({slot:s,id})}}
+    for(const s of ['backExt','glute2','core2','obliques','abs','singleLeg','calf']){if(ex.length>=Math.min(4,capMain-(a.goal==='lean'?1:0)))break;const id=planPick(s,equip,avoid,barOK);if(id){avoid.add(id);ex.push({slot:s,id})}}
+    // Sport: an explosive move goes first while you're fresh, sport-specific work goes after the main lifts.
+    if(sp){
+      const allowed=PLAN_EQUIP[equip];
+      const pick=list=>(list||[]).find(id=>{const e=EXMAP[id];return e&&!avoid.has(id)&&!lim.avoid.has(id)&&!sp.avoid.has(id)&&(!allowed||allowed.includes(e.equip))&&(equip==='gym'||!NEEDS_BAR.includes(id))});
+      const pw=pick(sp.power[di%sp.power.length])||pick(sp.power.flat());if(pw){avoid.add(pw);ex.unshift({slot:'power',id:pw})}
+      for(let k=0,got=0;k<sp.add.length&&got<spAdd;k++){const id=pick(sp.add[(di*spAdd+k)%sp.add.length]);if(id){avoid.add(id);ex.push({slot:'sport',id});got++}}
+    }
     // Strengthening work for each limitation, rotated across days (up to 2 per day).
     if(lim.add.length){let added=0;for(let k=0;k<lim.add.length&&added<2;k++){const it=lim.add[(di*2+k)%lim.add.length];const e=EXMAP[it.id];
       if(!e||avoid.has(it.id)||lim.avoid.has(it.id))continue;const allowed=PLAN_EQUIP[equip];if(allowed&&!allowed.includes(e.equip))continue;avoid.add(it.id);ex.push({slot:'prehab',id:it.id,k:it.k});added++}}
@@ -2874,12 +2885,19 @@ function generatePlanInner(a){
       if(EXMAP[id]&&EXMAP[id].equip==='Bodyweight'&&EXMAP[id].type!=='t'&&reps<10&&!HARD_BW.includes(id)&&!(L&&slot===L.slot))reps=Math.max(reps,id==='push-up'||id==='bodyweight-squat'?12:10);
       if(slot==='finisher'){sets=3;reps=equip==='bw'?10:15;rest=45;note='Finisher. Go hard, short rest.'}
       if(slot==='prehab'){sets=2;reps=12;rest=45;opts.secs=30;note=`Strengthens your ${PLAN_LIMITS[limKey].name.toLowerCase()}. Slow and controlled.`}
+      if(slot==='power'){const e=EXMAP[id];sets=exp==='new'?2:3;rest=90;
+        if(e&&e.type==='t'){opts.secs=30;note='Anti-rotation. Brace hard and don’t let your body twist.'}
+        else{reps=/clean|snatch/.test(id)?3:/jump|bound/.test(id)?4:/chop|rotation/.test(id)?6:5;note=/chop|rotation/.test(id)?'Explosive. Do every rep on each side, fast and powerful.':'Explosive. Move fast, and stop the set before you slow down.'}}
+      if(slot==='sport'){const e=EXMAP[id];sets=exp==='new'?2:3;rest=60;reps=/neck|wrist|calf|tibialis|rotation-band|rotation-cable|rotation-dumbbell|y-raise|pull-apart|face-pull/.test(id)?15:/nordic/.test(id)?5:10;
+        if(e&&e.type==='t')opts.secs=/copenhagen/.test(id)?20:30;note=`For ${sp.name.toLowerCase()}.${/nordic/.test(id)?' Lower yourself as slowly as you can, and use your hands to catch yourself.':/neck/.test(id)?' Start very light and go slow.':''}`}
+      if(sp&&sp.inSeason&&slot!=='prehab'&&slot!=='power')sets=Math.max(2,sets-1);
       if(lim.keys.length&&kind==='m'&&reps<6&&!(EXMAP[id]&&EXMAP[id].equip==='Bodyweight'))reps=6;
       return {exId:id,rest,note,sets:buildSets(id,sets,reps,opts)};
     });
     return {name:`Day ${di+1} · ${d.name}`,exercises};
   });
   const goalName=a.goal==='lift'?`Get stronger at ${(PLAN_LIFTS[a.lift]||PLAN_LIFTS.bench).name.toLowerCase()}`:a.goal==='muscle'?`Build your ${(PLAN_MUSCLES[a.muscle]||PLAN_MUSCLES.chest).name.toLowerCase()}`:PLAN_GOALS[a.goal];
+  if(sp){notes.push(sp.note);if(sp.inSeason)notes.push('In season: we cut a set from most exercises so you stay fresh for games. Two or three days a week is plenty. Skip lifting the day before a game.')}
   lim.keys.forEach(k=>notes.push(PLAN_LIMITS[k].note));
   if(lim.keys.length)notes.push('If something hurts (not just burns), stop and use Find a swap. Pain that sticks around is worth a visit to a physical therapist.');
   notes.push('Warm up for 5 minutes before you start. If a set hurts (not just burns), stop and swap the exercise.');
@@ -2900,11 +2918,11 @@ function generatePlanInner(a){
     }
   }
   if(equip!=='gym')notes.push(equip==='db'?'Built for dumbbells and a bench. Swap in anything else you have.':'Built for no equipment. For inverted rows, use a sturdy table or a low bar. A pull-up bar or bands open up more options.');
-  return {id:'plan-'+newId(),title,goal:goalName,answers:a,created:Date.now(),weeks:4,days:out,weekly,notes,minutes:+a.time||45,e1rm:liftInfo&&liftInfo.e1rm?liftInfo.e1rm:null,target,limits:lim.keys};
+  return {id:'plan-'+newId(),title,goal:goalName,answers:a,created:Date.now(),weeks:4,days:out,weekly,notes,minutes:+a.time||45,e1rm:liftInfo&&liftInfo.e1rm?liftInfo.e1rm:null,target,limits:lim.keys,sport:sp?{key:sp.key,name:sp.name,inSeason:sp.inSeason}:null};
 }
 
 /* ---------- plan UI ---------- */
-const PLAN_DEF={goal:'lift',lift:'bench',muscle:'chest',exp:'mid',days:4,time:60,equip:'gym',bestW:'',bestR:'',target:'',targetBy:0,limits:[]};
+const PLAN_DEF={goal:'lift',lift:'bench',muscle:'chest',exp:'mid',days:4,time:60,equip:'gym',bestW:'',bestR:'',target:'',targetBy:0,limits:[],sport:'none',season:'off'};
 const myPlan=()=>ST.settings.plan||null;
 function planNextIndex(p){
   if(!p)return 0;const names=p.days.map(d=>`${p.title} · ${d.name}`);
@@ -2954,6 +2972,9 @@ function openPlanBuilder(prefill){
       <div class="field"><label>Days per week</label>${chips('days',[[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div>
       <div class="field"><label>Time per workout</label>${chips('time',[[30,'30 min'],[45,'45 min'],[60,'60 min'],[75,'75+ min']])}</div>
       <div class="field"><label>Equipment</label>${chips('equip',[['gym','Full gym'],['db','Dumbbells'],['bw','No equipment']])}</div>
+      <div class="field"><label>Training for a sport? (optional)</label>${chips('sport',[['none','No sport'],...SPORT_ORDER.map(k=>[k,PLAN_SPORTS[k].name])])}
+        <p class="g-note" style="text-align:left;margin:4px 0 0">We’ll add explosive work and exercises built for your sport.</p></div>
+      ${PLAN_SPORTS[a.sport]?`<div class="field"><label>Season</label>${chips('season',[['off','Off-season'],['in','In season']])}</div>`:''}
       <div class="field"><label>Any limitations or sore spots? (optional)</label>
         <div class="chips wrap" data-multi="limits">${LIMIT_ORDER.map(k=>`<button class="chip" data-v="${k}" aria-pressed="${(a.limits||[]).includes(k)}">${PLAN_LIMITS[k].name}</button>`).join('')}</div>
         <p class="g-note" style="text-align:left;margin:4px 0 0">We’ll skip moves that tend to irritate these areas and add exercises that strengthen them.</p></div>
@@ -2967,7 +2988,7 @@ function openPlanBuilder(prefill){
     const had=myPlan();
     box.innerHTML=`<div class="stack">
       <section class="hero plan-hero"><span class="eyebrow">${esc(p.goal)}</span><h2>${esc(p.title)}</h2>
-        <div class="prog-meta"><span class="badge teal">4 weeks</span><span class="badge">${p.days.length} days a week</span><span class="badge">~${p.minutes} min</span>${(p.limits||[]).map(k=>`<span class="badge">Easy on ${esc(PLAN_LIMITS[k].name.toLowerCase())}</span>`).join('')}</div>${p.target?goalCardHTML(p):''}</section>
+        <div class="prog-meta"><span class="badge teal">4 weeks</span><span class="badge">${p.days.length} days a week</span><span class="badge">~${p.minutes} min</span>${p.sport?`<span class="badge teal">For ${esc(p.sport.name.toLowerCase())}${p.sport.inSeason?' · in season':''}</span>`:''}${(p.limits||[]).map(k=>`<span class="badge">Easy on ${esc(PLAN_LIMITS[k].name.toLowerCase())}</span>`).join('')}</div>${p.target?goalCardHTML(p):''}</section>
       ${p.notes.map(n=>`<p class="muted" style="font-size:14px;margin:0">${esc(n)}</p>`).join('')}
       <div class="card"><h3>How the 4 weeks go</h3><ol class="plan-weeks">${p.weekly.map(w=>`<li>${esc(w)}</li>`).join('')}</ol></div>
       ${p.days.map(planDayHTML).join('')}
@@ -3080,6 +3101,56 @@ function planLimits(a){
   const keys=(a.limits||[]).filter(k=>PLAN_LIMITS[k]),avoid=new Set(),swap={},add=[];
   keys.forEach(k=>{const L=PLAN_LIMITS[k];L.avoid.forEach(x=>avoid.add(x));Object.entries(L.swap).forEach(([s,l])=>{swap[s]=(swap[s]||[]).concat(l)});L.add.forEach(id=>add.push({id,k}))});
   return{keys,avoid,swap,add};
+}
+
+/* ---------- training for a sport ---------- */
+// Each sport adds one explosive move at the start of every day, rotates in sport-specific work, prefers
+// some lifts over others, and skips a few that tend to cause trouble for that sport. Lists are fallbacks
+// in order, so home plans still get something that fits. Ids that aren't in the library are ignored.
+const SP_JUMP=['box-jump','broad-jump','jump-squat-bodyweight'],SP_CLEAN=['hang-power-clean','hang-clean-dumbbell','jump-squat-dumbbell','broad-jump'],
+  SP_ROT=['woodchop-medicine-ball','landmine-rotation','woodchop-cable','woodchop-dumbbell','broad-jump'],SP_SLAM=['ball-slam','jump-squat-dumbbell','jump-squat-bodyweight'],
+  SP_CUFF=['external-rotation-band','external-rotation-cable','external-rotation-dumbbell'],SP_UPBACK=['y-raise-dumbbell','y-raise-cable','band-pull-apart','face-pull-cable','rear-delt-fly-dumbbell'],
+  SP_ANTI=['pallof-press-cable','pallof-press-band','side-plank'],SP_SLRDL=['single-leg-romanian-deadlift-dumbbell','single-leg-romanian-deadlift-bodyweight'],
+  SP_GROIN=['copenhagen-plank','hip-adduction-cable','hip-adduction-machine','side-plank'],SP_ABD=['hip-abduction-band','lateral-band-walk','hip-abduction-machine','clamshell-bodyweight'],
+  SP_CALF=['single-leg-calf-raise-dumbbell','single-leg-calf-raise-bodyweight'],SP_SHIN=['tibialis-raise-bodyweight','tibialis-raise-machine'],
+  SP_LAT=['lateral-lunge-dumbbell','lateral-lunge-kettlebell','lateral-lunge-bodyweight'],SP_HAM=['nordic-hamstring-curl','slider-leg-curl','single-leg-romanian-deadlift-dumbbell'],
+  SP_NECK=['neck-curl-plate','neck-curl-machine','neck-extension-plate','shrug-dumbbell'],SP_GRIP=['wrist-roller','wrist-curl-dumbbell','reverse-wrist-curl-dumbbell'],
+  SP_FORE=['wrist-curl-dumbbell','reverse-wrist-curl-dumbbell','wrist-roller'],SP_OVERHEAD_AVOID=['behind-the-neck-press-barbell','behind-the-neck-press-smith-machine','upright-row-barbell'];
+const PLAN_SPORTS={
+  football:{name:'Football',power:[SP_CLEAN,SP_JUMP],add:[SP_NECK,SP_HAM,SP_LAT,SP_GRIP],swap:{hinge:['deadlift-trap-bar']},avoid:[],
+    note:'Football: explosive cleans and jumps come first while you’re fresh, heavy pulls use a trap bar, and we added neck, hamstring and grip work that holds up to contact.'},
+  basketball:{name:'Basketball',power:[SP_JUMP,['depth-jump','box-jump','jump-squat-bodyweight']],add:[SP_LAT,SP_CALF,SP_SHIN,SP_GROIN,SP_SLRDL],swap:{singleLeg:['bulgarian-split-squat-dumbbell','split-squat-dumbbell']},avoid:[],
+    note:'Basketball: jumps come first, with plenty of single-leg and side-to-side strength, plus calf, shin and groin work that protects your knees and ankles on hard landings.'},
+  baseball:{name:'Baseball or softball',power:[SP_ROT,SP_SLAM],add:[SP_CUFF,SP_UPBACK,SP_ANTI,SP_FORE],swap:{ohp:['landmine-press','half-kneeling-landmine-press','seated-overhead-press-dumbbell'],ohpVariant:['half-kneeling-landmine-press','lateral-raise-dumbbell'],benchMain:['bench-press-dumbbell','push-up']},avoid:[...SP_OVERHEAD_AVOID,'overhead-press-barbell','push-press-barbell'],
+    note:'Baseball and softball: rotational power from the hips, plus rotator cuff and upper back work for a healthy throwing shoulder. Heavy barbell overhead pressing is swapped for landmine and dumbbell presses.'},
+  soccer:{name:'Soccer',power:[SP_JUMP,['broad-jump','jump-squat-bodyweight']],add:[SP_HAM,SP_GROIN,SP_CALF,SP_LAT,SP_SHIN],swap:{singleLeg:['bulgarian-split-squat-dumbbell','split-squat-dumbbell']},avoid:[],
+    note:'Soccer: jumps and single-leg strength for speed, plus Nordic curls and Copenhagen planks, two of the best-studied moves for preventing hamstring and groin strains.'},
+  hockey:{name:'Hockey',power:[SP_JUMP,SP_ROT],add:[SP_LAT,SP_GROIN,SP_ABD,SP_SLRDL],swap:{singleLeg:['bulgarian-split-squat-dumbbell','split-squat-dumbbell']},avoid:[],
+    note:'Hockey: explosive and side-to-side leg strength for your stride, groin and hip work that helps prevent strains, and rotational core work for shooting.'},
+  golf:{name:'Golf',power:[SP_ROT,SP_SLAM],add:[SP_ANTI,SP_SLRDL,SP_UPBACK,SP_ABD,SP_FORE],swap:{hinge:['deadlift-trap-bar'],rowMain:['single-arm-row-dumbbell','seated-row-cable']},avoid:[],
+    note:'Golf: rotational power for clubhead speed, anti-rotation core work and single-leg balance, and upper back work for posture through your swing.'},
+  tennis:{name:'Tennis or pickleball',power:[SP_ROT,SP_JUMP],add:[SP_CUFF,SP_LAT,SP_FORE,SP_ANTI,SP_CALF],swap:{},avoid:[...SP_OVERHEAD_AVOID],
+    note:'Tennis and pickleball: rotational power, quick side-to-side legs, and shoulder, forearm and wrist work for your hitting arm.'},
+  volleyball:{name:'Volleyball',power:[SP_JUMP,['depth-jump','box-jump','jump-squat-bodyweight']],add:[SP_CUFF,SP_CALF,SP_UPBACK,SP_SHIN,SP_GROIN],swap:{},avoid:[...SP_OVERHEAD_AVOID],
+    note:'Volleyball: jump power, landing strength in your calves and shins, and shoulder work for your hitting arm.'},
+  running:{name:'Running',power:[['box-jump','jump-squat-bodyweight'],['broad-jump','jump-squat-bodyweight']],add:[SP_CALF,SP_SHIN,SP_ABD,SP_SLRDL,['step-up-dumbbell','step-up-bodyweight']],swap:{singleLeg:['step-up-dumbbell','split-squat-dumbbell','step-up-bodyweight']},avoid:[],
+    note:'Running: strong legs with lots of single-leg, calf and hip work, which helps running economy and common running injuries. Lift on easy run days, not right before hard sessions.'},
+  combat:{name:'Wrestling or MMA',power:[SP_CLEAN,SP_SLAM],add:[SP_NECK,SP_GRIP,SP_GROIN,['battle-ropes','burpee']],swap:{hinge:['deadlift-trap-bar']},avoid:[],
+    note:'Wrestling and MMA: explosive hips, grip and neck strength, and conditioning you can use in scrambles.'},
+  swimming:{name:'Swimming',power:[SP_SLAM,SP_JUMP],add:[SP_CUFF,SP_UPBACK,['pullover-dumbbell','lat-pulldown-cable'],['dead-bug','plank']],swap:{ohp:['landmine-press','seated-overhead-press-dumbbell'],dip:['floor-press-dumbbell','push-up']},avoid:[...SP_OVERHEAD_AVOID,'overhead-press-barbell','push-press-barbell','chest-dip','bench-dip'],
+    note:'Swimming: pulling strength for your stroke and rotator cuff and upper back work to protect your shoulders. We skipped barbell overhead pressing and dips, which often bother swimmers’ shoulders.'},
+};
+const SPORT_ORDER=['football','basketball','baseball','soccer','hockey','golf','tennis','volleyball','running','combat','swimming'];
+let PLAN_SPORT=null; // set while a plan is being built
+function planSport(a,lim){
+  const S=PLAN_SPORTS[a.sport];if(!S)return null;
+  const limK=new Set(lim?lim.keys:[]);
+  // No jumping with sore knees, ankles or hips, and no Olympic lifts or slams with a sore back or for beginners.
+  const bad=id=>((limK.has('knees')||limK.has('ankles')||limK.has('hips'))&&/jump|bound|lateral-lunge/.test(id))||((limK.has('back')||a.exp==='new')&&/clean|snatch/.test(id))||(limK.has('back')&&/slam/.test(id));
+  const safe=list=>list.filter(id=>!bad(id));
+  const power=S.power.map(safe).filter(l=>l.length);
+  if(!power.length)power.push(SP_ANTI); // nothing explosive is safe, so use anti-rotation core work instead
+  return{key:a.sport,name:S.name,power,add:S.add.map(safe).filter(l=>l.length),swap:S.swap,avoid:new Set(S.avoid),inSeason:a.season==='in',note:S.note};
 }
 
 /* ---------- goal timelines ---------- */
