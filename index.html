@@ -1264,6 +1264,7 @@ function startRest(i,j){
   A.restAfter={i,j};A.restOver=false;
   if(rest>0){A.restEnd=Date.now()+rest*1000;A.restTotal=rest*1000;restFired=false;warned=false;ensureAudio();if(ST.settings.autoGame)openGame()}
   else{A.restEnd=0}
+  markRest();
   if(A.restEnd)N('restStart',A.restEnd,restLabel());else N('restCancel');
   saveActive();renderDock();syncPause();updateLock();
 }
@@ -1587,8 +1588,8 @@ function watchState(){
 window.BWApp={
   state:watchState,
   completeNext(){const ns=nextSet();if(!ns)return false;const ok=completeSet(ns.i,ns.j);if(ok){render();updateLock()}return ok},
-  skipRest(){if(!ST.active)return;N('restCancel');ST.active.restEnd=0;ST.active.restOver=false;restFired=true;saveActive();renderDock();syncPause();updateLock()},
-  addRest(sec){const A=ST.active;if(!A||!resting())return;A.restEnd+=sec*1000;A.restTotal=Math.max(A.restTotal,A.restEnd-Date.now());saveActive();tick();N('restStart',A.restEnd,restLabel())},
+  skipRest(){if(!ST.active)return;N('restCancel');ST.active.restEnd=0;ST.active.restOver=false;restFired=true;markRest();saveActive();renderDock();syncPause();updateLock()},
+  addRest(sec){const A=ST.active;if(!A||!resting())return;A.restEnd+=sec*1000;A.restTotal=Math.max(A.restTotal,A.restEnd-Date.now());markRest();saveActive();tick();N('restStart',A.restEnd,restLabel())},
 };
 /* ================= backup ================= */
 function exportBackup(){
@@ -2167,7 +2168,7 @@ async function loadAccountData(){
   if(owner&&owner!==uid){ST.workouts=[];ST.routines=[];ST.custom=[];ST.active=null;ST.settings=Object.assign({},DEF_SETTINGS)}
   const rows=await API.docs();
   const by={workout:[],routine:[],exercise:[]};let settings=null,active=null;
-  rows.forEach(r=>{if(r.kind==='settings')settings=r.data;else if(r.kind==='active')active=r.data;else if(by[r.kind])by[r.kind].push(r.data)});
+  rows.forEach(r=>{if(r.kind==='settings')settings=r.data;else if(r.kind==='active'){if(r.data&&!r.data.ended)active=r.data}else if(by[r.kind])by[r.kind].push(r.data)});
   if(!rows.length&&!owner&&(ST.workouts.length||ST.routines.length||ST.custom.length)){
     // First sign-in on a phone that already has a log: keep it and upload it.
     for(const k of ['workouts','routines','custom'])for(const o of ST[k])await API.putDoc(KIND[k],o.id,o).catch(()=>{});
@@ -5269,8 +5270,8 @@ document.addEventListener('click',e=>{
     case'finish':finishWorkout();break;
     case'wk-menu':openWkMenu();break;
     case'rest-minus':if(resting()){A.restEnd-=15000;saveActive();tick();N('restStart',A.restEnd,restLabel())}break;
-    case'rest-plus':if(resting()){A.restEnd+=15000;A.restTotal=Math.max(A.restTotal,A.restEnd-Date.now());warned=false;saveActive();tick();N('restStart',A.restEnd,restLabel())}break;
-    case'rest-skip':N('restCancel');A.restEnd=0;A.restOver=false;restFired=true;saveActive();renderDock();syncPause();updateLock();break;
+    case'rest-plus':if(resting()){A.restEnd+=15000;A.restTotal=Math.max(A.restTotal,A.restEnd-Date.now());warned=false;markRest();saveActive();tick();N('restStart',A.restEnd,restLabel())}break;
+    case'rest-skip':N('restCancel');A.restEnd=0;A.restOver=false;restFired=true;markRest();saveActive();renderDock();syncPause();updateLock();break;
     case'rest-dismiss':A.restOver=false;saveActive();renderDock();break;
     case'play':openGame();break;
     case'game-close':{const wasFree=G.free;closeGame();if(wasFree){softRender();break}if(ST.tab!=='workout')setTab('workout');const ns=nextSet();if(ns&&A&&A.restOver)goToRow(ns.i,ns.j);break}
@@ -5643,12 +5644,23 @@ function mergeActive(a,b){
   const newer=(b.updated||0)>=(a.updated||0)?b:a,older=newer===b?a:b,out=clone(newer);
   (out.exercises||[]).forEach(e=>{const o=(older.exercises||[]).find(x=>x.uid===e.uid);if(!o)return;
     e.sets=(e.sets||[]).map(s=>{const os=(o.sets||[]).find(x=>x.id===s.id);return os&&(os.at||0)>(s.at||0)?os:s})});
+  if(((older.restSync&&older.restSync.at)||0)>((out.restSync&&out.restSync.at)||0))out.restSync=older.restSync;
   return out;
 }
+// Record a rest timer change so a linked watch follows it.
+function markRest(){const A=ST.active;if(A)A.restSync={end:A.restEnd||0,at:Date.now(),by:'phone'}}
 const watchLinked=()=>API.live&&LS.get('watchLinked',false);
 function watchApplyRemote(R){
   if(!R||!R.id)return;
   const L=ST.active;
+  if(R.ended){
+    // Finished or discarded on the watch.
+    if(L&&L.id===R.id){
+      if(R.ended==='discarded'){endActive();toast('Workout discarded on your watch');render()}
+      else fetchWatchWorkout(R.id);
+    }
+    return;
+  }
   if(!L){
     // A workout started on the watch: open it here too.
     if(R.watch&&!LS.get('watchSeen',[]).includes(R.id)&&Date.now()-(R.updated||0)<6*3600e3){
@@ -5662,9 +5674,17 @@ function watchApplyRemote(R){
   const M=mergeActive(L,R);
   let fresh=null;
   (M.exercises||[]).forEach((e,i)=>(e.sets||[]).forEach((s,j)=>{const le=L.exercises.find(x=>x.uid===e.uid),ls=le&&le.sets.find(x=>x.id===s.id);if(s.done&&!(ls&&ls.done))fresh={i,j}}));
-  if(JSON.stringify(M.exercises)===JSON.stringify(L.exercises)&&M.name===L.name)return;
+  const restNew=!!(R.restSync&&R.restSync.by==='watch'&&R.restSync.at>((L.restSync&&L.restSync.at)||0));
+  if(!restNew&&JSON.stringify(M.exercises)===JSON.stringify(L.exercises)&&M.name===L.name)return;
   ['restEnd','restTotal','restAfter','restOver'].forEach(k=>M[k]=L[k]);
+  if(restNew){
+    // Rest skipped or extended on the watch.
+    M.restSync=R.restSync;M.restEnd=R.restSync.end>Date.now()?R.restSync.end:0;
+    if(M.restEnd){M.restTotal=Math.max(M.restTotal||0,M.restEnd-Date.now());restFired=false;N('restStart',M.restEnd,restLabel())}
+    else{M.restOver=false;restFired=true;N('restCancel')}
+  }
   ST.active=M;LS.set('active',M);
+  if(restNew){renderDock();syncPause();updateLock()}
   // A set logged on the watch starts the rest timer (and a brain game) here.
   if(fresh&&R.lastWatchSet&&Date.now()-R.lastWatchSet.at<90e3)startRest(fresh.i,fresh.j);
   softRender();try{updateLock()}catch(e){}
@@ -5688,6 +5708,10 @@ function startDocSync(){
   clearInterval(watchPoll);watchPoll=setInterval(()=>{if(document.visibilityState==='visible'&&watchLinked())pullActive()},20000);
 }
 function stopDocSync(){try{docChan&&sb.removeChannel(docChan)}catch(e){}docChan=null;clearInterval(watchPoll)}
+async function fetchWatchWorkout(id){
+  try{const {data:w}=await sb.from('user_docs').select('data').eq('kind','workout').eq('id',String(id)).maybeSingle();
+    if(w&&w.data)onDocChange({new:{kind:'workout',data:w.data}});else if(ST.active&&ST.active.id===id){endActive();render()}}catch(e){}
+}
 async function pullActive(){
   if(!watchLinked())return;
   try{const {data}=await sb.from('user_docs').select('data').eq('kind','active').eq('id','current').maybeSingle();
