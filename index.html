@@ -444,6 +444,8 @@ button.card:hover{border-color:#2D3746}
 .pr-big{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:14px;background:var(--surface-2);text-align:left}
 .pr-big b{font:700 26px var(--display)}.pr-big b small{font-size:13px;font-weight:600;color:var(--muted)}.pr-big .muted{font-size:12px}
 .prof-tabs button{font-size:13px;padding:0 4px}
+.g-line{display:block;margin-top:6px;font-size:12.5px;color:var(--mind)}.g-line.muted{color:var(--muted)}
+.g-pending{border:1px dashed var(--mind);gap:6px;display:flex;flex-direction:column}
 .sched-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0}
 .sched-day{display:flex;flex-direction:column;gap:3px;padding:7px 4px;border-radius:10px;background:var(--surface-2);min-width:0;text-align:center}
 .sched-day span{font:700 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -1202,10 +1204,10 @@ const Cloud={ok:false,mode:null,cols:{},q:Promise.resolve(),aq:Promise.resolve()
   saveSettings(){if(!this.ok)return;if(this.mode==='live'){const v=clone(ST.settings);this.q=this.q.then(()=>API.putDoc('settings','main',v)).catch(()=>{});return}const v=clone(ST.settings);this.q=this.q.then(()=>this.settingsRef.set({v})).catch(()=>{})},
   saveActive(){
     if(!this.ok)return;clearTimeout(this.aTimer);
-    this.aTimer=setTimeout(()=>{const v=ST.active?clone(ST.active):null;if(this.mode==='live'){this.aq=this.aq.then(()=>v?API.putDoc('active','current',v):API.delDoc('active','current')).catch(()=>{});return}this.aq=this.aq.then(()=>v?this.activeRef.set({v}):this.activeRef.delete()).catch(()=>{})},2000);
+    this.aTimer=setTimeout(()=>{const v=ST.active?clone(ST.active):null;if(this.mode==='live'){this.aq=this.aq.then(()=>v?(watchLinked()?API.watch('push',{active:v}).then(r=>{if(r&&r.active)watchApplyRemote(r.active)}):API.putDoc('active','current',v)):API.delDoc('active','current')).catch(()=>{});return}this.aq=this.aq.then(()=>v?this.activeRef.set({v}):this.activeRef.delete()).catch(()=>{})},2000);
   },
 };
-function saveSettings(){LS.set('settings',ST.settings);Cloud.saveSettings()}
+function saveSettings(){LS.set('settings',ST.settings);Cloud.saveSettings();try{syncWatchCache()}catch(e){}}
 let aLocal=null;
 function saveActive(now){
   if(ST.active)ST.active.updated=Date.now();
@@ -1213,8 +1215,8 @@ function saveActive(now){
   clearTimeout(aLocal);const go=()=>LS.set('active',ST.active);now?go():(aLocal=setTimeout(go,250));
   Cloud.saveActive();
 }
-function putItem(k,o){ST[k]=ST[k].filter(x=>x.id!==o.id).concat([o]);LS.set(k,ST[k]);Cloud.put(k,o);if(k==='custom')rebuildEx();if(k==='workouts')rebuildHistory()}
-function delItem(k,id){ST[k]=ST[k].filter(x=>x.id!==id);LS.set(k,ST[k]);Cloud.del(k,id);if(k==='custom')rebuildEx();if(k==='workouts')rebuildHistory()}
+function putItem(k,o){ST[k]=ST[k].filter(x=>x.id!==o.id).concat([o]);LS.set(k,ST[k]);Cloud.put(k,o);if(k==='custom')rebuildEx();if(k==='workouts')rebuildHistory();if(k==='routines')try{syncWatchCache()}catch(e){}}
+function delItem(k,id){ST[k]=ST[k].filter(x=>x.id!==id);LS.set(k,ST[k]);Cloud.del(k,id);if(k==='custom')rebuildEx();if(k==='workouts')rebuildHistory();if(k==='routines')try{syncWatchCache()}catch(e){}}
 
 /* ================= templates ================= */
 const TEMPLATES=[
@@ -1254,7 +1256,7 @@ function completeSet(i,j){
   const need={w:['r'],b:['r'],a:['r'],t:['t'],wt:['t'],d:['d','t'],c:['w','d']}[x.type]||['r'];
   const ok=need.some(f=>filled[f]>0);
   if(!ok)return false;
-  Object.assign(s,filled);s.done=true;
+  Object.assign(s,filled);s.done=true;s.at=Date.now();
   startRest(i,j);return true;
 }
 function startRest(i,j){
@@ -1352,17 +1354,18 @@ function gamesHTML(){
 }
 function historyHTML(){
   const W=ST.workouts;
-  if(!W.length)return `<p class="empty">Your finished workouts will show up here with volume, sets and personal records.</p>`;
+  if(!W.length)return gPendingHTML()+`<p class="empty">Your finished workouts will show up here with volume, sets and personal records.</p>`;
   const wk=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x.getTime()};
   const now=wk(Date.now()),counts=Array(8).fill(0);
   W.forEach(w=>{const k=Math.round((now-wk(w.start))/(7*864e5));if(k>=0&&k<8)counts[7-k]++});
   const mx=Math.max(1,...counts),thisWeek=W.filter(w=>wk(w.start)===now);
   return `<div class="tiles"><div class="tile"><b>${thisWeek.length}</b><span>Workouts this week</span></div><div class="tile"><b>${fmtVol(thisWeek.reduce((a,w)=>a+volOf(w),0))}</b><span>Volume this week</span></div><div class="tile"><b>${W.length}</b><span>All time</span></div></div>
   <div class="card"><span class="eyebrow">Workouts per week</span><div class="weeks">${counts.map((c,k)=>`<div class="${k===7?'now':''}" style="height:${c/mx*100}%" title="${c}"></div>`).join('')}</div><div class="weeks-l"><span>8 weeks ago</span><span>This week</span></div></div>
+  ${gPendingHTML()}
   <div class="stack">${W.map(w=>`<button class="card" style="text-align:left" data-act="hist-open" data-id="${w.id}">
     <div class="row"><h3>${esc(w.name)}</h3>${w.prs?.length?`<span class="tag" style="background:var(--p15);color:#111">${w.prs.length} PR</span>`:''}</div>
     <span class="eyebrow">${new Date(w.start).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})} · ${clock((w.end-w.start)/1000)} · ${fmtVol(volOf(w))}</span>
-    <div class="lines">${w.exercises.slice(0,4).map(e=>`<span>${e.sets.length} × ${esc(exOf(e).name)}</span>`).join('')}${w.exercises.length>4?`<span>and ${w.exercises.length-4} more</span>`:''}</div></button>`).join('')}</div>`;
+    <div class="lines">${w.exercises.slice(0,4).map(e=>`<span>${e.sets.length} × ${esc(exOf(e).name)}</span>`).join('')}${w.exercises.length>4?`<span>and ${w.exercises.length-4} more</span>`:''}</div>${garminLine(w.garmin)}${w.src==='watch'?'<span class="g-line">⌚ Logged on your watch</span>':''}${w.fromPlan?'<span class="g-line muted">Sets copied from your routine. Tap to check them.</span>':''}</button>`).join('')}</div>`;
 }
 let exFilter={q:'',muscle:'All',equip:'All'};
 const MUSCLES=()=>['All',...[...new Set(EX.map(e=>e.muscle))].sort()];
@@ -1722,10 +1725,13 @@ function openHistory(id){
   const w=ST.workouts.find(x=>x.id===id);if(!w)return;
   const o=sheet(`<div class="sheet-h"><h2>${esc(w.name)}</h2><button class="link" data-close>Close</button></div>
     <span class="eyebrow">${new Date(w.start).toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} · ${clock((w.end-w.start)/1000)} · ${fmtVol(volOf(w))}</span>
+    ${w.garmin?`<div class="tiles">${w.garmin.hr?`<div class="tile"><b>${w.garmin.hr}</b><span>Avg heart rate</span></div>`:''}${w.garmin.maxHr?`<div class="tile"><b>${w.garmin.maxHr}</b><span>Max heart rate</span></div>`:''}${w.garmin.cal?`<div class="tile"><b>${w.garmin.cal}</b><span>Calories</span></div>`:''}</div>`:''}
+    ${w.fromPlan?'<p class="muted" style="font-size:13px;margin:0">These sets were copied from your routine. If you changed anything on your watch, edit them here.</p>':''}
     ${w.prs?.length?`<div class="card"><span class="eyebrow">Personal records</span><div class="lines">${w.prs.map(p=>`<span style="color:var(--fg)">${esc(p)}</span>`).join('')}</div><button class="secondary" data-act="pr-share-w" data-id="${esc(w.id)}">Share your PR</button></div>`:''}
     ${w.exercises.map(e=>`<div class="card"><h3>${esc(exOf(e).name)}</h3>${e.note?`<p class="muted" style="font-size:14px">${esc(e.note)}</p>`:''}<div class="lines">${e.sets.map((s,j)=>`<span class="mono" style="color:var(--fg)">${setLabel(e.sets,j)} · ${esc(setText(e.type,s))}</span>`).join('')}</div></div>`).join('')}
-    <button class="primary" data-act="share-workout" data-id="${esc(w.id)}">Share to feed</button><button class="secondary" id="hAgain">Do this workout again</button><button class="secondary" id="hRout">Save as routine</button><button class="secondary danger" id="hDel">Delete workout</button>`);
+    <button class="primary" data-act="share-workout" data-id="${esc(w.id)}">Share to feed</button><button class="secondary" id="hEdit">Edit sets</button><button class="secondary" id="hAgain">Do this workout again</button><button class="secondary" id="hRout">Save as routine</button><button class="secondary danger" id="hDel">Delete workout</button>`);
   o.querySelector('#hAgain').onclick=()=>{o.close();startWorkout(w)};
+  o.querySelector('#hEdit').onclick=()=>{o.close();openRoutineEditor(w,{workout:true})};
   o.querySelector('#hRout').onclick=()=>{o.close();saveRoutineFrom(w)};
   confirmBtn(o.querySelector('#hDel'),'Tap again to delete',()=>{delItem('workouts',w.id);o.close();render()});
 }
@@ -1761,12 +1767,12 @@ function openExercise(id){
   const a=o.querySelector('#eAdd');if(a)a.onclick=()=>{ST.active.exercises.push(newEx(id));saveActive();o.close();setTab('workout')};
   const d=o.querySelector('#eDel');if(d)confirmBtn(d,'Tap again to delete',()=>{delItem('custom',id);o.close();render()});
 }
-function openRoutineEditor(src){
-  const isNew=!src||src.template,d=src?clone(src):{name:'',exercises:[]};
+function openRoutineEditor(src,opt={}){
+  const isNew=!opt.workout&&(!src||src.template),d=src?clone(src):{name:'',exercises:[]};
   if(isNew){d.id='r-'+newId();delete d.template}
   let dirty=false;
-  const o=sheet(`<div class="sheet-h"><button class="link" id="reCancel">Cancel</button><h2>${isNew?'New routine':'Edit routine'}</h2><button class="link" id="reSave">Save</button></div>
-    <input class="wk-name" id="reName" placeholder="Routine name" value="${esc(d.name)}" aria-label="Routine name">
+  const o=sheet(`<div class="sheet-h"><button class="link" id="reCancel">Cancel</button><h2>${opt.workout?'Edit workout':isNew?'New routine':'Edit routine'}</h2><button class="link" id="reSave">Save</button></div>
+    <input class="wk-name" id="reName" placeholder="${opt.workout?'Workout name':'Routine name'}" value="${esc(d.name)}" aria-label="${opt.workout?'Workout name':'Routine name'}">
     <div class="re-body" id="reBody"></div>`,{full:true,modal:true});
   const body=o.querySelector('#reBody');
   const rests=[[null,'Default rest'],[0,'No rest'],[30],[45],[60],[90],[120],[180],[240],[300]];
@@ -1783,7 +1789,7 @@ function openRoutineEditor(src){
     }).join('')
     +(d.exercises.length?'':'<p class="empty">Add exercises, then set your target sets, weight and reps. Tap a set number to make it a warm-up, drop or failure set.</p>')
     +`<button class="outline" data-ra="add">+ Add exercise</button>`
-    +(isNew?'':'<button class="secondary danger" data-ra="del">Delete routine</button>');
+    +(isNew||opt.workout?'':'<button class="secondary danger" data-ra="del">Delete routine</button>');
     body.scrollTop=st;
   }
   body.addEventListener('click',e=>{
@@ -1810,6 +1816,7 @@ function openRoutineEditor(src){
     if(!d.name.trim()){pulse(o.querySelector('#reName'),'shake');o.querySelector('#reName').focus();toast('Give your routine a name');return}
     if(!d.exercises.length){toast('Add at least one exercise');return}
     d.name=d.name.trim();d.exercises=d.exercises.filter(x=>x.sets.length);
+    if(opt.workout){d.exercises.forEach(x=>{x.name=x.name||exOf(x).name;x.type=x.type||EXMAP[x.exId]?.type||'w'});delete d.fromPlan;putItem('workouts',d);o.close();toast('Workout updated');softRender();return}
     putItem('routines',d);o.close();toast('Routine saved');setTab('workout');
   };
   draw();
@@ -1878,6 +1885,7 @@ const LiveAPI={
   async removePushSub(endpoint){await sb.from('push_subscriptions').delete().eq('endpoint',endpoint)},
   async scheduleRest(seconds){await sb.rpc('schedule_rest',{seconds})},
   async cancelRest(){await sb.rpc('cancel_rest')},
+  async watch(action,extra){const {data,error}=await sb.functions.invoke('watch',{body:Object.assign({action},extra||{})});if(error){let m='Couldn’t reach Brainweight. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
   async garmin(action,extra){const {data,error}=await sb.functions.invoke('garmin',{body:Object.assign({action},extra||{})});if(error){let m='Couldn’t reach Garmin. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
   async billingJSON(body){const {data,error}=await sb.functions.invoke('billing',{body:Object.assign({return_url:siteURL()},body)});if(error){let m='Something went wrong. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
   async coachMarket(){const {data,error}=await sb.rpc('coach_market');if(error)throw error;return data||[]},
@@ -2040,7 +2048,8 @@ const DemoAPI=(()=>{
     async signUp(email,password,name,username){if(password.length<8)throw new Error('Password should be at least 8 characters');D.signedIn=true;D.me.display_name=name||'You';if(username)D.me.username=username;save();return {session:{user:{id:'me',email}}}},
     async acceptTerms(v){D.me.terms_version=v;save()},
     async logScore(){},
-    async garmin(action,extra){if(action==='send_schedule'){const n=(extra.items||[]).reduce((a,i)=>a+i.dates.length,0);return wait({workouts:(extra.items||[]).length,scheduled:n,failed:0})}if(action==='start'){D.garmin={connected:true,connected_at:new Date().toISOString()};save();toast('Preview: Garmin connected (no real sign-in).');return{url:'#garmin-connected'}}if(action==='disconnect'){D.garmin=null;save();return{connected:false}}if(action==='send_workout'){D.garminSent=(D.garminSent||0)+1;save();return wait({workoutId:1,scheduled:true})}return wait(D.garmin||{connected:false})},
+    async watch(action,extra){if(action==='devices')return wait({devices:D.watches||[]});if(action==='claim'){if(!/^\d{6}$/.test(extra.code||''))throw new Error('Enter the 6-digit code from your watch.');D.watches=[{id:'w1',model:'venu3',linked_at:new Date().toISOString()}];save();return wait({ok:true})}if(action==='unlink'){D.watches=[];save();return wait({ok:true})}if(action==='push')return wait({active:extra.active});return wait({})},
+    async garmin(action,extra){if(action==='activities')return wait({activities:D.garminActs||[]});if(action==='send_schedule'){const n=(extra.items||[]).reduce((a,i)=>a+i.dates.length,0);return wait({workouts:(extra.items||[]).length,scheduled:n,failed:0})}if(action==='start'){D.garmin={connected:true,connected_at:new Date().toISOString()};save();toast('Preview: Garmin connected (no real sign-in).');return{url:'#garmin-connected'}}if(action==='disconnect'){D.garmin=null;save();return{connected:false}}if(action==='send_workout'){D.garminSent=(D.garminSent||0)+1;save();return wait({workoutId:1,scheduled:true})}return wait(D.garmin||{connected:false})},
     async dailySubmit(puzzle,guesses,pattern){D.daily={puzzle,guesses,pattern};save()},
     async puzzleSubmit(game,puzzle,solved,score,detail){D.pz=D.pz||{};D.pz[game]={puzzle,solved,score,detail};save()},
     async puzzleBoard(game,puzzle){const m=D.pz&&D.pz[game]&&D.pz[game].puzzle===puzzle?[Object.assign({},D.me,{user_id:'me',solved:D.pz[game].solved,score:D.pz[game].score,is_me:true})]:[];
@@ -2320,11 +2329,12 @@ async function enterApp(){
   if(!LS.get('welcomed',false))showWelcome();else maybeOnboard();
   refreshPushFlag();setTimeout(()=>routeHash(),300);setTimeout(maybePushPrompt,1500);
   // Remember whether Garmin is connected so routines can show Send to Garmin.
-  if(API.live&&API.garmin)API.garmin('status').then(st=>{const on=!!(st&&st.connected);if(on!==LS.get('garminOn',false)){LS.set('garminOn',on);softRender()}}).catch(()=>{});
+  if(API.live&&API.garmin)API.garmin('status').then(st=>{const on=!!(st&&st.connected);if(on!==LS.get('garminOn',false)){LS.set('garminOn',on);softRender()}if(on)refreshGarminActs(true)}).catch(()=>{});
+  if(API.live){if(LS.get('watchLinked',false))startDocSync();refreshWatchLinked()}
 }
 async function signOut(){
   try{await API.signOut()}catch(e){}
-  ME.user=null;ME.access=null;ME.profile=null;appEntered=false;Cloud.ok=false;Cloud.mode=null;
+  ME.user=null;ME.access=null;ME.profile=null;appEntered=false;Cloud.ok=false;Cloud.mode=null;try{stopDocSync()}catch(e){}LS.set('watchLinked',false);
   FEED.posts=[];FEED.loaded=false;PROG.list=null;
   document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());closeGame();
   gate('signin');
@@ -5077,7 +5087,7 @@ function accountHTML(){
   return `<div class="card"><span class="eyebrow">Your plan</span><h3>${esc(pl.title)}</h3>${pl.line?`<span class="muted" style="font-size:14px">${esc(pl.line)}</span>`:''}
     <div style="display:flex;gap:8px;flex-wrap:wrap">${s&&s.has_customer?'<button class="secondary" id="acManage">Manage subscription</button>':''}${lvl()<1&&!isAdmin()?'<button class="primary" id="acMember" style="min-height:46px">Become a Member</button>':''}${lvl()<2?`<button class="${lvl()<1&&!isAdmin()?'secondary':'primary'}" id="acUp" style="min-height:46px">Upgrade to Pro</button>`:''}</div>
     <div class="promo-row"><input class="input" id="acCode" placeholder="Promo or invite code" autocapitalize="characters" autocomplete="off" aria-label="Promo or invite code"><button class="secondary" id="acRedeem">Redeem</button></div></div>
-    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}${isCoachMe()?'<button id="acCoach">Coach portal</button>':'<button id="acCoach">Become a coach</button>'}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acGarmin">Garmin Connect</button><button id="acImport">Import workouts</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
+    <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}${isCoachMe()?'<button id="acCoach">Coach portal</button>':'<button id="acCoach">Become a coach</button>'}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acGarmin">Garmin Connect</button><button id="acWatch">Brainweight watch app</button><button id="acImport">Import workouts</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
     <p class="g-note">Signed in as ${esc(ME.user?.email||'')}${!API.live?' · preview mode':''}</p>`;
 }
 function wireAccount(o){
@@ -5091,6 +5101,7 @@ function wireAccount(o){
   o.querySelector('#acPrivacy').onclick=()=>{o.close();openPrivacy()};
   o.querySelector('#acNotif').onclick=()=>{o.close();openNotifications()};
   o.querySelector('#acGarmin').onclick=()=>{o.close();openGarmin()};
+  o.querySelector('#acWatch').onclick=()=>{o.close();openWatchLink()};
   o.querySelector('#acImport').onclick=()=>{o.close();openImport()};
   o.querySelector('#acCoach').onclick=()=>{o.close();isCoachMe()?openCoachPortal():openCoachApply()};
   o.querySelector('#acInvite').onclick=()=>{o.close();openInvite()};
@@ -5252,7 +5263,7 @@ document.addEventListener('click',e=>{
     case'ex-open':openExercise(b.dataset.id);break;
     case'set-menu':openSetMenu(i,j);break;
     case'use-prev':{const x=A.exercises[i],p=prevFor(x.exId,j);if(!p||x.sets[j].done)break;(TYPES[x.type]||TYPES.w).forEach(f=>x.sets[j][f]=p[f]??null);saveActive();render();break}
-    case'check':{const s=A.exercises[i].sets[j];if(s.done){s.done=false;saveActive();render();break}
+    case'check':{const s=A.exercises[i].sets[j];if(s.done){s.done=false;s.at=Date.now();saveActive();render();break}
       if(completeSet(i,j)){render()}else{pulse(document.querySelector(`[data-row="${i}-${j}"]`),'shake');toast('Enter your numbers first')}break}
     case'add-set':{const x=A.exercises[i],last=x.sets[x.sets.length-1];x.sets.push(newSet(last?{kind:last.kind==='w'?'n':last.kind,w:last.w,r:last.r,t:last.t,d:last.d}:null));saveActive();render();break}
     case'finish':finishWorkout();break;
@@ -5271,13 +5282,15 @@ document.addEventListener('click',e=>{
     case'install':if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;render()})}break;
     case'new-custom':openCustom();break;
     case'hist-open':openHistory(b.dataset.id);break;
+    case'g-add':openGarminAdd(b.dataset.id);break;
+    case'g-hide':LS.set('garminHidden',[b.dataset.id,...LS.get('garminHidden',[])].slice(0,300));softRender();break;
   }
 });
 document.addEventListener('input',e=>{
   const t=e.target,A=ST.active;
   if(t.id==='wkName'&&A){A.name=t.value;saveActive();return}
   if(t.dataset.note!=null&&A){A.exercises[+t.dataset.note].note=t.value;saveActive();return}
-  if(t.classList.contains('fin')&&A){const s=A.exercises[+t.dataset.i].sets[+t.dataset.j];s[t.dataset.f]=fieldParse(t.dataset.f,t.value);saveActive()}
+  if(t.classList.contains('fin')&&A){const s=A.exercises[+t.dataset.i].sets[+t.dataset.j];s[t.dataset.f]=fieldParse(t.dataset.f,t.value);s.at=Date.now();saveActive()}
 });
 document.addEventListener('focusout',e=>{
   const t=e.target;if(!t.classList||!t.classList.contains('fin')||!ST.active)return;
@@ -5572,6 +5585,161 @@ function openSchedule(){
       const last=items.flatMap(i=>i.dates).sort().pop();ST.settings.schedule.garminUntil=last;saveSettings();softRender();o.close();
       toast(res.failed?`Sent ${res.scheduled} workouts. ${res.failed} didn’t go through, try again.`:`Sent ${res.scheduled} workouts to your Garmin calendar. Sync your watch.`);
     }catch(err){toast(err.message||'Couldn’t send to Garmin. Try again.');b.disabled=false;b.textContent='Save and send to Garmin'}
+  };
+}
+
+/* ================= Garmin workouts in History ================= */
+// Garmin sends a summary (time, heart rate, calories) for each strength workout. A workout already in
+// History gets the stats added. A workout named after one of your routines (from the schedule you sent
+// to Garmin) is added automatically with the sets from that routine. Anything else waits for you.
+let GACTS=LS.get('garminActs',[]),gActsAt=0;
+async function refreshGarminActs(force){
+  if(!API.live||!LS.get('garminOn',false))return;
+  if(!force&&Date.now()-gActsAt<10*60e3)return;gActsAt=Date.now();
+  try{const r=await API.garmin('activities');GACTS=(r.activities||[]).filter(a=>a.start);LS.set('garminActs',GACTS);autoImportGarmin();softRender()}catch(e){}
+}
+const gStats=a=>({id:a.id,secs:a.secs,hr:a.hr,maxHr:a.maxHr,cal:a.cal,device:a.device});
+const gMatch=a=>ST.workouts.find(w=>(w.garmin&&w.garmin.id===a.id)||w.id==='g-'+a.id)||ST.workouts.find(w=>!w.garmin&&Math.abs(w.start-a.start)<90*60e3);
+const gRoutineFor=a=>{const n=String(a.name||'').trim().toLowerCase();return n?ST.routines.find(r=>!r.template&&r.name.trim().toLowerCase()===n)||null:null};
+function autoImportGarmin(){
+  const hidden=new Set(LS.get('garminHidden',[]));
+  GACTS.forEach(a=>{
+    const w=gMatch(a);
+    if(w){if(!w.garmin||w.garmin.id!==a.id){w.garmin=gStats(a);putItem('workouts',w)}return}
+    if(hidden.has(a.id))return;
+    const r=gRoutineFor(a);if(r)addGarminWorkout(a,r);
+  });
+}
+function addGarminWorkout(a,r){
+  const exercises=(r?r.exercises:[]).filter(e=>EXMAP[e.exId]).map(e=>({exId:e.exId,name:exOf(e).name,type:EXMAP[e.exId].type||'w',rest:e.rest??null,note:'',
+    sets:e.sets.map(s=>({kind:s.kind||'n',w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))}));
+  const w={id:'g-'+a.id,name:a.name||(r&&r.name)||'Strength workout',start:a.start,end:a.start+(a.secs||0)*1000,exercises,prs:[],src:'garmin',fromPlan:!!r,garmin:gStats(a)};
+  putItem('workouts',w);return w;
+}
+const gPending=()=>{const hidden=new Set(LS.get('garminHidden',[]));return GACTS.filter(a=>!hidden.has(a.id)&&!gMatch(a))};
+function garminLine(g){if(!g)return'';const bits=[g.hr?`${g.hr} bpm avg`:'',g.cal?`${g.cal} cal`:''].filter(Boolean);return bits.length?`<span class="g-line">⌚ ${bits.join(' · ')}</span>`:''}
+function gPendingHTML(){
+  const P=gPending();if(!P.length)return'';
+  return `<div class="stack" style="gap:10px">${P.slice(0,5).map(a=>`<div class="card g-pending"><span class="eyebrow">⌚ From your Garmin</span><h3>${esc(a.name||'Strength workout')}</h3>
+    <span class="muted" style="font-size:13px">${new Date(a.start).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})} · ${clock(a.secs||0)}${a.hr?` · ${a.hr} bpm avg`:''}${a.cal?` · ${a.cal} cal`:''}</span>
+    <div style="display:flex;gap:8px"><button class="secondary" data-act="g-add" data-id="${esc(a.id)}" style="flex:1">Add to History</button><button class="link" data-act="g-hide" data-id="${esc(a.id)}">Hide</button></div></div>`).join('')}</div>`;
+}
+function openGarminAdd(id){
+  const a=GACTS.find(x=>x.id===id);if(!a)return;
+  const mine=ST.routines.filter(r=>!r.template);
+  const o=sheet(`<div class="sheet-h"><h2>Add to History</h2><button class="link" data-close>Cancel</button></div>
+    <p class="muted" style="font-size:14px;margin:0">Which routine did you do? We’ll copy its sets, and you can edit them after.</p>
+    <div class="stack" style="gap:8px">${mine.map(r=>`<button class="card choice" data-r="${r.id}" style="text-align:left"><b>${esc(r.name)}</b><span class="muted">${r.exercises.length} exercises</span></button>`).join('')}
+    <button class="secondary" data-r="">Just the time, heart rate and calories</button></div>`,{full:mine.length>5});
+  o.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const r=ST.routines.find(x=>x.id===b.dataset.r)||null;const w=addGarminWorkout(a,r);o.close();toast('Added to History');softRender();if(r)openHistory(w.id)});
+}
+
+/* ================= Brainweight watch app: live sync ================= */
+// The watch app and this phone share one "workout in progress" through the server. Each set remembers
+// when it last changed ("at"), so whichever side changed a set last wins and nothing logged is lost.
+function mergeActive(a,b){
+  if(!a)return b;if(!b)return a;
+  if(a.id!==b.id)return (b.updated||0)>=(a.updated||0)?b:a;
+  const newer=(b.updated||0)>=(a.updated||0)?b:a,older=newer===b?a:b,out=clone(newer);
+  (out.exercises||[]).forEach(e=>{const o=(older.exercises||[]).find(x=>x.uid===e.uid);if(!o)return;
+    e.sets=(e.sets||[]).map(s=>{const os=(o.sets||[]).find(x=>x.id===s.id);return os&&(os.at||0)>(s.at||0)?os:s})});
+  return out;
+}
+const watchLinked=()=>API.live&&LS.get('watchLinked',false);
+function watchApplyRemote(R){
+  if(!R||!R.id)return;
+  const L=ST.active;
+  if(!L){
+    // A workout started on the watch: open it here too.
+    if(R.watch&&!LS.get('watchSeen',[]).includes(R.id)&&Date.now()-(R.updated||0)<6*3600e3){
+      ST.active=Object.assign({restEnd:0,restTotal:0,restAfter:null,restOver:false},R);LS.set('active',ST.active);
+      LS.set('watchSeen',[R.id,...LS.get('watchSeen',[])].slice(0,20));
+      toast('Workout started on your watch');setTab('workout');wake();renderDock();
+    }
+    return;
+  }
+  if(L.id!==R.id)return;
+  const M=mergeActive(L,R);
+  let fresh=null;
+  (M.exercises||[]).forEach((e,i)=>(e.sets||[]).forEach((s,j)=>{const le=L.exercises.find(x=>x.uid===e.uid),ls=le&&le.sets.find(x=>x.id===s.id);if(s.done&&!(ls&&ls.done))fresh={i,j}}));
+  if(JSON.stringify(M.exercises)===JSON.stringify(L.exercises)&&M.name===L.name)return;
+  ['restEnd','restTotal','restAfter','restOver'].forEach(k=>M[k]=L[k]);
+  ST.active=M;LS.set('active',M);
+  // A set logged on the watch starts the rest timer (and a brain game) here.
+  if(fresh&&R.lastWatchSet&&Date.now()-R.lastWatchSet.at<90e3)startRest(fresh.i,fresh.j);
+  softRender();try{updateLock()}catch(e){}
+}
+function onDocChange(p){
+  const r=p&&p.new;if(!r||!r.kind)return;
+  if(r.kind==='active'){watchApplyRemote(r.data);return}
+  if(r.kind==='workout'&&r.data&&r.data.id){
+    const w=r.data,had=ST.workouts.find(x=>x.id===w.id);
+    if(had&&JSON.stringify(had)===JSON.stringify(w))return;
+    ST.workouts=ST.workouts.filter(x=>x.id!==w.id).concat([w]);LS.set('workouts',ST.workouts);rebuildHistory();
+    if(ST.active&&ST.active.id===w.id){endActive();toast('Workout saved from your watch');setTab('history');return}
+    softRender();
+  }
+}
+let docChan=null,watchPoll=null;
+function startDocSync(){
+  if(!API.live||!sb||docChan||!ME.user)return;
+  const f={schema:'public',table:'user_docs',filter:`user_id=eq.${ME.user.id}`};
+  docChan=sb.channel('docs-'+ME.user.id).on('postgres_changes',Object.assign({event:'INSERT'},f),onDocChange).on('postgres_changes',Object.assign({event:'UPDATE'},f),onDocChange).subscribe();
+  clearInterval(watchPoll);watchPoll=setInterval(()=>{if(document.visibilityState==='visible'&&watchLinked())pullActive()},20000);
+}
+function stopDocSync(){try{docChan&&sb.removeChannel(docChan)}catch(e){}docChan=null;clearInterval(watchPoll)}
+async function pullActive(){
+  if(!watchLinked())return;
+  try{const {data}=await sb.from('user_docs').select('data').eq('kind','active').eq('id','current').maybeSingle();
+    if(data&&data.data)watchApplyRemote(data.data);
+    else if(ST.active&&ST.active.watch){
+      // Gone on the server: finished or discarded on the watch.
+      const {data:w}=await sb.from('user_docs').select('data').eq('kind','workout').eq('id',String(ST.active.id)).maybeSingle();
+      if(w&&w.data)onDocChange({new:{kind:'workout',data:w.data}});
+    }
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){pullActive();refreshGarminActs()}});
+
+// Keep a small copy of routines and the weekly schedule where the watch can read it.
+let wcTimer=null;
+function syncWatchCache(now){
+  if(!watchLinked())return;
+  clearTimeout(wcTimer);
+  wcTimer=setTimeout(()=>{
+    const doc={unit:u(),rest:ST.settings.rest,schedule:{days:(ST.settings.schedule&&ST.settings.schedule.days)||{}},
+      routines:ST.routines.filter(r=>!r.template).slice(0,30).map(r=>({id:r.id,name:r.name,ex:r.exercises.filter(e=>EXMAP[e.exId]).slice(0,20).map(e=>({exId:e.exId,name:exOf(e).name,type:EXMAP[e.exId].type||'w',rest:e.rest??null,note:e.note||'',
+        sets:e.sets.slice(0,12).map(s=>({kind:s.kind||'n',w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))}))}))};
+    const key=JSON.stringify(doc);if(key===LS.get('watchCacheKey',''))return;
+    API.putDoc('watch','cache',doc).then(()=>LS.set('watchCacheKey',key)).catch(()=>{});
+  },now?0:2500);
+}
+async function refreshWatchLinked(){
+  if(!API.live||!API.watch)return;
+  try{const r=await API.watch('devices');const on=!!(r.devices&&r.devices.length);LS.set('watchLinked',on);if(on){syncWatchCache(true);startDocSync()}}catch(e){}
+}
+const watchName=m=>{m=String(m||'').toLowerCase();const P=[['fr','Forerunner '],['fenix','fēnix '],['venu','Venu '],['vivoactive','vívoactive '],['epix','epix '],['instinct','Instinct ']];for(const [k,v] of P)if(m.startsWith(k))return v+m.slice(k.length).replace(/^(\d+)(.*)$/,(x,a,b)=>a+(b?' '+b.toUpperCase():''));return 'Garmin watch'};
+async function openWatchLink(){
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">⌚ Brainweight on your watch</span><h2>Link your Garmin watch</h2></div><button class="link" data-close>Close</button></div>
+    <ol class="plan-weeks" style="margin:0"><li>Install the Brainweight app on your Garmin watch.</li><li>Open it. It shows a 6-digit code.</li><li>Enter the code here.</li></ol>
+    <div class="promo-row"><input class="input" id="wlCode" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" aria-label="Code from your watch"><button class="primary" id="wlGo" style="min-height:46px">Link</button></div>
+    <div id="wlList"><div class="spinner"></div></div>
+    <p class="g-note" style="text-align:left">Start a workout on your watch or your phone and it opens on the other one. Sets you log on either show up on both, and a set logged on your watch starts your rest timer and brain game here.</p>`);
+  const list=o.querySelector('#wlList');
+  const draw=async()=>{
+    try{const r=await API.watch('devices');const D=r.devices||[];LS.set('watchLinked',D.length>0);
+      list.innerHTML=D.length?`<div class="card"><span class="eyebrow">Linked watches</span>${D.map(d=>`<div class="row" style="display:flex;justify-content:space-between;align-items:center"><span>${esc(watchName(d.model))}<span class="muted" style="font-size:12px;display:block">${d.last_seen?'Last used '+new Date(d.last_seen).toLocaleDateString():'Linked '+new Date(d.linked_at).toLocaleDateString()}</span></span><button class="link danger" data-un="${esc(d.id)}">Unlink</button></div>`).join('')}</div>`:'';
+      list.querySelectorAll('[data-un]').forEach(b=>b.onclick=async()=>{try{await API.watch('unlink',{id:b.dataset.un});toast('Watch unlinked');draw()}catch(e){toast(e.message)}});
+    }catch(e){list.innerHTML=''}
+  };
+  draw();
+  o.querySelector('#wlGo').onclick=async e=>{
+    const b=e.currentTarget,code=o.querySelector('#wlCode').value.replace(/\D/g,'');
+    if(code.length!==6){toast('Enter the 6-digit code from your watch');return}
+    b.disabled=true;
+    try{await API.watch('claim',{code});LS.set('watchLinked',true);LS.set('watchCacheKey','');syncWatchCache(true);startDocSync();toast('Watch linked. Your routines are on their way to it.');o.querySelector('#wlCode').value='';draw()}
+    catch(err){toast(err.message||'That code didn’t work')}
+    b.disabled=false;
   };
 }
 
