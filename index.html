@@ -444,6 +444,20 @@ button.card:hover{border-color:#2D3746}
 .pr-big{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:14px;background:var(--surface-2);text-align:left}
 .pr-big b{font:700 26px var(--display)}.pr-big b small{font-size:13px;font-weight:600;color:var(--muted)}.pr-big .muted{font-size:12px}
 .prof-tabs button{font-size:13px;padding:0 4px}
+.mm-card{display:flex;flex-direction:column;gap:10px}
+.mm{width:100%;max-width:340px;margin:0 auto;display:block}
+.mm .mm-body{fill:var(--surface-2)}
+.mm .mm-m{fill:color-mix(in srgb,var(--fg) 9%,var(--surface-2));stroke:var(--surface);stroke-width:.8}
+.mm .mm-s{fill:color-mix(in srgb,var(--accent) 42%,var(--surface-2))}
+.mm .mm-p{fill:var(--accent);animation:mmPulse 1.8s ease-in-out infinite}
+.mm .mm-t{fill:var(--muted);font:600 7px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+@keyframes mmPulse{0%,100%{opacity:1}50%{opacity:.62}}
+@media (prefers-reduced-motion:reduce){.mm .mm-p{animation:none}}
+.mm-legend{display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--muted)}
+.mm-legend span{display:inline-flex;align-items:center;gap:6px}
+.mm-dot{width:10px;height:10px;border-radius:3px;display:inline-block}.mm-dot.p{background:var(--accent)}.mm-dot.s{background:color-mix(in srgb,var(--accent) 42%,var(--surface-2))}
+.mm-rows{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14px}
+.mm-rows dt{color:var(--muted)}.mm-rows dd{margin:0;text-align:right;font-weight:600}
 .g-line{display:block;margin-top:6px;font-size:12.5px;color:var(--mind)}.g-line.muted{color:var(--muted)}
 .g-pending{border:1px dashed var(--mind);gap:6px;display:flex;flex-direction:column}
 .sched-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0}
@@ -1760,6 +1774,7 @@ function openExercise(id){
   }
   const o=sheet(`<div class="sheet-h"><h2>${esc(e.name)}</h2><button class="link" data-close>Close</button></div>
     <span class="eyebrow">${esc(e.muscle)} · ${esc(e.equip)} · ${TYPE_NAMES[e.type]}</span>
+    ${muscleCardHTML(id)}
     ${howToHTML(id)}
     <div class="tiles"><div class="tile"><b>${best?esc(metric[1](best)):'—'}</b><span>${metric[2]}</span></div><div class="tile"><b>${heavy?dispW(heavy)+' '+u():'—'}</b><span>Heaviest</span></div><div class="tile"><b>${sessions.length}</b><span>Sessions</span></div></div>
     ${chart}
@@ -3585,7 +3600,7 @@ function howToHTML(id){
 }
 function openHowTo(id){
   const e=EXMAP[id];if(!e)return;
-  sheet(`<div class="sheet-h"><h2>${esc(e.name)}</h2><button class="link" data-close>Done</button></div><span class="eyebrow">${esc(e.muscle)} · ${esc(e.equip)}</span>${howToHTML(id)}`);
+  sheet(`<div class="sheet-h"><h2>${esc(e.name)}</h2><button class="link" data-close>Done</button></div><span class="eyebrow">${esc(e.muscle)} · ${esc(e.equip)}</span>${muscleCardHTML(id)}${howToHTML(id)}`);
 }
 
 /* ---------- self-updating plans ---------- */
@@ -5765,6 +5780,140 @@ async function openWatchLink(){
     catch(err){toast(err.message||'That code didn’t work')}
     b.disabled=false;
   };
+}
+
+/* ================= muscle map ================= */
+// Which muscles each exercise works (primary and secondary) and its movement pattern, drawn on a
+// front and back body. Worked out from the exercise name and its main muscle, so it also covers
+// custom exercises.
+const MM_LABEL={chest:'Chest',delts:'Shoulders',rear:'Rear delts',biceps:'Biceps',triceps:'Triceps',forearms:'Forearms',abs:'Abs',obliques:'Obliques',
+  quads:'Quads',hamstrings:'Hamstrings',glutes:'Glutes',calves:'Calves',shins:'Shins',adductors:'Adductors',abductors:'Hip abductors',
+  lats:'Lats',upper:'Upper back',traps:'Traps',lower:'Lower back',neck:'Neck'};
+// [name test, primary, secondary, movement pattern]. The first match wins.
+const MM_RULES=[
+  [/clean|snatch|jerk/,['glutes','quads','traps'],['hamstrings','delts','lower','calves'],'Olympic lift'],
+  [/thruster|wall ball/,['quads','delts'],['glutes','triceps','abs'],'Squat to press'],
+  [/burpee|man maker|devil/,['quads','chest'],['delts','triceps','abs'],'Full body'],
+  [/turkish/,['delts','abs'],['glutes','obliques','triceps'],'Get-up'],
+  [/farmer|suitcase|carry|yoke/,['forearms','traps'],['abs','obliques','glutes'],'Carry'],
+  [/sled push|prowler/,['quads','glutes'],['calves','delts','triceps'],'Push (legs)'],
+  [/sled pull|sled drag/,['hamstrings','glutes'],['quads','upper','forearms'],'Pull (legs)'],
+  [/rowing machine|rower|\berg\b|ski erg/,['upper','quads'],['lats','biceps','hamstrings'],'Cardio'],
+  [/^(?!.*(rear|reverse)).*(fly|crossover|pec deck|squeeze press)/,['chest'],['delts'],'Chest fly'],
+  [/swing/,['glutes','hamstrings'],['lower','delts','forearms'],'Hinge'],
+  [/romanian|stiff|good morning|rdl/,['hamstrings','glutes'],['lower','forearms'],'Hinge'],
+  [/deadlift|rack pull/,['glutes','hamstrings','lower'],['quads','traps','forearms','lats'],'Hinge'],
+  [/hip thrust|glute bridge|bridge/,['glutes'],['hamstrings'],'Hip extension'],
+  [/kickback/,[],[],null], // decided by main muscle (glute or triceps kickback)
+  [/nordic|leg curl|hamstring curl|slider/,['hamstrings'],['calves'],'Knee flexion'],
+  [/leg extension/,['quads'],[],'Knee extension'],
+  [/lunge|split squat|step-up|step up|pistol|skater|cossack/,['quads','glutes'],['adductors','hamstrings','calves'],'Single-leg squat'],
+  [/squat|leg press|hack|wall sit|sissy/,['quads','glutes'],['adductors','hamstrings','lower'],'Squat'],
+  [/box jump|broad jump|jump squat|depth jump|tuck jump|bound/,['quads','glutes'],['calves','hamstrings'],'Jump'],
+  [/calf|calves/,['calves'],[],'Ankle extension'],
+  [/tibialis/,['shins'],[],'Ankle flexion'],
+  [/adduct|copenhagen/,['adductors'],['abs'],'Hip adduction'],
+  [/abduct|clamshell|band walk|monster walk/,['abductors'],['glutes'],'Hip abduction'],
+  [/pull-?up|chin-?up|pulldown|pull down/,['lats'],['biceps','upper','rear','forearms'],'Vertical pull'],
+  [/pullover/,['lats'],['chest','triceps'],'Pullover'],
+  [/face pull|reverse fly|rear delt|reverse pec|rear fly/,['rear'],['upper','traps'],'Rear delt pull'],
+  [/row/,['upper','lats'],['biceps','rear','forearms'],'Horizontal pull'],
+  [/shrug/,['traps'],['forearms'],'Shrug'],
+  [/upright row/,['delts','traps'],['biceps'],'Vertical pull'],
+  [/lateral raise|side raise|y-raise|y raise|lu raise/,['delts'],['traps'],'Raise'],
+  [/front raise/,['delts'],['chest'],'Raise'],
+  [/pike push|handstand/,['delts','triceps'],['chest','traps'],'Vertical push'],
+  [/overhead press|shoulder press|military|arnold|push press|landmine press|z press|bradford/,['delts'],['triceps','traps','abs'],'Vertical push'],
+  [/close.?grip|jm press|tate/,['triceps','chest'],['delts'],'Horizontal push'],
+  [/incline/,['chest','delts'],['triceps'],'Incline push'],
+  [/fly|crossover|pec deck|squeeze press/,['chest'],['delts'],'Chest fly'],
+  [/dip/,['chest','triceps'],['delts'],'Dip'],
+  [/bench|chest press|push-?up|floor press|svend|press-up/,['chest'],['triceps','delts'],'Horizontal push'],
+  [/pushdown|push-down|skull|triceps extension|tricep extension|overhead extension|french press/,['triceps'],[],'Elbow extension'],
+  [/curl/,['biceps'],['forearms'],'Elbow flexion'],
+  [/wrist|forearm|grip|roller|plate pinch|dead hang|hang\b/,['forearms'],[],'Grip'],
+  [/woodchop|chop|russian twist|rotation|pallof|landmine twist|side bend/,['obliques'],['abs'],'Rotation'],
+  [/side plank/,['obliques'],['abs','abductors'],'Anti-lateral flexion'],
+  [/plank|dead bug|hollow|ab wheel|rollout|bird dog|bear crawl/,['abs'],['obliques','delts'],'Anti-extension'],
+  [/crunch|sit-?up|leg raise|knee raise|v-up|toes to bar|flutter|mountain climber/,['abs'],['obliques'],'Trunk flexion'],
+  [/hyperextension|back extension|superman|reverse hyper/,['lower'],['glutes','hamstrings'],'Hip extension'],
+  [/neck/,['neck'],['traps'],'Neck'],
+  [/row(er|ing)|erg/,['upper','quads'],['lats','biceps','hamstrings'],'Cardio'],
+  [/bike|cycl|spin/,['quads'],['glutes','calves','hamstrings'],'Cardio'],
+  [/run|sprint|treadmill|jog/,['quads','hamstrings'],['glutes','calves'],'Cardio'],
+  [/jump rope|skip/,['calves'],['quads','delts'],'Cardio'],
+  [/stair|elliptical|climb/,['quads','glutes'],['calves','hamstrings'],'Cardio'],
+  [/swim/,['lats','delts'],['triceps','abs'],'Cardio'],
+  [/battle rope|rope wave/,['delts'],['abs','forearms'],'Conditioning'],
+];
+// Fallback by the exercise's main muscle.
+const MM_BY_MUSCLE={Chest:[['chest'],['triceps','delts'],'Horizontal push'],Shoulders:[['delts'],['triceps'],'Shoulders'],Biceps:[['biceps'],['forearms'],'Elbow flexion'],
+  Triceps:[['triceps'],[],'Elbow extension'],Forearms:[['forearms'],[],'Grip'],Lats:[['lats'],['biceps','upper'],'Vertical pull'],'Upper back':[['upper','lats'],['biceps','rear'],'Horizontal pull'],
+  Traps:[['traps'],['forearms'],'Shrug'],'Lower back':[['lower'],['glutes','hamstrings'],'Hip extension'],Abs:[['abs'],['obliques'],'Core'],Obliques:[['obliques'],['abs'],'Rotation'],
+  Quads:[['quads'],['glutes'],'Squat'],Glutes:[['glutes'],['hamstrings'],'Hip extension'],Hamstrings:[['hamstrings'],['glutes'],'Hinge'],Calves:[['calves'],[],'Ankle extension'],
+  Adductors:[['adductors'],[],'Hip adduction'],Abductors:[['abductors'],['glutes'],'Hip abduction'],Neck:[['neck'],['traps'],'Neck'],
+  'Full body':[['quads','glutes','delts'],['abs','hamstrings'],'Full body'],Olympic:[['glutes','quads','traps'],['hamstrings','delts','lower'],'Olympic lift'],
+  Cardio:[['quads'],['glutes','calves'],'Cardio'],Mobility:[[],[],'Mobility']};
+const MM_CACHE={};
+function exMuscles(id){
+  if(MM_CACHE[id])return MM_CACHE[id];
+  const e=EXMAP[id];if(!e)return{p:[],s:[],pattern:''};
+  const n=e.name.toLowerCase();
+  let rule=MM_RULES.find(r=>r[0].test(n)&&r[1].length);
+  if(n.includes('kickback'))rule=e.muscle==='Triceps'?[0,['triceps'],[],'Elbow extension']:[0,['glutes'],['hamstrings'],'Hip extension'];
+  const base=MM_BY_MUSCLE[e.muscle]||[[],[],''];
+  let p=rule?rule[1]:base[0],s=rule?rule[2]:base[1],pattern=rule?rule[3]:base[2];
+  // Keep the listed main muscle in the primary group.
+  const main=Object.entries(MM_BY_MUSCLE).find(([k])=>k===e.muscle);
+  if(main&&main[1][0][0]&&!p.includes(main[1][0][0])&&!(main[1][0][0]==='delts'&&p.includes('rear'))&&!['Full body','Olympic','Cardio','Mobility'].includes(e.muscle))p=[main[1][0][0],...p];
+  if(/rear|reverse fly|reverse pec|face pull/.test(n))p=p.map(m=>m==='delts'?'rear':m);
+  s=s.filter(m=>!p.includes(m));
+  return MM_CACHE[id]={p:[...new Set(p)],s:[...new Set(s)],pattern:pattern||''};
+}
+// Front and back body. Each muscle is one or two shapes, keyed by region.
+const MM_FRONT={
+  neck:'<rect x="46" y="21" width="8" height="7" rx="2"/>',
+  delts:'<ellipse cx="31" cy="40" rx="7" ry="7.5"/><ellipse cx="69" cy="40" rx="7" ry="7.5"/>',
+  chest:'<path d="M37 40Q49 37 49 42L49 56Q42 60 34 55Q31 47 37 40Z"/><path d="M63 40Q51 37 51 42L51 56Q58 60 66 55Q69 47 63 40Z"/>',
+  biceps:'<ellipse cx="24" cy="58" rx="4.2" ry="10" transform="rotate(8 24 58)"/><ellipse cx="76" cy="58" rx="4.2" ry="10" transform="rotate(-8 76 58)"/>',
+  forearms:'<ellipse cx="19.5" cy="85" rx="3.8" ry="10" transform="rotate(10 19.5 85)"/><ellipse cx="80.5" cy="85" rx="3.8" ry="10" transform="rotate(-10 80.5 85)"/>',
+  abs:'<rect x="44" y="59" width="12" height="32" rx="4"/>',
+  obliques:'<path d="M35 60L42 62L42 90L36 92Q32 76 35 60Z"/><path d="M65 60L58 62L58 90L64 92Q68 76 65 60Z"/>',
+  abductors:'<ellipse cx="33.5" cy="106" rx="2.8" ry="7"/><ellipse cx="66.5" cy="106" rx="2.8" ry="7"/>',
+  adductors:'<ellipse cx="47.3" cy="117" rx="2.6" ry="10"/><ellipse cx="52.7" cy="117" rx="2.6" ry="10"/>',
+  quads:'<ellipse cx="41" cy="128" rx="6.8" ry="19"/><ellipse cx="59" cy="128" rx="6.8" ry="19"/>',
+  shins:'<ellipse cx="41" cy="170" rx="3.6" ry="14"/><ellipse cx="59" cy="170" rx="3.6" ry="14"/>',
+};
+const MM_BACK={
+  neck:'<rect x="46" y="21" width="8" height="7" rx="2"/>',
+  traps:'<path d="M43 24L57 24L66 36L50 58L34 36Z"/>',
+  rear:'<ellipse cx="31" cy="40" rx="7" ry="7.5"/><ellipse cx="69" cy="40" rx="7" ry="7.5"/>',
+  upper:'<path d="M37 39L45 46L45 56L37 53Q34 46 37 39Z"/><path d="M63 39L55 46L55 56L63 53Q66 46 63 39Z"/>',
+  triceps:'<ellipse cx="24" cy="59" rx="4.2" ry="10" transform="rotate(8 24 59)"/><ellipse cx="76" cy="59" rx="4.2" ry="10" transform="rotate(-8 76 59)"/>',
+  forearms:'<ellipse cx="19.5" cy="85" rx="3.8" ry="10" transform="rotate(10 19.5 85)"/><ellipse cx="80.5" cy="85" rx="3.8" ry="10" transform="rotate(-10 80.5 85)"/>',
+  lats:'<path d="M33 53L45 59L46 80Q38 78 31 66Z"/><path d="M67 53L55 59L54 80Q62 78 69 66Z"/>',
+  lower:'<rect x="45" y="70" width="4.4" height="22" rx="2"/><rect x="50.6" y="70" width="4.4" height="22" rx="2"/>',
+  abductors:'<ellipse cx="35" cy="98" rx="3.4" ry="5"/><ellipse cx="65" cy="98" rx="3.4" ry="5"/>',
+  glutes:'<ellipse cx="43" cy="105" rx="7.8" ry="8"/><ellipse cx="57" cy="105" rx="7.8" ry="8"/>',
+  hamstrings:'<ellipse cx="42" cy="131" rx="6.6" ry="16"/><ellipse cx="58" cy="131" rx="6.6" ry="16"/>',
+  adductors:'<ellipse cx="47.6" cy="122" rx="2.2" ry="8"/><ellipse cx="52.4" cy="122" rx="2.2" ry="8"/>',
+  calves:'<ellipse cx="42" cy="166" rx="5.4" ry="12"/><ellipse cx="58" cy="166" rx="5.4" ry="12"/>',
+};
+const MM_BODY='<circle cx="50" cy="13" r="9"/><rect x="45" y="20" width="10" height="9" rx="3"/><path d="M29 34Q50 27 71 34L73 60Q71 80 67 96L33 96Q29 80 27 60Z"/><path d="M33 94L67 94L65 110Q50 116 35 110Z"/>'
+  +'<ellipse cx="24" cy="58" rx="6.2" ry="15" transform="rotate(8 24 58)"/><ellipse cx="76" cy="58" rx="6.2" ry="15" transform="rotate(-8 76 58)"/>'
+  +'<ellipse cx="19" cy="86" rx="5.2" ry="13" transform="rotate(10 19 86)"/><ellipse cx="81" cy="86" rx="5.2" ry="13" transform="rotate(-10 81 86)"/>'
+  +'<circle cx="15.5" cy="104" r="4"/><circle cx="84.5" cy="104" r="4"/><ellipse cx="42" cy="128" rx="9" ry="24"/><ellipse cx="58" cy="128" rx="9" ry="24"/>'
+  +'<ellipse cx="42" cy="170" rx="6.2" ry="21"/><ellipse cx="58" cy="170" rx="6.2" ry="21"/><ellipse cx="41" cy="196" rx="6" ry="3.2"/><ellipse cx="59" cy="196" rx="6" ry="3.2"/>';
+function muscleSVG(m,size){
+  const fig=(map,x,label)=>`<g transform="translate(${x} 0)"><g class="mm-body">${MM_BODY}</g>${Object.entries(map).map(([k,d])=>`<g class="mm-m${m.p.includes(k)?' mm-p':m.s.includes(k)?' mm-s':''}">${d}</g>`).join('')}<text x="50" y="208" text-anchor="middle" class="mm-t">${label}</text></g>`;
+  return `<svg class="mm" viewBox="0 0 210 212" ${size?`style="max-width:${size}px"`:''} role="img" aria-label="Muscles worked: ${esc([...m.p,...m.s].map(k=>MM_LABEL[k]).join(', ')||'none')}">${fig(MM_FRONT,0,'Front')}${fig(MM_BACK,110,'Back')}</svg>`;
+}
+function muscleCardHTML(id){
+  const m=exMuscles(id);if(!m.p.length&&!m.s.length)return'';
+  const names=a=>a.map(k=>MM_LABEL[k]).join(', ')||'None';
+  return `<div class="card mm-card">${muscleSVG(m)}
+    <div class="mm-legend"><span><i class="mm-dot p"></i>Primary</span><span><i class="mm-dot s"></i>Secondary</span></div>
+    <dl class="mm-rows"><dt>Primary muscles</dt><dd>${esc(names(m.p))}</dd><dt>Secondary muscles</dt><dd>${esc(names(m.s))}</dd>${m.pattern?`<dt>Movement pattern</dt><dd>${esc(m.pattern)}</dd>`:''}</dl></div>`;
 }
 
 /* ================= free tier ================= */
