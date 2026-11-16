@@ -846,6 +846,7 @@ body{font-variant-numeric:tabular-nums}
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
+var APP_VERSION='30';
 (function(){
   var start=Date.now(),msgs=['Loading the bar','Chalking up','Warming up your brain','Setting up your plates'],i=0;
   var t=setInterval(function(){var m=document.getElementById('spMsg');if(!m){clearInterval(t);return}i=(i+1)%msgs.length;m.textContent=msgs[i]},1400);
@@ -5230,7 +5231,7 @@ function accountHTML(){
     <div style="display:flex;gap:8px;flex-wrap:wrap">${s&&s.has_customer?'<button class="secondary" id="acManage">Manage subscription</button>':''}${lvl()<1&&!isAdmin()?'<button class="primary" id="acMember" style="min-height:46px">Become a Member</button>':''}${lvl()<2?`<button class="${lvl()<1&&!isAdmin()?'secondary':'primary'}" id="acUp" style="min-height:46px">Upgrade to Pro</button>`:''}</div>
     <div class="promo-row"><input class="input" id="acCode" placeholder="Promo or invite code" autocapitalize="characters" autocomplete="off" aria-label="Promo or invite code"><button class="secondary" id="acRedeem">Redeem</button></div></div>
     <div class="menu"><button id="acProfile">Edit profile</button>${isAdmin()?'<button id="acAdmin">Admin tools</button>':''}${isCoachMe()?'<button id="acCoach">Coach portal</button>':'<button id="acCoach">Become a coach</button>'}<button id="acPrivacy" class="menu-badge">Privacy &amp; messages<span class="nbadge" data-badge="requests" hidden></span></button><button id="acNotif">Notifications</button><button id="acGarmin">Garmin Connect</button><button id="acWatch">Brainweight watch app</button><button id="acImport">Import workouts</button><button id="acInvite">Invite friends</button><button id="acTerms">Community guidelines</button><a class="menu-link" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a class="menu-link" href="terms.html" target="_blank" rel="noopener">Terms of service</a><button id="acOut">Sign out</button><button id="acDel" class="danger">Delete account</button></div>
-    <p class="g-note">Signed in as ${esc(ME.user?.email||'')}${!API.live?' · preview mode':''}</p>`;
+    <p class="g-note">Signed in as ${esc(ME.user?.email||'')}${!API.live?' · preview mode':''} · Version ${APP_VERSION}</p>`;
 }
 function wireAccount(o){
   const m=o.querySelector('#acManage');if(m)m.onclick=async()=>{try{const url=await API.billing({action:'portal'});if(url)location.href=url}catch(e){toast(errMsg(e))}};
