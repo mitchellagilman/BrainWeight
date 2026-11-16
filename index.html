@@ -838,6 +838,7 @@ body{font-variant-numeric:tabular-nums}
 .scan-ov{position:fixed;inset:0;z-index:120;background:#000;display:flex;flex-direction:column}
 .scan-ov video,.scan-prev{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .scan-ov.scan-dead .scan-frame{display:none}
+html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html.vshort .scan-bot{padding-bottom:16px}
 .scan-frame{position:absolute;left:10%;right:10%;top:38%;height:18%;border:3px solid #fff;border-radius:16px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
 .scan-top{position:relative;display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 12px) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));color:#fff}
 .scan-top b{font-size:17px}.scan-x{color:#fff;font-weight:600;width:64px;text-align:left}
@@ -893,7 +894,7 @@ body{font-variant-numeric:tabular-nums}
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='37';
+var APP_VERSION='38';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -910,6 +911,11 @@ var APP_VERSION='37';
   document.addEventListener('focusout',function(e){if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)){setTimeout(heal,150);setTimeout(heal,600)}});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(heal,150)});
   window.addEventListener('pageshow',function(){setTimeout(heal,150)});
+  // Some iPhones give home-screen apps a window that already stops above the home bar. Then the usual
+  // home-bar padding just pushes the tab bar up, so drop it.
+  function short(){var portrait=window.innerWidth<window.innerHeight;document.documentElement.classList.toggle('vshort',portrait&&screen.height-window.innerHeight>20)}
+  short();window.addEventListener('resize',function(){setTimeout(short,60)});window.addEventListener('pageshow',short);document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(short,200)});
+  var h0=heal;heal=function(){h0();setTimeout(short,120)};
   window.bwHeal=heal;
 })();
 (function(){
