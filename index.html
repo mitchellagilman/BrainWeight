@@ -757,6 +757,7 @@ button.card:hover{border-color:#2D3746}
 html{background:var(--bg)}
 body{background:var(--bg)}
 .app{position:fixed;top:0;bottom:0;left:0;right:0;height:auto}
+html.standalone .app{bottom:auto;height:var(--appH,100vh)}
 html,body{min-height:100%;background:var(--bg)}
 .top{padding-block:calc(env(safe-area-inset-top,0px) + 10px) 8px}
 .top .brand{display:none}
@@ -835,6 +836,14 @@ body{font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){#splash .sp-bar,#splash .sp-arm,#splash .sp-head,#splash .sp-spark,#splash .sp-track i{animation:none}#splash .sp-bar{transform:none}}
 
 /* ---- meals ---- */
+.scan-ov{position:fixed;inset:0;z-index:120;background:#000;display:flex;flex-direction:column}
+.scan-ov video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan-frame{position:absolute;left:10%;right:10%;top:38%;height:18%;border:3px solid #fff;border-radius:16px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
+.scan-top{position:relative;display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 12px) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));color:#fff}
+.scan-top b{font-size:17px}.scan-x{color:#fff;font-weight:600;width:64px;text-align:left}
+.scan-bot{position:relative;margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(transparent,rgba(0,0,0,.85) 30%)}
+.scan-bot p{color:#fff;text-align:center;font-size:15px;margin:0}
+
 .title-switch{display:inline-flex;align-items:center;gap:6px;font:inherit;color:inherit;letter-spacing:inherit}
 .title-switch svg{width:22px;height:22px;margin-top:4px;color:var(--muted)}
 .tswitch{position:fixed;z-index:70;min-width:250px;background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 12px 40px rgba(0,0,0,.5);display:flex;flex-direction:column}
@@ -884,7 +893,18 @@ body{font-variant-numeric:tabular-nums}
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='35';
+var APP_VERSION='36';
+// iPhone home-screen apps sometimes report a screen that's too short (often after the keyboard closes),
+// which leaves a gap under the tab bar. Size the app from the real screen height instead.
+(function(){
+  var sa=window.navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  if(!sa)return;document.documentElement.classList.add('standalone');
+  function fit(){var portrait=window.innerWidth<window.innerHeight,h=window.innerHeight;
+    if(portrait&&screen.height>h&&screen.height-h<160)h=screen.height;
+    document.documentElement.style.setProperty('--appH',h+'px')}
+  fit();['resize','orientationchange','focusout','pageshow'].forEach(function(e){window.addEventListener(e,function(){setTimeout(fit,60)})});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(fit,60)});
+})();
 (function(){
   var start=Date.now(),msgs=['Loading the bar','Chalking up','Warming up your brain','Setting up your plates'],i=0;
   var t=setInterval(function(){var m=document.getElementById('spMsg');if(!m){clearInterval(t);return}i=(i+1)%msgs.length;m.textContent=msgs[i]},1400);
@@ -6845,18 +6865,26 @@ function openCreateFood(pre,done){
 }
 
 /* ---------- barcode scanner ---------- */
+// Full-screen camera (no blurred sheet behind it, which can turn iPhone video black). We start the camera
+// ourselves, then read frames into a canvas a few times a second and decode them with ZXing.
 let zxingP=null;
 function loadZXing(){if(window.ZXing)return Promise.resolve(window.ZXing);return zxingP||(zxingP=new Promise((res,rej)=>{const s=document.createElement('script');s.src=ZXING_URL;s.onload=()=>res(window.ZXing);s.onerror=()=>{zxingP=null;rej(new Error('load'))};document.head.appendChild(s)}))}
-function zxReader(Z){const h=new Map();h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E]);h.set(Z.DecodeHintType.TRY_HARDER,true);return new Z.BrowserMultiFormatReader(h,250)}
+function zxHints(Z){const h=new Map();h.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E]);h.set(Z.DecodeHintType.TRY_HARDER,true);return h}
+function zxReader(Z){return new Z.BrowserMultiFormatReader(zxHints(Z),250)}
+function zxCanvas(Z,reader,canvas){try{const src=new Z.HTMLCanvasElementLuminanceSource(canvas);const r=reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(src)));return r&&r.getText()}catch(e){return null}}
 function openScanner(done){
-  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>Scan a barcode</h2><span style="width:52px"></span></div>
-    <div class="fd-cam"><video id="scV" playsinline muted autoplay></video><div class="fd-frame"></div></div>
-    <p class="muted fd-hint" id="scMsg">Starting the camera…</p>
-    <div class="fd-tools"><label class="secondary fd-file">Take a photo instead<input type="file" id="scF" accept="image/*" capture="environment" hidden></label></div>
-    <form class="fd-search" id="scForm"><input class="input" id="scN" inputmode="numeric" placeholder="Or type the numbers" autocomplete="off"><button class="secondary" type="submit">Look up</button></form>`,{full:true});
-  const msg=o.querySelector('#scMsg'),video=o.querySelector('#scV');let reader=null,doneOnce=false;
-  const stop=()=>{try{reader&&reader.reset()}catch(e){}try{(video.srcObject&&video.srcObject.getTracks()||[]).forEach(t=>t.stop())}catch(e){}};
-  const close0=o.close;o.close=()=>{stop();close0()};
+  const o=el(`<div class="scan-ov" role="dialog" aria-modal="true" aria-label="Scan a barcode">
+    <video id="scV" playsinline muted autoplay></video><div class="scan-frame"></div>
+    <div class="scan-top"><button class="scan-x" id="scX">Cancel</button><b>Scan a barcode</b><span style="width:64px"></span></div>
+    <div class="scan-bot"><p id="scMsg">Starting the camera…</p>
+      <div class="scan-row"><label class="secondary fd-file">Take a photo instead<input type="file" id="scF" accept="image/*" capture="environment" hidden></label></div>
+      <form class="fd-search" id="scForm"><input class="input" id="scN" inputmode="numeric" placeholder="Or type the numbers" autocomplete="off"><button class="secondary" type="submit">Look up</button></form></div></div>`);
+  document.body.appendChild(o);
+  const msg=o.querySelector('#scMsg'),video=o.querySelector('#scV');let stream=null,timer=null,doneOnce=false,Z=null,reader=null,closed=false;
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
+  const stop=()=>{clearInterval(timer);timer=null;try{(stream&&stream.getTracks()||[]).forEach(t=>t.stop())}catch(e){}try{video.srcObject=null}catch(e){}};
+  o.close=()=>{closed=true;stop();o.remove()};
+  o.querySelector('#scX').onclick=()=>o.close();
   const found=async code=>{
     if(doneOnce)return;doneOnce=true;stop();msg.textContent=`Looking up ${code}…`;try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}
     const mine=FOOD.lib.custom.concat(FOOD.lib.recent).find(f=>f.code&&(f.code===code||f.code.replace(/^0/,'')===code.replace(/^0/,'')));
@@ -6867,14 +6895,26 @@ function openScanner(done){
   };
   o.querySelector('#scForm').onsubmit=e=>{e.preventDefault();const n=o.querySelector('#scN').value.replace(/\D/g,'');if(n.length<8){toast('Barcodes are 8 to 13 digits.');return}found(n)};
   o.querySelector('#scF').onchange=async e=>{const file=e.target.files[0];if(!file)return;msg.textContent='Reading the photo…';
-    try{const Z=await loadZXing();const r=zxReader(Z),url=URL.createObjectURL(file);const out=await r.decodeFromImageUrl(url);URL.revokeObjectURL(url);found(out.getText())}
+    try{const Zl=await loadZXing();const r=zxReader(Zl),url=URL.createObjectURL(file);const out=await r.decodeFromImageUrl(url);URL.revokeObjectURL(url);found(out.getText())}
     catch(err){msg.textContent='Couldn’t read a barcode in that photo. Get closer, with the bars filling most of the picture.'}e.target.value=''};
+  // Scan the middle band of the picture, where the frame is.
+  const tick=()=>{
+    if(doneOnce||!video.videoWidth)return;
+    const vw=video.videoWidth,vh=video.videoHeight,cw=Math.min(1000,vw),sh=Math.round(vh*.5),sy=Math.round(vh*.25);
+    canvas.width=cw;canvas.height=Math.round(sh*cw/vw);ctx.drawImage(video,0,sy,vw,sh,0,0,canvas.width,canvas.height);
+    const t=zxCanvas(Z,reader,canvas);if(t)found(t);
+  };
   (async()=>{
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){msg.textContent='Your camera isn’t available here. Take a photo or type the numbers instead.';return}
-    try{const Z=await loadZXing();if(!document.body.contains(o))return;reader=zxReader(Z);
-      await reader.decodeFromConstraints({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}},video,(r)=>{if(r)found(r.getText())});
-      msg.textContent='Hold the barcode inside the box.';}
-    catch(err){msg.textContent=err&&err.name==='NotAllowedError'?'Camera access is off. Allow it in Settings, or take a photo or type the numbers instead.':err&&err.message==='load'?'Couldn’t load the scanner. Check your connection, or type the numbers instead.':'Couldn’t start the camera. Take a photo or type the numbers instead.'}
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){msg.textContent='The camera isn’t available here. Take a photo or type the numbers instead.';return}
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
+      if(closed){stop();return}
+      video.setAttribute('playsinline','');video.muted=true;video.srcObject=stream;
+      await video.play().catch(()=>{});
+      msg.textContent='Hold the barcode inside the box.';
+      Z=await loadZXing();if(closed)return;reader=new Z.MultiFormatReader();reader.setHints(zxHints(Z));
+      timer=setInterval(tick,180);
+    }catch(err){msg.textContent=err&&err.name==='NotAllowedError'?'Camera access is off. Allow it in your phone’s Settings, or take a photo or type the numbers instead.':err&&err.message==='load'?'Couldn’t load the scanner. Check your connection, or type the numbers instead.':'Couldn’t start the camera. Take a photo or type the numbers instead.'}
   })();
 }
 
