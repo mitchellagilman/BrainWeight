@@ -1,7 +1,7 @@
 // Brainweight offline support.
 // App files: network first (so updates show right away), cached copy when offline.
 // Google Fonts: cache first.
-const VERSION = 'bw-v30';
+const VERSION = 'bw-v31';
 const SHELL = [
   './',
   'index.html',
@@ -78,4 +78,4 @@ self.addEventListener('fetch', (event) => {
       })
       .catch(() => caches.match(req).then((hit) => hit || caches.match('index.html')))
   );
-}); 
+});
