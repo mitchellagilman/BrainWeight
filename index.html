@@ -754,7 +754,8 @@ button.card:hover{border-color:#2D3746}
 }
 html{background:var(--bg)}
 body{background:var(--bg)}
-.app{height:100vh;height:100dvh}
+.app{position:fixed;top:0;bottom:0;left:0;right:0;height:auto}
+html,body{min-height:100%;background:var(--bg)}
 .top{padding-block:calc(env(safe-area-inset-top,0px) + 10px) 8px}
 .top .brand{display:none}
 #title{position:static;width:auto;height:auto;overflow:visible;clip:auto;font:800 30px/1.1 var(--body-font);letter-spacing:-.02em;margin:0}
@@ -846,7 +847,7 @@ body{font-variant-numeric:tabular-nums}
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='30';
+var APP_VERSION='31';
 (function(){
   var start=Date.now(),msgs=['Loading the bar','Chalking up','Warming up your brain','Setting up your plates'],i=0;
   var t=setInterval(function(){var m=document.getElementById('spMsg');if(!m){clearInterval(t);return}i=(i+1)%msgs.length;m.textContent=msgs[i]},1400);
