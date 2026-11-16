@@ -458,6 +458,10 @@ button.card:hover{border-color:#2D3746}
 .mm-dot{width:10px;height:10px;border-radius:3px;display:inline-block}.mm-dot.p{background:var(--accent)}.mm-dot.s{background:color-mix(in srgb,var(--accent) 42%,var(--surface-2))}
 .mm-rows{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14px}
 .mm-rows dt{color:var(--muted)}.mm-rows dd{margin:0;text-align:right;font-weight:600}
+.kit-row{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px;padding:2px 0;border-bottom:1px solid var(--line)}
+.kit-row label{display:flex;align-items:center;gap:10px;font-size:15px}.kit-row input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+.kit-max{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.kit-max .input{width:64px;min-height:34px;padding:4px 8px}
+.kit-scan,.kit-sum{display:flex;flex-direction:column;gap:6px}.kit-sum{margin-top:8px;padding:12px 14px;font-size:14px}
 .g-line{display:block;margin-top:6px;font-size:12.5px;color:var(--mind)}.g-line.muted{color:var(--muted)}
 .g-pending{border:1px dashed var(--mind);gap:6px;display:flex;flex-direction:column}
 .sched-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0}
@@ -740,7 +744,117 @@ button.card:hover{border-color:#2D3746}
 .loadrow{display:flex;justify-content:center;padding:8px}
 
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+/* ================= clean look (v28) =================
+   Flat dark background, solid cards, big page titles, one blue accent for actions,
+   a floating tab bar, and the app filling the whole screen on iPhone. */
+:root{
+  --bg:#111214; --surface:#1C1D21; --surface-2:#26282D; --glass:rgba(28,29,33,.94); --fg:#F2F4F7; --muted:#8E949E; --line:#2A2C31;
+  --body-font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Manrope",system-ui,sans-serif;
+  --scrim:rgba(0,0,0,.6);
+}
+html{background:var(--bg)}
+body{background:var(--bg)}
+.app{height:100vh;height:100dvh}
+.top{padding-block:calc(env(safe-area-inset-top,0px) + 10px) 8px}
+.top .brand{display:none}
+#title{position:static;width:auto;height:auto;overflow:visible;clip:auto;font:800 30px/1.1 var(--body-font);letter-spacing:-.02em;margin:0}
+.icon-btn{background:var(--surface);border-radius:50%;color:var(--fg)}
+.eyebrow{font:600 12px var(--body-font);letter-spacing:.05em;color:var(--muted)}
+.card{background:var(--surface);border:none;border-radius:16px}
+.hero{background:var(--surface);border:none;box-shadow:none;border-radius:18px}
+.hero::before,.hero::after{display:none}
+.primary{border-radius:14px;box-shadow:none;font:700 17px var(--body-font);letter-spacing:0}
+.secondary{border:none;background:var(--surface-2);border-radius:14px;font-weight:600}
+.input{border-color:transparent;background:var(--surface-2)}
+.input:focus{border-color:var(--body)}
+.chip{border:none;background:var(--surface-2);color:var(--fg);font-weight:600}
+.chip[aria-pressed="true"]{background:var(--body);color:#fff;border-color:transparent}
+.seg{border:none;background:var(--surface-2);border-radius:12px;padding:3px;gap:2px}
+.seg button{border-radius:10px;min-height:38px}
+.seg button[aria-pressed="true"]{background:#3A3D44;color:var(--fg)}
+.link{color:var(--body)}
+.quick-row{grid-template-columns:repeat(2,1fr)}
+#tlSeg{grid-template-columns:repeat(4,1fr)}
+.dock{padding-bottom:max(10px,env(safe-area-inset-bottom,0px))}
+.tabbar{border-radius:30px;background:var(--glass);border:1px solid var(--line);padding:5px;margin:0 6px;gap:2px;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.tabbar button{min-height:54px;border-radius:24px;font-size:11px;font-weight:600;color:var(--muted)}
+.tabbar button svg{width:23px;height:23px}
+.tabbar button[aria-current="page"]{color:var(--body);background:#24262B}
+.tabbar button[aria-current="page"]::after{display:none}
+.sheet{background:#18191C;border:none}
+/* warm-up calculator */
+.wu-card{gap:0;padding:6px 14px}
+.wu-row{display:grid;grid-template-columns:36px 1fr 46px 52px;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.wu-row:last-child{border-bottom:none}
+.wu-row span:nth-child(2){display:flex;flex-direction:column;gap:2px}
+.wu-row small{color:var(--muted);font-size:12px}
+.wu-row span:nth-child(n+3){text-align:right}
+.wu-head{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;padding:8px 0}
+.wu-row.goal b{color:var(--body);font-size:17px}
+.wu-warn{background:rgba(255,192,46,.12);color:#FFC02E;border-radius:12px;padding:10px 12px;font-size:13px;margin:0}
+.wu-tips{margin:0;padding-left:18px;color:var(--muted);font-size:13px;display:flex;flex-direction:column;gap:4px}
+
+:root{--mono:var(--body-font)}
+body{font-variant-numeric:tabular-nums}
+.outline{border:none;background:var(--surface);color:var(--body);font-weight:700;border-radius:14px}
+.ex-name{color:var(--fg)}
+.fin:focus,.rin:focus,.textarea:focus{border-color:var(--body);box-shadow:none}
+.restdock{border-color:var(--line)}
+.pz-list{background:var(--surface);border:none}
+.daily-card{border:none;background:var(--surface)}
+.coach-cta{border:none;background:var(--surface)}
+.plan-go,.plan-ex b,.sw-act,.check-row b{color:var(--body)}
+.check-row i.on{background:var(--body);border-color:var(--body)}
+.sched-day.now{background:rgba(47,134,255,.16);outline:1px solid var(--body)}.sched-day.now span{color:var(--body)}
+.g-line{color:var(--body)}
+.plan[aria-pressed="true"]{border-color:var(--body);box-shadow:0 0 0 3px rgba(47,134,255,.18)}
+.toggle input,.kit-row input[type=checkbox]{accent-color:var(--body)}
+.mm .mm-p{fill:var(--body)}.mm .mm-s{fill:color-mix(in srgb,var(--body) 45%,var(--surface-2))}.mm-dot.p{background:var(--body)}.mm-dot.s{background:color-mix(in srgb,var(--body) 45%,var(--surface-2))}
+
+/* ---- loading screen ---- */
+#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:var(--bg);transition:opacity .35s ease}
+#splash.out{opacity:0;pointer-events:none}
+#splash svg{width:150px;height:150px;overflow:visible}
+#splash .sp-bar{animation:spPress 1.6s cubic-bezier(.55,0,.35,1) infinite}
+#splash .sp-arm{transform-box:fill-box;transform-origin:50% 100%;animation:spArm 1.6s cubic-bezier(.55,0,.35,1) infinite}
+#splash .sp-head{animation:spHead 1.6s cubic-bezier(.55,0,.35,1) infinite}
+#splash .sp-spark{opacity:0;transform-box:fill-box;transform-origin:50% 50%;animation:spSpark 1.6s ease-out infinite}
+#splash .sp-wm{font:800 22px/1 var(--body-font);letter-spacing:.14em;color:var(--fg)}
+#splash .sp-wm b{color:var(--body)}
+#splash .sp-msg{font:500 14px/1 var(--body-font);color:var(--muted);min-height:14px}
+#splash .sp-track{width:120px;height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden}
+#splash .sp-track i{display:block;width:40%;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--body),var(--mind));animation:spSlide 1.1s ease-in-out infinite}
+@keyframes spPress{0%,100%{transform:translateY(39px)}45%,60%{transform:translateY(0)}}
+@keyframes spArm{0%,100%{transform:scaleY(.12)}45%,60%{transform:scaleY(1)}}
+@keyframes spHead{0%,100%{transform:translateY(1px)}45%,60%{transform:translateY(-1px)}}
+@keyframes spSpark{0%,40%{opacity:0;transform:scale(.6)}52%{opacity:1;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.25)}}
+@keyframes spSlide{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+@media (prefers-reduced-motion:reduce){#splash .sp-bar,#splash .sp-arm,#splash .sp-head,#splash .sp-spark,#splash .sp-track i{animation:none}#splash .sp-bar{transform:none}}
+
 </style>
+<div id="splash" role="status" aria-label="Loading Brainweight">
+  <svg viewBox="0 0 120 120" aria-hidden="true">
+    <g class="sp-spark" stroke="var(--mind)" stroke-width="3" stroke-linecap="round"><path d="M60 6v8M44 10l4 7M76 10l-4 7"/></g>
+    <rect class="sp-arm" x="40" y="30" width="6" height="40" rx="3" fill="var(--fg)"/><rect class="sp-arm" x="74" y="30" width="6" height="40" rx="3" fill="var(--fg)"/>
+    <circle class="sp-head" cx="60" cy="58" r="8" fill="var(--fg)"/>
+    <path d="M44 70h32l-4 30H48z" fill="var(--fg)"/>
+    <path d="M50 100l-4 16M70 100l4 16" stroke="var(--fg)" stroke-width="7" stroke-linecap="round"/>
+    <g class="sp-bar"><rect x="8" y="26" width="104" height="5" rx="2.5" fill="var(--muted)"/><rect x="12" y="15" width="10" height="27" rx="3" fill="var(--body)"/><rect x="23" y="19" width="7" height="19" rx="2.5" fill="var(--body)" opacity=".7"/><rect x="98" y="15" width="10" height="27" rx="3" fill="var(--body)"/><rect x="90" y="19" width="7" height="19" rx="2.5" fill="var(--body)" opacity=".7"/></g>
+  </svg>
+  <div class="sp-wm"><b>BRAIN</b>WEIGHT</div>
+  <div class="sp-track"><i></i></div>
+  <div class="sp-msg" id="spMsg">Loading the bar</div>
+</div>
+<script>
+(function(){
+  var start=Date.now(),msgs=['Loading the bar','Chalking up','Warming up your brain','Setting up your plates'],i=0;
+  var t=setInterval(function(){var m=document.getElementById('spMsg');if(!m){clearInterval(t);return}i=(i+1)%msgs.length;m.textContent=msgs[i]},1400);
+  // Keep it up long enough to see one rep, then fade out.
+  window.hideSplash=function(){var s=document.getElementById('splash');if(!s||s.classList.contains('out'))return;
+    setTimeout(function(){s.classList.add('out');clearInterval(t);setTimeout(function(){s.remove()},400)},Math.max(0,1200-(Date.now()-start)))};
+  setTimeout(window.hideSplash,10000);
+})();
+</script>
 </head>
 <body>
 <div class="app">
@@ -1327,7 +1441,7 @@ function startHTML(){
     <button class="primary" data-act="start-empty">Start a workout</button></section>
   ${planCardHTML()}
   ${scheduleCardHTML()}
-  <div class="quick-row"><button class="secondary" data-act="swap-finder">🔁 Find a swap</button><button class="secondary" data-act="tools" data-tool="plates">🧮 Calculators</button><button class="secondary" data-act="invite">🎁 Invite</button></div>
+  <div class="quick-row"><button class="secondary" data-act="swap-finder">🔁 Find a swap</button><button class="secondary" data-act="max-warmup">🎯 Max-out warm-up</button><button class="secondary" data-act="tools" data-tool="plates">🧮 Calculators</button><button class="secondary" data-act="invite">🎁 Invite</button></div>
   <div class="stack"><div class="section-h"><h2>My routines</h2><button class="link" data-act="new-routine">+ New routine</button></div>
   ${mine.length?mine.map(routineCard).join(''):`<button class="card" data-act="new-routine" style="text-align:left"><h3>Build your own workout</h3><span class="muted" style="font-size:14px">Pick exercises and set your target sets, weight and reps. You can also customize a template below or save any finished workout.</span></button>`}</div>
   <div class="stack"><div class="section-h"><h2>Templates</h2></div>${TEMPLATES.map(routineCard).join('')}</div>
@@ -1901,6 +2015,7 @@ const LiveAPI={
   async removePushSub(endpoint){await sb.from('push_subscriptions').delete().eq('endpoint',endpoint)},
   async scheduleRest(seconds){await sb.rpc('schedule_rest',{seconds})},
   async cancelRest(){await sb.rpc('cancel_rest')},
+  async scanEquipment(images){const {data,error}=await sb.functions.invoke('equipment',{body:{images}});if(error){let m='Photo scan isn’t working right now. Tick the boxes yourself for now.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
   async watch(action,extra){const {data,error}=await sb.functions.invoke('watch',{body:Object.assign({action},extra||{})});if(error){let m='Couldn’t reach Brainweight. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
   async garmin(action,extra){const {data,error}=await sb.functions.invoke('garmin',{body:Object.assign({action},extra||{})});if(error){let m='Couldn’t reach Garmin. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
   async billingJSON(body){const {data,error}=await sb.functions.invoke('billing',{body:Object.assign({return_url:siteURL()},body)});if(error){let m='Something went wrong. Try again in a minute.';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}return data||{}},
@@ -2064,6 +2179,7 @@ const DemoAPI=(()=>{
     async signUp(email,password,name,username){if(password.length<8)throw new Error('Password should be at least 8 characters');D.signedIn=true;D.me.display_name=name||'You';if(username)D.me.username=username;save();return {session:{user:{id:'me',email}}}},
     async acceptTerms(v){D.me.terms_version=v;save()},
     async logScore(){},
+    async scanEquipment(images){if(!images||!images.length)throw new Error('Add a photo first');return wait({items:{dumbbells:{max_lb:25},bench:{},bands:{}},seen:['dumbbells up to 25 lb','adjustable bench','resistance bands']},900)},
     async watch(action,extra){if(action==='devices')return wait({devices:D.watches||[]});if(action==='claim'){if(!/^\d{6}$/.test(extra.code||''))throw new Error('Enter the 6-digit code from your watch.');D.watches=[{id:'w1',model:'venu3',linked_at:new Date().toISOString()}];save();return wait({ok:true})}if(action==='unlink'){D.watches=[];save();return wait({ok:true})}if(action==='push')return wait({active:extra.active});return wait({})},
     async garmin(action,extra){if(action==='activities')return wait({activities:D.garminActs||[]});if(action==='send_schedule'){const n=(extra.items||[]).reduce((a,i)=>a+i.dates.length,0);return wait({workouts:(extra.items||[]).length,scheduled:n,failed:0})}if(action==='start'){D.garmin={connected:true,connected_at:new Date().toISOString()};save();toast('Preview: Garmin connected (no real sign-in).');return{url:'#garmin-connected'}}if(action==='disconnect'){D.garmin=null;save();return{connected:false}}if(action==='send_workout'){D.garminSent=(D.garminSent||0)+1;save();return wait({workoutId:1,scheduled:true})}return wait(D.garmin||{connected:false})},
     async dailySubmit(puzzle,guesses,pattern){D.daily={puzzle,guesses,pattern};save()},
@@ -2203,7 +2319,7 @@ async function loadAccountData(){
 let gateEl=null,gateView=null,payInterval='month',payPlan='member',finishing=false;
 const GATE_LOGO=`<div class="w-logo">${'<span class="mark" role="img" aria-label="Brainweight logo"></span>'}<span class="wm"><b>BRAIN</b>WEIGHT</span><span class="eyebrow">Train your muscles &amp; mind</span></div>`;
 function gate(view,msg){
-  gateView=view;
+  gateView=view;try{hideSplash()}catch(e){}
   if(!gateEl){gateEl=el('<div class="ov gate" role="dialog" aria-modal="true" aria-label="Brainweight account"><div class="g-in" id="gIn"></div></div>');document.body.appendChild(gateEl)}
   const box=gateEl.querySelector('#gIn'),demo=!API.live?'<span class="preview-tag">Preview mode</span>':'';
   const views={
@@ -2340,7 +2456,7 @@ async function waitForCheckout(){
 let appEntered=false;
 async function enterApp(){
   try{await loadAccountData()}catch(e){toast('Couldn’t load your workouts. Showing what’s on this phone.')}
-  hideGate();appEntered=true;render();renderDock();refreshBadges();
+  hideGate();appEntered=true;render();renderDock();refreshBadges();try{hideSplash()}catch(e){}
   if(ST.active){restFired=!ST.active.restEnd;wake()}
   if(!LS.get('welcomed',false))showWelcome();else maybeOnboard();
   refreshPushFlag();setTimeout(()=>routeHash(),300);setTimeout(maybePushPrompt,1500);
@@ -2748,7 +2864,14 @@ function planPick(slot,equip,avoid,barOK){
   // and never anything on a skip list.
   const pre=[...((lim&&lim.swap[slot])||[]),...((sp&&sp.swap[slot])||[])];
   const base=pre.concat(PLAN_SLOTS[slot]||[]);
-  const list=base.filter(id=>EXMAP[id]&&!(lim&&lim.avoid.has(id))&&!(sp&&sp.avoid.has(id))&&(!allowed||allowed.includes(EXMAP[id].equip))&&(equip==='gym'||barOK||!NEEDS_BAR.includes(id)));
+  const ok=id=>EXMAP[id]&&!(lim&&lim.avoid.has(id))&&!(sp&&sp.avoid.has(id))&&equipOK(id,equip,barOK);
+  let list=base.filter(ok);
+  if(equip==='mine'){
+    // Use what's on the equipment list: same movement and main muscle, weighted options (or the bar) first.
+    const alts=kitAlternatives(slot).filter(ok);
+    const loaded=id=>EXMAP[id].equip!=='Bodyweight'||KIT_NEEDS_BAR.test(EXMAP[id].name.toLowerCase());
+    list=[...new Set([...list.filter(loaded),...alts.filter(loaded),...list,...alts])];
+  }
   return list.find(id=>!avoid.has(id))||null;
 }
 // Round a weight (in the person's units) to a plate-friendly number, then store it in kg.
@@ -2784,7 +2907,7 @@ function buildSets(exId,sets,reps,opts={}){
 }
 function generatePlan(a){
   PLAN_LIM=planLimits(a);PLAN_SPORT=planSport(a,PLAN_LIM);
-  try{return generatePlanInner(a)}finally{PLAN_LIM=null;PLAN_SPORT=null}
+  try{const p=generatePlanInner(a);return a.equip==='mine'?kitAdjustPlan(p):p}finally{PLAN_LIM=null;PLAN_SPORT=null}
 }
 function generatePlanInner(a){
   const lim=PLAN_LIM,sp=PLAN_SPORT;
@@ -2794,7 +2917,7 @@ function generatePlanInner(a){
   let split=PLAN_SPLITS[days].map(k=>Object.assign({key:k},PLAN_DAYS[k],{slots:PLAN_DAYS[k].slots.slice()}));
   // Pull-ups need a bar. Beginners in a gym and anyone without a gym get a pulldown or row instead,
   // unless pull-ups are the lift they asked to improve.
-  const swapPull=!(a.goal==='lift'&&a.lift==='pullup')&&(equip!=='gym'||exp==='new');
+  const swapPull=!(a.goal==='lift'&&a.lift==='pullup')&&(!kitHasBar(equip)||exp==='new');
   if(swapPull)split.forEach(d=>{d.slots=d.slots.map(s=>s==='verticalPull'?'latPulldown':s)});
   const focusDays=types=>{const idx=[];types.forEach(t=>split.forEach((d,i)=>{if(d.type===t&&!idx.includes(i))idx.push(i)}));return idx};
   const notes=[];let title='',weekly=[],liftInfo=null;
@@ -2883,14 +3006,13 @@ function generatePlanInner(a){
     for(const s of ['backExt','glute2','core2','obliques','abs','singleLeg','calf']){if(ex.length>=Math.min(4,capMain-(a.goal==='lean'?1:0)))break;const id=planPick(s,equip,avoid,barOK);if(id){avoid.add(id);ex.push({slot:s,id})}}
     // Sport: an explosive move goes first while you're fresh, sport-specific work goes after the main lifts.
     if(sp){
-      const allowed=PLAN_EQUIP[equip];
-      const pick=list=>(list||[]).find(id=>{const e=EXMAP[id];return e&&!avoid.has(id)&&!lim.avoid.has(id)&&!sp.avoid.has(id)&&(!allowed||allowed.includes(e.equip))&&(equip==='gym'||!NEEDS_BAR.includes(id))});
+      const pick=list=>(list||[]).find(id=>{const e=EXMAP[id];return e&&!avoid.has(id)&&!lim.avoid.has(id)&&!sp.avoid.has(id)&&equipOK(id,equip,false)});
       const pw=pick(sp.power[di%sp.power.length])||pick(sp.power.flat());if(pw){avoid.add(pw);ex.unshift({slot:'power',id:pw})}
       for(let k=0,got=0;k<sp.add.length&&got<spAdd;k++){const id=pick(sp.add[(di*spAdd+k)%sp.add.length]);if(id){avoid.add(id);ex.push({slot:'sport',id});got++}}
     }
     // Strengthening work for each limitation, rotated across days (up to 2 per day).
     if(lim.add.length){let added=0;for(let k=0;k<lim.add.length&&added<2;k++){const it=lim.add[(di*2+k)%lim.add.length];const e=EXMAP[it.id];
-      if(!e||avoid.has(it.id)||lim.avoid.has(it.id))continue;const allowed=PLAN_EQUIP[equip];if(allowed&&!allowed.includes(e.equip))continue;avoid.add(it.id);ex.push({slot:'prehab',id:it.id,k:it.k});added++}}
+      if(!e||avoid.has(it.id)||lim.avoid.has(it.id))continue;if(!equipOK(it.id,equip,false))continue;avoid.add(it.id);ex.push({slot:'prehab',id:it.id,k:it.k});added++}}
     if(a.goal==='lean'){const id=planPick('finisher',equip,avoid,barOK);if(id)ex.push({slot:'finisher',id})}
     ex.forEach(e=>usedAll.add(e.id));
     const L=a.goal==='lift'?PLAN_LIFTS[a.lift]||PLAN_LIFTS.bench:null;
@@ -2943,7 +3065,7 @@ function generatePlanInner(a){
       target={lift:L.name.toLowerCase(),weight:+a.target,unit,start:Math.round(liftInfo.goalE1),exId:mainId,eta:goalDateText(t.mid)};
     }
   }
-  if(equip!=='gym')notes.push(equip==='db'?'Built for dumbbells and a bench. Swap in anything else you have.':'Built for no equipment. For inverted rows, use a sturdy table or a low bar. A pull-up bar or bands open up more options.');
+  if(equip==='db'||equip==='bw')notes.push(equip==='db'?'Built for dumbbells and a bench. Swap in anything else you have.':'Built for no equipment. For inverted rows, use a sturdy table or a low bar. A pull-up bar or bands open up more options.');
   return {id:'plan-'+newId(),title,goal:goalName,answers:a,created:Date.now(),weeks:4,days:out,weekly,notes,minutes:+a.time||45,e1rm:liftInfo&&liftInfo.e1rm?liftInfo.e1rm:null,target,limits:lim.keys,sport:sp?{key:sp.key,name:sp.name,inSeason:sp.inSeason}:null};
 }
 
@@ -2997,7 +3119,8 @@ function openPlanBuilder(prefill){
       <div class="field"><label>How long have you been lifting?</label>${chips('exp',[['new','Under 6 months'],['mid','6 months to 2 years'],['adv','2+ years']])}</div>
       <div class="field"><label>Days per week</label>${chips('days',[[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div>
       <div class="field"><label>Time per workout</label>${chips('time',[[30,'30 min'],[45,'45 min'],[60,'60 min'],[75,'75+ min']])}</div>
-      <div class="field"><label>Equipment</label>${chips('equip',[['gym','Full gym'],['db','Dumbbells'],['bw','No equipment']])}</div>
+      <div class="field"><label>Equipment</label>${chips('equip',[['gym','Full gym'],['mine','My equipment'],['db','Dumbbells'],['bw','No equipment']])}
+        ${a.equip==='mine'?`<div class="card kit-sum"><span>${esc(kitSummary())}</span><button class="link" id="pbKit">${kitEmpty()?'Add your equipment':'Edit or snap a photo'}</button></div>`:''}</div>
       <div class="field"><label>Training for a sport? (optional)</label>${chips('sport',[['none','No sport'],...SPORT_ORDER.map(k=>[k,PLAN_SPORTS[k].name])])}
         <p class="g-note" style="text-align:left;margin:4px 0 0">We’ll add explosive work and exercises built for your sport.</p></div>
       ${PLAN_SPORTS[a.sport]?`<div class="field"><label>Season</label>${chips('season',[['off','Off-season'],['in','In season']])}</div>`:''}
@@ -3005,9 +3128,10 @@ function openPlanBuilder(prefill){
         <div class="chips wrap" data-multi="limits">${LIMIT_ORDER.map(k=>`<button class="chip" data-v="${k}" aria-pressed="${(a.limits||[]).includes(k)}">${PLAN_LIMITS[k].name}</button>`).join('')}</div>
         <p class="g-note" style="text-align:left;margin:4px 0 0">We’ll skip moves that tend to irritate these areas and add exercises that strengthen them.</p></div>
       <button class="primary" id="pbGo">Build my plan</button></div>`;
-    box.querySelectorAll('[data-k]').forEach(row=>row.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;readBest();a[row.dataset.k]=isNaN(+b.dataset.v)?b.dataset.v:+b.dataset.v;form()}));
+    box.querySelectorAll('[data-k]').forEach(row=>row.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;readBest();a[row.dataset.k]=isNaN(+b.dataset.v)?b.dataset.v:+b.dataset.v;form();if(row.dataset.k==='equip'&&a.equip==='mine'&&kitEmpty())openKitEditor(form)}));
     box.querySelectorAll('[data-multi]').forEach(row=>row.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;readBest();const k=row.dataset.multi,v=b.dataset.v,cur=new Set(a[k]||[]);cur.has(v)?cur.delete(v):cur.add(v);a[k]=LIMIT_ORDER.filter(x=>cur.has(x));b.setAttribute('aria-pressed',cur.has(v))}));
-    box.querySelector('#pbGo').onclick=()=>{readBest();preview(generatePlan(a))};
+    const kb=box.querySelector('#pbKit');if(kb)kb.onclick=()=>{readBest();openKitEditor(form)};
+    box.querySelector('#pbGo').onclick=()=>{readBest();if(a.equip==='mine'&&kitEmpty()){openKitEditor(form);return}preview(generatePlan(a))};
   };
   const readBest=()=>{const w=box.querySelector('#pbW'),r=box.querySelector('#pbR'),t=box.querySelector('#pbT');if(w)a.bestW=w.value.trim();if(r)a.bestR=r.value.trim();if(t)a.target=t.value.trim()};
   const preview=p=>{
@@ -3067,9 +3191,11 @@ function openNewRoutineChoice(){
   const o=sheet(`<h2>New routine</h2>
     <button class="card choice" id="nrMe"><b>Build it myself</b><span class="muted">Pick your own exercises, sets and reps.</span></button>
     <button class="card choice" id="nrPlan"><b>Build it for me</b><span class="muted">Answer a few questions and get a full 4-week plan, like a bigger bench or more chest.</span></button>
+    <button class="card choice" id="nrQuick"><b>Quick workout from what I have</b><span class="muted">Tell us (or show us with a photo) what equipment you have, and get one workout for today.</span></button>
     <button class="secondary" data-close>Cancel</button>`);
   o.querySelector('#nrMe').onclick=()=>{o.close();openRoutineEditor(null)};
   o.querySelector('#nrPlan').onclick=()=>{o.close();openPlanBuilder()};
+  o.querySelector('#nrQuick').onclick=()=>{o.close();openQuickWorkout()};
 }
 
 /* ================= limitations, goal timelines and the swap finder ================= */
@@ -3482,7 +3608,7 @@ function plateMath(target,bar){
 function openTools(tab='plates',prefill){
   const lb=u()==='lb';const st={tab,w:prefill||'',bar:lb?45:20,reps:''};
   const o=sheet(`<div class="sheet-h"><h2>Calculators</h2><button class="link" data-close>Done</button></div>
-    <div class="seg wide" id="tlSeg"><button data-t="plates">Plates</button><button data-t="warm">Warm-up</button><button data-t="max">Max</button></div>
+    <div class="seg wide" id="tlSeg"><button data-t="plates">Plates</button><button data-t="warm">Warm-up</button><button data-t="max">Max</button><button data-t="maxout">Max out</button></div>
     <div id="tlBox"></div>`,{full:true});
   o.querySelector('.sheet').style.overflowY='auto';
   const box=o.querySelector('#tlBox'),seg=o.querySelector('#tlSeg');
@@ -3528,7 +3654,7 @@ function openTools(tab='plates',prefill){
         ${tbl.map(([p,r])=>`<div class="plan-ex"><span>${p}% · about ${r} rep${r>1?'s':''}</span><b>${roundPlate(e1*p/100)} ${u()}</b></div>`).join('')}</div>`;
     }
   };
-  seg.onclick=e=>{const b=e.target.closest('[data-t]');if(b){st.tab=b.dataset.t;paint()}};
+  seg.onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;if(b.dataset.t==='maxout'){o.close();openWarmup({target:st.w||''});return}st.tab=b.dataset.t;paint()};
   paint();
 }
 
@@ -5240,6 +5366,7 @@ document.addEventListener('click',e=>{
     case'pr-share-w':{const w=ST.workouts.find(x=>x.id===id);if(w)openPRShare((w.prs||[]).map(p=>Object.assign(parsePR(p),{t:w.start})));break}
     case'notif-ask':LS.set('pushAsked',true);document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());openNotifications();break;
     case'tools':openTools(b.dataset.tool||'plates');break;
+    case'max-warmup':openWarmup();break;
     case'invite':openInvite();break;
     case'prof-sub':PROFILE_SUB=b.dataset.sub;LS.set('profileSub',PROFILE_SUB);softRender();if(PROFILE_SUB==='posts')loadMine();break;
     case'edit-profile':openEditProfile();break;
@@ -5914,6 +6041,236 @@ function muscleCardHTML(id){
   return `<div class="card mm-card">${muscleSVG(m)}
     <div class="mm-legend"><span><i class="mm-dot p"></i>Primary</span><span><i class="mm-dot s"></i>Secondary</span></div>
     <dl class="mm-rows"><dt>Primary muscles</dt><dd>${esc(names(m.p))}</dd><dt>Secondary muscles</dt><dd>${esc(names(m.s))}</dd>${m.pattern?`<dt>Movement pattern</dt><dd>${esc(m.pattern)}</dd>`:''}</dl></div>`;
+}
+
+/* ================= my equipment ================= */
+// What someone has at home (or their gym): a checklist, with the heaviest dumbbell and kettlebell.
+// Plans and quick workouts built with "My equipment" only use what's on it. A photo can fill it in.
+const KIT_ITEMS=[
+  {k:'dumbbells',n:'Dumbbells',eq:['Dumbbell'],max:true},
+  {k:'kettlebells',n:'Kettlebells',eq:['Kettlebell'],max:true},
+  {k:'bench',n:'Bench'},
+  {k:'barbell',n:'Barbell and plates',eq:['Barbell','Plate','Axle']},
+  {k:'rack',n:'Squat rack'},
+  {k:'pullup',n:'Pull-up bar'},
+  {k:'bands',n:'Resistance bands',eq:['Band']},
+  {k:'cable',n:'Cable machine',eq:['Cable']},
+  {k:'machines',n:'Weight machines',eq:['Machine']},
+  {k:'smith',n:'Smith machine',eq:['Smith machine']},
+  {k:'ezbar',n:'EZ curl bar',eq:['EZ bar']},
+  {k:'trapbar',n:'Trap bar',eq:['Trap bar']},
+  {k:'landmine',n:'Landmine',eq:['Landmine']},
+  {k:'rings',n:'Rings or TRX',eq:['Rings']},
+  {k:'medball',n:'Medicine ball',eq:['Medicine ball']},
+  {k:'box',n:'Plyo box or step'},
+  {k:'abwheel',n:'Ab wheel',eq:['Ab wheel']},
+  {k:'ball',n:'Stability ball',eq:['Stability ball']},
+  {k:'jumprope',n:'Jump rope',eq:['Jump rope']},
+  {k:'cardio',n:'Bike, rower or treadmill',eq:['Cardio machine','Bike']},
+  {k:'sled',n:'Sled',eq:['Sled']},
+  {k:'vest',n:'Weighted vest',eq:['Weighted vest']},
+];
+const KIT_BY_KEY=Object.fromEntries(KIT_ITEMS.map(i=>[i.k,i]));
+const myKit=()=>ST.settings.kit||{items:{}};
+const kitHas=k=>!!myKit().items[k];
+const kitEmpty=()=>!Object.keys(myKit().items).length;
+// Free weights that need a bench, a rack, a bar to hang from or a box.
+const KIT_NEEDS_BENCH=/bench press|incline|decline|chest-supported|hip thrust|skull|preacher|pullover|tate press|seated|lying triceps|spider curl|prone/;
+const KIT_NEEDS_RACK=/squat|bench press|board press|pin press|bradford|overhead press|military|push press|lunge|split squat|good morning|z press|rack/;
+const KIT_NEEDS_BAR=/pull-?up|chin-?up|hanging|toes.to.bar|muscle-?up|dead hang/;
+function kitOK(id){
+  const e=EXMAP[id];if(!e)return false;
+  const n=e.name.toLowerCase(),K=myKit().items;
+  if(e.equip!=='Bodyweight'&&!KIT_ITEMS.some(i=>K[i.k]&&i.eq&&i.eq.includes(e.equip)))return false;
+  const free=['Barbell','Dumbbell','EZ bar','Kettlebell','Smith machine','Plate'].includes(e.equip);
+  if(free&&KIT_NEEDS_BENCH.test(n)&&!/bench dip/.test(n)&&!K.bench)return false;
+  if(e.equip==='Barbell'&&KIT_NEEDS_RACK.test(n)&&!K.rack)return false;
+  if((KIT_NEEDS_BAR.test(n)||NEEDS_BAR.includes(id))&&!K.pullup&&!K.rings)return false;
+  if(/box jump|depth jump|box squat|step-up|step up/.test(n)&&e.equip==='Bodyweight'&&/box|depth/.test(n)&&!K.box&&!K.bench)return false;
+  return true;
+}
+// One check used everywhere the plan builder picks exercises.
+function equipOK(id,equip,barOK){
+  const e=EXMAP[id];if(!e)return false;
+  if(equip==='gym')return true;
+  if(equip==='mine')return kitOK(id);
+  const allowed=PLAN_EQUIP[equip]||[];
+  return allowed.includes(e.equip)&&(barOK||!NEEDS_BAR.includes(id));
+}
+// Exercises on someone's equipment list that do the same job as a plan slot (same movement pattern and
+// main muscle as the slot's usual pick), for kits the usual lists don't cover, like bands or kettlebells.
+const KIT_ALT_CACHE={};
+function kitAlternatives(slot){
+  const key=slot+'|'+JSON.stringify(myKit().items);if(KIT_ALT_CACHE[key])return KIT_ALT_CACHE[key];
+  const ref=(PLAN_SLOTS[slot]||[]).find(id=>EXMAP[id]);if(!ref)return KIT_ALT_CACHE[key]=[];
+  const m=exMuscles(ref);if(!m.pattern||!m.p.length)return KIT_ALT_CACHE[key]=[];
+  return KIT_ALT_CACHE[key]=Object.keys(EXMAP).filter(id=>{const e=EXMAP[id];if(e.type==='c'||e.type==='d'||e.muscle==='Cardio'||e.muscle==='Mobility'||!kitOK(id))return false;const x=exMuscles(id);return x.pattern===m.pattern&&x.p[0]===m.p[0]});
+}
+const kitHasBar=equip=>equip==='gym'||(equip==='mine'&&(kitHas('pullup')||kitHas('rings')));
+function kitSummary(){
+  const K=myKit().items,unit=u();
+  const parts=KIT_ITEMS.filter(i=>K[i.k]).map(i=>i.max&&K[i.k].max?`${i.n.toLowerCase()} up to ${Math.round(dispW(K[i.k].max))} ${unit}`:i.n.toLowerCase());
+  return parts.length?parts.join(', ').replace(/^./,c=>c.toUpperCase()):'Nothing added yet';
+}
+// Light dumbbells or kettlebells: more reps, slower lowering and shorter rests so the sets still work.
+function kitAdjustPlan(p){
+  const K=myKit().items,LIGHT=18; // kg, about 40 lb
+  const caps={Dumbbell:K.dumbbells&&K.dumbbells.max,Kettlebell:K.kettlebells&&K.kettlebells.max};
+  let light=false;
+  p.days.forEach(d=>d.exercises.forEach(x=>{
+    const e=EXMAP[x.exId];const cap=e&&caps[e.equip];if(!cap)return;
+    x.sets.forEach(s=>{if(s.w!=null&&s.w>cap)s.w=cap});
+    if(cap<LIGHT&&e.type!=='t'){light=true;x.sets.forEach(s=>{if(s.kind!=='w'&&s.r!=null&&s.r<12)s.r=12});x.rest=Math.min(x.rest||90,75);
+      if(!/3 seconds/.test(x.note||''))x.note=((x.note?x.note+' ':'')+'Lower the weight for 3 seconds each rep.').trim()}
+  }));
+  p.notes=p.notes||[];
+  p.notes.unshift(`Built for your equipment: ${kitSummary().toLowerCase()}.`);
+  if(light)p.notes.splice(1,0,'Your weights are on the lighter side, so sets are 12 or more reps with a slow 3-second lowering and shorter rests. Go until 1 or 2 reps are left in the tank.');
+  return p;
+}
+// ---------- the equipment editor ----------
+function openKitEditor(onSave){
+  const K=clone(myKit().items),unit=u();
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">My equipment</span><h2>What do you have?</h2></div><button class="link" data-close>Cancel</button></div>
+    <div class="card kit-scan"><b>📷 Snap your setup</b><span class="muted" style="font-size:13px">Take a photo or two of your equipment and we’ll fill this in. Check it before you save.</span>
+      <input type="file" id="kitPhoto" accept="image/*" multiple hidden><button class="secondary" id="kitPhotoBtn">Take or choose photos</button><div id="kitScanMsg" class="g-note" style="text-align:left"></div></div>
+    <div class="stack kit-list" style="gap:6px" id="kitList"></div>
+    <button class="primary" id="kitSave">Save my equipment</button>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const list=o.querySelector('#kitList');
+  const draw=()=>{list.innerHTML=KIT_ITEMS.map(i=>`<div class="kit-row"><label><input type="checkbox" data-k="${i.k}" ${K[i.k]?'checked':''}> ${esc(i.n)}</label>${i.max?`<span class="kit-max" ${K[i.k]?'':'hidden'}>up to <input class="input" data-max="${i.k}" inputmode="decimal" placeholder="${unit==='lb'?'50':'25'}" value="${K[i.k]&&K[i.k].max?Math.round(dispW(K[i.k].max)):''}"> ${unit}</span>`:''}</div>`).join('');
+    list.querySelectorAll('[data-k]').forEach(c=>c.onchange=()=>{if(c.checked)K[c.dataset.k]=K[c.dataset.k]||{};else delete K[c.dataset.k];const m=c.closest('.kit-row').querySelector('.kit-max');if(m)m.hidden=!c.checked});
+    list.querySelectorAll('[data-max]').forEach(inp=>inp.oninput=()=>{const v=parseFloat(inp.value);const k=inp.dataset.max;K[k]=K[k]||{};if(v>0)K[k].max=unit==='lb'?v/2.20462:v;else delete K[k].max});
+  };
+  draw();
+  const file=o.querySelector('#kitPhoto'),msg=o.querySelector('#kitScanMsg'),btn=o.querySelector('#kitPhotoBtn');
+  btn.onclick=()=>file.click();
+  file.onchange=async()=>{
+    const files=[...file.files].slice(0,4);if(!files.length)return;
+    btn.disabled=true;btn.textContent='Looking at your photos…';msg.textContent='';
+    try{
+      const images=await Promise.all(files.map(f=>shrinkPhoto(f,1280)));
+      const r=await API.scanEquipment(images);
+      const found=r.items||{};let n=0;
+      Object.entries(found).forEach(([k,v])=>{if(!KIT_BY_KEY[k])return;n++;K[k]=K[k]||{};if(v&&v.max_lb>0)K[k].max=v.max_lb/2.20462});
+      draw();
+      msg.textContent=n?`We spotted ${n} item${n>1?'s':''}${r.seen&&r.seen.length?`: ${r.seen.slice(0,8).join(', ')}`:''}. Check the list and fix anything we got wrong.`:'We couldn’t spot any equipment. Try a wider photo with more light, or tick the boxes yourself.';
+    }catch(e){msg.textContent=e.message||'That didn’t work. Tick the boxes yourself for now.'}
+    btn.disabled=false;btn.textContent='Take or choose photos';file.value='';
+  };
+  o.querySelector('#kitSave').onclick=()=>{
+    if(!Object.keys(K).length){toast('Tick at least one item, or pick “No equipment” instead');return}
+    ST.settings.kit={items:K,updated:Date.now()};saveSettings();o.close();toast('Equipment saved');if(onSave)onSave();
+  };
+}
+// Resize a photo in the browser so uploads stay small. Returns base64 JPEG without the data: prefix.
+function shrinkPhoto(file,maxSide){
+  return new Promise((res,rej)=>{const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{const s=Math.min(1,maxSide/Math.max(img.width,img.height));const c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',0.82).split(',')[1])};
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('That photo couldn’t be opened. Try a different one.'))};img.src=url});
+}
+// ---------- quick workout from what you have ----------
+const QUICK_FOCUS={full:{n:'Full body',days:3,day:0},upper:{n:'Upper body',days:4,day:0},lower:{n:'Lower body',days:4,day:1},push:{n:'Push',days:5,day:0},pull:{n:'Pull',days:5,day:1},legs:{n:'Legs',days:5,day:2}};
+function openQuickWorkout(){
+  const a={focus:'full',time:45,equip:kitEmpty()?'db':'mine',goal:'size'};
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Quick workout</span><h2>Work out with what you have</h2></div><button class="link" data-close>Cancel</button></div><div id="qwBox"></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#qwBox');
+  const chips=(key,opts)=>`<div class="chips wrap" data-k="${key}">${opts.map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${String(a[key])===String(v)}">${l}</button>`).join('')}</div>`;
+  const draw=()=>{
+    box.innerHTML=`<div class="stack">
+      <div class="field"><label>What do you want to train?</label>${chips('focus',Object.entries(QUICK_FOCUS).map(([k,v])=>[k,v.n]))}</div>
+      <div class="field"><label>How long?</label>${chips('time',[[30,'30 min'],[45,'45 min'],[60,'60 min']])}</div>
+      <div class="field"><label>Equipment</label>${chips('equip',[['mine','My equipment'],['gym','Full gym'],['db','Dumbbells'],['bw','No equipment']])}
+        ${a.equip==='mine'?`<div class="card kit-sum"><span>${esc(kitSummary())}</span><div style="display:flex;gap:8px"><button class="link" id="qwKit">${kitEmpty()?'Add your equipment':'Edit'}</button></div></div>`:''}</div>
+      <button class="primary" id="qwGo">Build my workout</button></div>`;
+    box.querySelectorAll('[data-k] .chip').forEach(b=>b.onclick=()=>{const k=b.parentElement.dataset.k;a[k]=isNaN(+b.dataset.v)?b.dataset.v:+b.dataset.v;if(k==='equip'&&a.equip==='mine'&&kitEmpty()){draw();openKitEditor(draw);return}draw()});
+    const kb=box.querySelector('#qwKit');if(kb)kb.onclick=()=>openKitEditor(draw);
+    box.querySelector('#qwGo').onclick=()=>{
+      if(a.equip==='mine'&&kitEmpty()){openKitEditor(draw);return}
+      const F=QUICK_FOCUS[a.focus];
+      let p=generatePlan(Object.assign({},PLAN_DEF,{goal:'size',exp:'mid',days:F.days,time:a.time,equip:a.equip,limits:[],sport:'none'}));
+      if(a.equip==='mine')p=kitAdjustPlan(p);
+      const d=p.days[F.day];
+      const where=a.equip==='mine'?'Home':a.equip==='gym'?'Gym':a.equip==='db'?'Dumbbell':'Bodyweight';
+      const r={id:newId(),name:`${where} ${F.n.toLowerCase()}`,exercises:d.exercises.map(x=>({exId:x.exId,rest:x.rest,note:x.note,sets:x.sets}))};
+      o.close();previewQuick(r,p.notes||[]);
+    };
+  };
+  draw();
+}
+function previewQuick(r,notes){
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Your workout</span><h2>${esc(r.name)}</h2></div><button class="link" data-close>Close</button></div>
+    ${notes.length?`<p class="muted" style="font-size:13px;margin:0">${esc(notes[0])}</p>`:''}
+    <div class="stack" style="gap:8px">${r.exercises.map(x=>{const e=EXMAP[x.exId],w=x.sets.filter(s=>s.kind!=='w'),s0=w[0]||{};return `<div class="card" style="padding:12px 14px"><b>${esc(e?e.name:'Exercise')}</b><span class="muted" style="font-size:13px">${w.length} × ${s0.t?s0.t+'s':(s0.r||'')}${x.note?` · ${esc(x.note)}`:''}</span></div>`}).join('')}</div>
+    <button class="primary" id="qwStart">Start now</button><button class="secondary" id="qwSave">Save as a routine</button><button class="link" id="qwAgain">Change options</button>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  o.querySelector('#qwStart').onclick=()=>{if(ST.active){toast('Finish or discard your current workout first.');return}o.close();startWorkout({name:r.name,exercises:clone(r.exercises)})};
+  o.querySelector('#qwSave').onclick=()=>{putItem('routines',r);o.close();toast('Saved to your routines');setTab('workout')};
+  o.querySelector('#qwAgain').onclick=()=>{o.close();openQuickWorkout()};
+}
+
+/* ================= warm-up calculator ================= */
+const wuNum=w=>Number.isInteger(+w)?String(+w):(+w).toFixed(1);
+// Builds the climb to a heavy single: percentages of the target, fewer reps as it gets heavier,
+// longer rests near the top, and the plates to load on each side of the bar.
+const WU_LIFTS={bench:{n:'Bench press',id:'bench-press-barbell'},squat:{n:'Squat',id:'back-squat-barbell'},deadlift:{n:'Deadlift',id:'deadlift-barbell'},ohp:{n:'Overhead press',id:'overhead-press-barbell'},other:{n:'Other lift',id:null}};
+// [percent of target, reps, rest in seconds after the set]
+const WU_STEPS=[[0,10,60],[.40,5,60],[.55,3,90],[.70,2,120],[.80,1,150],[.88,1,180],[.94,1,240]];
+function wuPlates(total,unit){
+  const bar=unit==='kg'?20:45,plates=unit==='kg'?[25,20,15,10,5,2.5,1.25]:[45,35,25,10,5,2.5];
+  let side=(total-bar)/2;if(side<=0)return'Empty bar';
+  const out=[];for(const p of plates){while(side>=p-1e-9){out.push(p);side-=p}}
+  return out.length?`${out.join(' + ')} per side`:'Empty bar';
+}
+function warmupPlan(target,unit,opener){
+  const bar=unit==='kg'?20:45,step=unit==='kg'?2.5:5;
+  const round=w=>Math.max(bar,Math.round(w/step)*step);
+  const rows=[];let last=0;
+  WU_STEPS.forEach(([pct,reps,rest],i)=>{
+    if(pct>0&&opener===false&&pct>.9)return;
+    const w=i===0?bar:round(target*pct);
+    if(w<=last||w>=target)return; // skip repeats and anything at or over the goal
+    rows.push({w,reps,rest,kind:'w',plates:wuPlates(w,unit)});last=w;
+  });
+  rows.push({w:round(target),reps:1,rest:0,kind:'n',plates:wuPlates(round(target),unit),goal:true});
+  return rows;
+}
+function openWarmup(prefill){
+  const unit=u(),a=Object.assign({lift:'bench',target:'',best:''},prefill||{});
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Max-out warm-up</span><h2>Work up to a heavy single</h2></div><button class="link" data-close>Close</button></div><div id="wuBox"></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#wuBox');
+  const draw=()=>{
+    const t=parseFloat(a.target),best=parseFloat(a.best);
+    const rows=t>0?warmupPlan(t,unit):[];
+    const jump=t>0&&best>0?(t/best-1)*100:null;
+    box.innerHTML=`<div class="stack">
+      <div class="field"><label>Lift</label><div class="chips wrap" data-k="lift">${Object.entries(WU_LIFTS).map(([k,v])=>`<button class="chip" data-v="${k}" aria-pressed="${a.lift===k}">${v.n}</button>`).join('')}</div></div>
+      <div class="field"><label>Weight you want to hit</label><div class="pb-best"><input class="input" id="wuT" inputmode="decimal" placeholder="${unit==='lb'?'295':'135'}" value="${esc(a.target)}"><span>${unit}</span></div></div>
+      <div class="field"><label>Your current best single (optional)</label><div class="pb-best"><input class="input" id="wuB" inputmode="decimal" placeholder="${unit==='lb'?'275':'125'}" value="${esc(a.best)}"><span>${unit}</span></div></div>
+      ${jump!=null&&jump>5?`<p class="wu-warn">That’s ${Math.round(jump)}% over your best. Most lifters add 2 to 5% at a time. Consider ${Math.round(best*1.03/(unit==='kg'?2.5:5))*(unit==='kg'?2.5:5)} ${unit} first.</p>`:''}
+      ${rows.length?`<div class="card wu-card"><div class="wu-row wu-head"><span>Set</span><span>Weight</span><span>Reps</span><span>Rest</span></div>
+        ${rows.map((r,i)=>`<div class="wu-row${r.goal?' goal':''}"><span>${r.goal?'🎯':i+1}</span><span><b>${wuNum(r.w)} ${unit}</b><small>${esc(r.plates)}</small></span><span>${r.reps}</span><span>${r.goal?'Go':clock(r.rest)}</span></div>`).join('')}</div>
+        <ul class="wu-tips"><li>Move fast through the light sets. They warm you up, they shouldn’t tire you out.</li><li>Rest longer near the top: 3 to 5 minutes before your max attempt.</li><li>Use a spotter or safety arms for bench and squat.</li></ul>
+        <button class="primary" id="wuStart">Start as a workout</button>`:'<p class="muted" style="font-size:14px">Enter a weight to see your warm-up sets.</p>'}
+    </div>`;
+    box.querySelectorAll('[data-k] .chip').forEach(b=>b.onclick=()=>{read();a.lift=b.dataset.v;draw()});
+    const tIn=box.querySelector('#wuT'),bIn=box.querySelector('#wuB');
+    // Redraw after typing pauses so the keyboard stays up.
+    let tm;[tIn,bIn].forEach(inp=>inp.oninput=()=>{clearTimeout(tm);tm=setTimeout(()=>{read();const id=document.activeElement&&document.activeElement.id,pos=document.activeElement&&document.activeElement.selectionStart;draw();const el=id&&box.querySelector('#'+id);if(el){el.focus();try{el.setSelectionRange(pos,pos)}catch(e){}}},500)});
+    const sb=box.querySelector('#wuStart');
+    if(sb)sb.onclick=()=>{
+      if(ST.active){toast('Finish or discard your current workout first.');return}
+      const L=WU_LIFTS[a.lift],exId=L.id&&EXMAP[L.id]?L.id:'bench-press-barbell';
+      const toKg=w=>unit==='lb'?w/2.20462:w;
+      o.close();
+      startWorkout({name:`${L.id?L.n:'Max'} attempt: ${wuNum(rows[rows.length-1].w)} ${unit}`,exercises:[{exId,rest:240,note:'Warm-up sets climb to your max attempt. Rest 3 to 5 minutes before the last one.',sets:rows.map(r=>({kind:r.kind,w:toKg(r.w),r:r.reps,t:null,d:null}))}]});
+    };
+  };
+  const read=()=>{const t=box.querySelector('#wuT'),b=box.querySelector('#wuB');if(t)a.target=t.value.trim();if(b)a.best=b.value.trim()};
+  draw();
 }
 
 /* ================= free tier ================= */
