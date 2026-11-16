@@ -757,7 +757,6 @@ button.card:hover{border-color:#2D3746}
 html{background:var(--bg)}
 body{background:var(--bg)}
 .app{position:fixed;top:0;bottom:0;left:0;right:0;height:auto}
-html.standalone .app{bottom:auto;height:var(--appH,100vh)}
 html,body{min-height:100%;background:var(--bg)}
 .top{padding-block:calc(env(safe-area-inset-top,0px) + 10px) 8px}
 .top .brand{display:none}
@@ -837,7 +836,8 @@ body{font-variant-numeric:tabular-nums}
 
 /* ---- meals ---- */
 .scan-ov{position:fixed;inset:0;z-index:120;background:#000;display:flex;flex-direction:column}
-.scan-ov video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan-ov video,.scan-prev{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan-ov.scan-dead .scan-frame{display:none}
 .scan-frame{position:absolute;left:10%;right:10%;top:38%;height:18%;border:3px solid #fff;border-radius:16px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
 .scan-top{position:relative;display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 12px) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));color:#fff}
 .scan-top b{font-size:17px}.scan-x{color:#fff;font-weight:600;width:64px;text-align:left}
@@ -893,17 +893,24 @@ body{font-variant-numeric:tabular-nums}
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='36';
-// iPhone home-screen apps sometimes report a screen that's too short (often after the keyboard closes),
-// which leaves a gap under the tab bar. Size the app from the real screen height instead.
+var APP_VERSION='37';
+// iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
+// leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
   var sa=window.navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
-  if(!sa)return;document.documentElement.classList.add('standalone');
-  function fit(){var portrait=window.innerWidth<window.innerHeight,h=window.innerHeight;
-    if(portrait&&screen.height>h&&screen.height-h<160)h=screen.height;
-    document.documentElement.style.setProperty('--appH',h+'px')}
-  fit();['resize','orientationchange','focusout','pageshow'].forEach(function(e){window.addEventListener(e,function(){setTimeout(fit,60)})});
-  document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(fit,60)});
+  if(!sa)return;
+  var peak=window.innerHeight;
+  function heal(){
+    var h=window.innerHeight;if(h>peak){peak=h;return}if(peak-h<=4)return;
+    var a=document.querySelector('.app'),m=document.getElementById('main');if(!a)return;var st=m?m.scrollTop:0;
+    a.style.display='none';void a.offsetHeight;a.style.display='';if(m)m.scrollTop=st;
+    setTimeout(function(){if(peak-window.innerHeight>4){var b=document.body;b.style.display='none';void b.offsetHeight;b.style.display='';if(m)m.scrollTop=st}},80);
+  }
+  window.addEventListener('resize',function(){if(window.innerHeight>peak)peak=window.innerHeight});
+  document.addEventListener('focusout',function(e){if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)){setTimeout(heal,150);setTimeout(heal,600)}});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(heal,150)});
+  window.addEventListener('pageshow',function(){setTimeout(heal,150)});
+  window.bwHeal=heal;
 })();
 (function(){
   var start=Date.now(),msgs=['Loading the bar','Chalking up','Warming up your brain','Setting up your plates'],i=0;
@@ -1350,7 +1357,7 @@ const DEF_SETTINGS={unit:'lb',rest:90,game:'math',autoGame:true,sound:true};
 const ST={
   settings:Object.assign({},DEF_SETTINGS,LS.get('settings',{})),
   workouts:LS.get('workouts',[]),routines:LS.get('routines',[]),custom:LS.get('custom',[]),
-  active:LS.get('active',null),tab:({history:'profile',exercises:'profile'})[LS.get('tab','workout')]||LS.get('tab','workout'),cloud:false,
+  active:LS.get('active',null),tab:LS.get('active',null)?'workout':'programs',cloud:false,
 };
 let lastSets={};
 function rebuildEx(){
@@ -6534,7 +6541,8 @@ TEMPLATES.push(...moveTemplates());
 // Meal tracking lives under the Workout tab: the title is a dropdown that switches between Workout and Meals.
 // Foods come from a built-in list of common foods, your own foods, and Open Food Facts (free, no key) for
 // search and barcodes. Each day is one synced doc (kind 'food', id YYYY-MM-DD); your foods and recents are doc 'lib'.
-let WORK_VIEW=LS.get('workView','workout');
+// Every fresh launch starts on Workout, not Meals.
+let WORK_VIEW='workout';
 const FOOD={days:LS.get('foodDays',{}),lib:Object.assign({recent:[],custom:[]},LS.get('foodLib',{}))};
 let FOOD_DATE=null;
 const MEALS=[['b','Breakfast'],['l','Lunch'],['d','Dinner'],['s','Snacks']];
@@ -6874,16 +6882,20 @@ function zxReader(Z){return new Z.BrowserMultiFormatReader(zxHints(Z),250)}
 function zxCanvas(Z,reader,canvas){try{const src=new Z.HTMLCanvasElementLuminanceSource(canvas);const r=reader.decode(new Z.BinaryBitmap(new Z.HybridBinarizer(src)));return r&&r.getText()}catch(e){return null}}
 function openScanner(done){
   const o=el(`<div class="scan-ov" role="dialog" aria-modal="true" aria-label="Scan a barcode">
-    <video id="scV" playsinline muted autoplay></video><div class="scan-frame"></div>
+    <video id="scV" playsinline muted autoplay></video><canvas id="scC" class="scan-prev" aria-hidden="true"></canvas><div class="scan-frame"></div>
     <div class="scan-top"><button class="scan-x" id="scX">Cancel</button><b>Scan a barcode</b><span style="width:64px"></span></div>
     <div class="scan-bot"><p id="scMsg">Starting the camera…</p>
-      <div class="scan-row"><label class="secondary fd-file">Take a photo instead<input type="file" id="scF" accept="image/*" capture="environment" hidden></label></div>
+      <div class="scan-row"><label class="secondary fd-file" id="scFL">Take a photo instead<input type="file" id="scF" accept="image/*" capture="environment" hidden></label></div>
       <form class="fd-search" id="scForm"><input class="input" id="scN" inputmode="numeric" placeholder="Or type the numbers" autocomplete="off"><button class="secondary" type="submit">Look up</button></form></div></div>`);
   document.body.appendChild(o);
   const msg=o.querySelector('#scMsg'),video=o.querySelector('#scV');let stream=null,timer=null,doneOnce=false,Z=null,reader=null,closed=false;
   const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
-  const stop=()=>{clearInterval(timer);timer=null;try{(stream&&stream.getTracks()||[]).forEach(t=>t.stop())}catch(e){}try{video.srcObject=null}catch(e){}};
-  o.close=()=>{closed=true;stop();o.remove()};
+  const prev=o.querySelector('#scC'),pctx=prev.getContext('2d');let raf=0;
+  // Draw the camera into a canvas too: some iPhones show home-screen app video as black even while frames arrive.
+  const paint=()=>{raf=requestAnimationFrame(paint);if(!video.videoWidth)return;const W=prev.clientWidth,H=prev.clientHeight;if(!W||!H)return;const dpr=Math.min(2,window.devicePixelRatio||1);if(prev.width!==Math.round(W*dpr)){prev.width=Math.round(W*dpr);prev.height=Math.round(H*dpr)}
+    const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(prev.width/vw,prev.height/vh),dw=vw*sc,dh=vh*sc;pctx.drawImage(video,(prev.width-dw)/2,(prev.height-dh)/2,dw,dh)};
+  const stop=()=>{cancelAnimationFrame(raf);clearInterval(timer);timer=null;try{(stream&&stream.getTracks()||[]).forEach(t=>t.stop())}catch(e){}try{video.srcObject=null}catch(e){}};
+  o.close=()=>{closed=true;stop();o.remove();if(window.bwHeal)setTimeout(window.bwHeal,200)};
   o.querySelector('#scX').onclick=()=>o.close();
   const found=async code=>{
     if(doneOnce)return;doneOnce=true;stop();msg.textContent=`Looking up ${code}…`;try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}
@@ -6907,10 +6919,20 @@ function openScanner(done){
   (async()=>{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){msg.textContent='The camera isn’t available here. Take a photo or type the numbers instead.';return}
     try{
-      stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
-      if(closed){stop();return}
-      video.setAttribute('playsinline','');video.muted=true;video.srcObject=stream;
-      await video.play().catch(()=>{});
+      const start=async()=>{
+        stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
+        if(closed){stop();return false}
+        video.setAttribute('playsinline','');video.muted=true;video.srcObject=stream;
+        const ok=await Promise.race([video.play().then(()=>true).catch(()=>false),new Promise(r=>setTimeout(()=>r(false),2500))]);
+        // Wait up to 3 seconds for the first frame.
+        for(let i=0;i<30&&!video.videoWidth&&!closed;i++)await new Promise(r=>setTimeout(r,100));
+        return ok&&!!video.videoWidth;
+      };
+      let live=await start();
+      if(!live&&!closed){try{(stream&&stream.getTracks()||[]).forEach(t=>t.stop())}catch(e){}video.srcObject=null;msg.textContent='Restarting the camera…';await new Promise(r=>setTimeout(r,400));live=await start()}
+      if(closed)return;
+      if(!live){stop();o.classList.add('scan-dead');msg.textContent='Your iPhone isn’t letting the live camera run in home-screen apps right now. Take a photo of the barcode instead. It works the same way.';const fl=o.querySelector('#scFL');if(fl)fl.classList.replace('secondary','primary');return}
+      paint();
       msg.textContent='Hold the barcode inside the box.';
       Z=await loadZXing();if(closed)return;reader=new Z.MultiFormatReader();reader.setHints(zxHints(Z));
       timer=setInterval(tick,180);
