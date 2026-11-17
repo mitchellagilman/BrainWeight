@@ -178,7 +178,7 @@ button.card:hover{border-color:#2D3746}
 
 /* overlays */
 .ov{position:fixed;inset:0;display:flex;z-index:60}
-.sheet-ov{background:var(--scrim);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-end;padding:env(safe-area-inset-top,0px) max(8px,env(safe-area-inset-right,0px)) 0 max(8px,env(safe-area-inset-left,0px))}
+.sheet-ov{background:var(--scrim);align-items:flex-end;padding:env(safe-area-inset-top,0px) max(8px,env(safe-area-inset-right,0px)) 0 max(8px,env(safe-area-inset-left,0px))}
 .sheet{width:100%;max-width:600px;margin:0 auto;background:#0B0E14;border:1px solid var(--line);border-bottom:none;border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;max-height:88%;overflow-y:auto;animation:up .22s ease-out}
 @keyframes up{from{transform:translateY(24px);opacity:.4}}
 .sheet.full{height:92%;max-height:92%;overflow:hidden}
@@ -834,6 +834,21 @@ body{font-variant-numeric:tabular-nums}
 @keyframes spSlide{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
 @media (prefers-reduced-motion:reduce){#splash .sp-bar,#splash .sp-arm,#splash .sp-head,#splash .sp-spark,#splash .sp-track i{animation:none}#splash .sp-bar{transform:none}}
 
+/* ---- number pad + supersets ---- */
+.kp{position:fixed;left:0;right:0;bottom:0;z-index:150;max-width:600px;margin:0 auto;background:var(--surface);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:8px max(10px,env(safe-area-inset-right,0px)) max(10px,env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));box-shadow:0 -10px 30px rgba(0,0,0,.45)}
+html.vshort .kp{padding-bottom:10px}
+.kp-top{display:flex;justify-content:space-between;align-items:center;padding:2px 4px 8px;font-size:13px;color:var(--muted);gap:10px}.kp-top span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.kp-k{height:48px;border-radius:12px;background:var(--surface-2);font:600 22px var(--body-font);color:var(--fg);touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.kp-k:active{background:#33363D}.kp-step{color:var(--body);font-size:26px}
+.kp-next{grid-column:span 2;background:var(--body);color:#fff;font-size:18px}.kp-next:active{background:#1f6fe0}
+input[data-kp]{caret-color:transparent;-webkit-user-select:none;user-select:none;cursor:pointer}
+input[data-kp].kp-on{border-color:var(--body);background:rgba(47,134,255,.16);box-shadow:0 0 0 2px rgba(47,134,255,.35)}
+.ex.ss{border-left:4px solid var(--ss)}
+.ss-tag{display:inline-block;color:var(--ss);font-weight:700;margin-right:6px}
+.ss-gap{display:flex;justify-content:center;margin:-6px 0}
+.ss-link{font-size:12px;font-weight:600;color:var(--muted);padding:6px 12px;border-radius:999px;border:1px dashed var(--line)}
+.ss-gap.on .ss-link{color:var(--fg);border-style:solid;border-color:var(--line);background:var(--surface-2)}
 /* ---- watch guide ---- */
 .wg-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
 .wg-step{display:flex;gap:12px;align-items:flex-start}.wg-step b{font-size:16px}.wg-step p{margin:4px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}.wg-step p b{font-size:inherit;color:var(--fg)}
@@ -899,7 +914,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='39';
+var APP_VERSION='40';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -908,12 +923,14 @@ var APP_VERSION='39';
   var peak=window.innerHeight;
   function heal(){
     var h=window.innerHeight;if(h>peak){peak=h;return}if(peak-h<=4)return;
+    // Never while typing or with a panel open: re-measuring then is slow and can close the keyboard.
+    var ae=document.activeElement;if(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)&&!ae.readOnly)return;
+    if(document.querySelector('.sheet-ov'))return;
     var a=document.querySelector('.app'),m=document.getElementById('main');if(!a)return;var st=m?m.scrollTop:0;
     a.style.display='none';void a.offsetHeight;a.style.display='';if(m)m.scrollTop=st;
-    setTimeout(function(){if(peak-window.innerHeight>4){var b=document.body;b.style.display='none';void b.offsetHeight;b.style.display='';if(m)m.scrollTop=st}},80);
   }
   window.addEventListener('resize',function(){if(window.innerHeight>peak)peak=window.innerHeight});
-  document.addEventListener('focusout',function(e){if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)){setTimeout(heal,150);setTimeout(heal,600)}});
+  document.addEventListener('focusout',function(e){if(e.isTrusted&&e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)&&!e.target.readOnly){setTimeout(heal,600)}});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(heal,150)});
   window.addEventListener('pageshow',function(){setTimeout(heal,150)});
   // Some iPhones give home-screen apps a window that already stops above the home bar. Then the usual
@@ -1480,13 +1497,14 @@ function startWorkout(from){
   if(ST.active){toast('Finish or discard your current workout first.');return}
   const h=new Date().getHours();
   const name=from?.name||(h<11?'Morning workout':h<17?'Afternoon workout':'Evening workout');
-  ST.active={id:newId(),name,start:Date.now(),exercises:(from?.exercises||[]).filter(e=>EXMAP[e.exId]).map(e=>Object.assign(newEx(e.exId,e.sets.map(s=>newSet(s))),{rest:e.rest??null,note:e.note||''})),restEnd:0,restTotal:0,restAfter:null,restOver:false};
+  ST.active={id:newId(),name,start:Date.now(),exercises:(from?.exercises||[]).filter(e=>EXMAP[e.exId]).map(e=>Object.assign(newEx(e.exId,e.sets.map(s=>newSet(s))),{rest:e.rest??null,note:e.note||''},e.ss?{ss:e.ss}:{})),restEnd:0,restTotal:0,restAfter:null,restOver:false};
   saveActive(true);setTab('workout');wake();
 }
 function setLabel(sets,j){const k=sets[j].kind;if(k==='w')return'W';if(k==='d')return'D';if(k==='f')return'F';let n=0;for(let i=0;i<=j;i++)if(sets[i].kind==='n')n++;return String(n)}
 const prevFor=(exId,j)=>(lastSets[exId]||[])[j];
 function nextSet(){
   const A=ST.active;if(!A)return null;const ex=A.exercises;if(!ex.length)return null;
+  if(A.restAfter&&ex[A.restAfter.i]){const sn=ssAfter(ex,A.restAfter.i);if(sn)return{i:sn.i,j:sn.j}}
   const start=A.restAfter||{i:0,j:-1};
   const order=[];for(let k=0;k<ex.length;k++){const i=(start.i+k)%ex.length;ex[i].sets.forEach((s,j)=>{if(k===0&&j<=start.j)return;order.push({i,j})})}
   ex[start.i]&&ex[start.i].sets.forEach((s,j)=>{if(j<=start.j)order.push({i:start.i,j})});
@@ -1503,7 +1521,8 @@ function completeSet(i,j){
   startRest(i,j);return true;
 }
 function startRest(i,j){
-  const A=ST.active,x=A.exercises[i],rest=x.rest??ST.settings.rest;
+  // In a superset, no rest until the last exercise of the round.
+  const A=ST.active,x=A.exercises[i],sn=ssAfter(A.exercises,i),rest=sn&&!sn.rest?0:(x.rest??ST.settings.rest);
   A.restAfter={i,j};A.restOver=false;
   if(rest>0){A.restEnd=Date.now()+rest*1000;A.restTotal=rest*1000;restFired=false;warned=false;ensureAudio();if(ST.settings.autoGame)openGame()}
   else{A.restEnd=0}
@@ -1514,7 +1533,7 @@ function startRest(i,j){
 
 /* ================= rendering ================= */
 let tabScroll={};
-function setTab(t){if(t==='history'||t==='exercises'){PROFILE_SUB=t;LS.set('profileSub',t);t='profile'}tabScroll[ST.tab]=$('#main').scrollTop;ST.tab=t;LS.set('tab',t);render();$('#main').scrollTop=tabScroll[t]||0}
+function setTab(t){kpClose();if(t==='history'||t==='exercises'){PROFILE_SUB=t;LS.set('profileSub',t);t='profile'}tabScroll[ST.tab]=$('#main').scrollTop;ST.tab=t;LS.set('tab',t);render();$('#main').scrollTop=tabScroll[t]||0}
 function render(){
   if(!appEntered)return;
   const titles={workout:ST.active?'Lifting':'Workout',feed:'Feed',programs:'Programs',profile:'Profile',games:'Brain gym'};
@@ -1526,7 +1545,7 @@ function render(){
   else if(ST.tab==='programs'){m.innerHTML=programsHTML();if(PROG.list==null&&!PROG.err)loadPrograms()}
   else if(ST.tab==='games')m.innerHTML=gamesHTML();
   else{m.innerHTML=profileHTML();if(PROFILE_SUB==='exercises')renderExList();if(!myStats||(PROFILE_SUB==='posts'&&myPosts==null))loadMine()}
-  renderDock();paintBadges();
+  renderDock();paintBadges();kpReattach();
 }
 function softRender(){const a=document.activeElement;if(a&&$('#main').contains(a)&&a.tagName==='INPUT')return;const st=$('#main').scrollTop;render();$('#main').scrollTop=st}
 
@@ -1569,14 +1588,14 @@ function workoutHTML(){
     <div class="wk-stats"><div><span class="eyebrow">Time</span><b id="wkDur">${clock((Date.now()-A.start)/1000)}</b></div><div><span class="eyebrow">Volume</span><b>${fmtVol(volOf({exercises:A.exercises.map(e=>({type:e.type,sets:e.sets.filter(s=>s.done)}))}))}</b></div><div><span class="eyebrow">Sets</span><b>${done}</b></div></div>
     <div class="wk-actions"><button class="primary" data-act="finish">Finish</button><button class="secondary" data-act="wk-menu" aria-label="Workout options">•••</button></div>
   </div>
-  ${A.exercises.map(exHTML).join('')}
+  ${A.exercises.map((x,i)=>exHTML(x,i)+ssLinkHTML(A.exercises,i,'act')).join('')}
   ${A.exercises.length?'':'<p class="empty">No exercises yet. Add your first one below.</p>'}
   <button class="outline" data-act="add-ex">+ Add exercise</button>`;
 }
 function exHTML(x,i){
-  const ex=exOf(x),fields=TYPES[x.type]||TYPES.w,rest=x.rest??ST.settings.rest;
-  return `<section class="ex" data-ex="${i}">
-    <div class="ex-top"><div><button class="ex-name" data-act="ex-open" data-id="${x.exId}">${esc(ex.name)}</button><div class="ex-meta">${esc(ex.muscle)} · Rest ${rest?clock(rest):'off'}</div></div>
+  const ex=exOf(x),fields=TYPES[x.type]||TYPES.w,rest=x.rest??ST.settings.rest,ss=ssAttrs(ST.active.exercises,i),sr=ssRange(ST.active.exercises,i);
+  return `<section class="ex${ss.cls}" data-ex="${i}" style="${ss.style}">
+    <div class="ex-top"><div><button class="ex-name" data-act="ex-open" data-id="${x.exId}">${esc(ex.name)}</button><div class="ex-meta">${ss.tag}${esc(ex.muscle)} · ${sr&&i<sr[1]?'No rest, then next exercise':'Rest '+(rest?clock(rest):'off')}</div></div>
     <button class="icon-btn" data-act="ex-menu" data-i="${i}" aria-label="Exercise options">•••</button></div>
     <input class="note" data-note="${i}" placeholder="Add notes" value="${esc(x.note)}" aria-label="Notes for ${esc(ex.name)}">
     <div class="sets">
@@ -1584,7 +1603,7 @@ function exHTML(x,i){
       ${x.sets.map((s,j)=>{const p=prevFor(x.exId,j);return `<div class="srow ${s.done?'done':''}" data-row="${i}-${j}" style="--n:${fields.length}">
         <button class="stag k-${s.kind}" data-act="set-menu" data-i="${i}" data-j="${j}" aria-label="Set type">${setLabel(x.sets,j)}</button>
         <button class="prev" data-act="use-prev" data-i="${i}" data-j="${j}">${p?esc(setText(x.type,p)):'—'}</button>
-        ${fields.map(f=>`<input class="fin" data-i="${i}" data-j="${j}" data-f="${f}" inputmode="${f==='t'?'numeric':'decimal'}" value="${fieldDisp(f,s[f])}" placeholder="${p?fieldDisp(f,p[f]):''}" aria-label="${colLabel(x.type,f)}">`).join('')}
+        ${fields.map(f=>`<input class="fin" data-kp readonly data-i="${i}" data-j="${j}" data-f="${f}" value="${fieldDisp(f,s[f])}" placeholder="${p?fieldDisp(f,p[f]):''}" aria-label="${colLabel(x.type,f)}">`).join('')}
         <button class="chk" data-act="check" data-i="${i}" data-j="${j}" aria-pressed="${s.done}" aria-label="Complete set">${CHECK}</button></div>`}).join('')}
     </div>
     <button class="add-set" data-act="add-set" data-i="${i}">+ Add set</button>
@@ -1857,7 +1876,7 @@ async function shareApp(){
 /* ================= sheets ================= */
 function sheet(inner,opts={}){
   const o=el(`<div class="ov sheet-ov"><div class="sheet ${opts.full?'full':''}" role="dialog" aria-modal="true">${inner}</div></div>`);
-  document.body.appendChild(o);o.close=()=>o.remove();
+  document.body.appendChild(o);o.close=()=>{if(KP.inp&&o.contains(KP.inp))kpClose();o.remove();if(window.bwHeal)setTimeout(window.bwHeal,250)};
   o.addEventListener('click',e=>{if((e.target===o&&!opts.modal)||e.target.closest('[data-close]'))o.close()});
   return o;
 }
@@ -1906,10 +1925,10 @@ function openExMenu(i){
   const mp=o.querySelector('#mPlate');if(mp)mp.onclick=()=>{const s=x.sets.find(s=>!s.done&&s.w)||x.sets.find(s=>s.w);o.close();openTools('plates',s?dispW(s.w):'')};
   o.querySelector('#mSwap').onclick=()=>{o.close();openSwapFinder({exId:x.exId,onPick:id=>{const n=newEx(id,x.sets.map(s=>newSet({kind:s.kind})));n.rest=x.rest;n.note=x.note;A.exercises[i]=n;saveActive();render();toast('Swapped')}})};
   o.querySelector('#mRep').onclick=()=>{o.close();openPicker({single:true,title:'Replace with',onDone:([id])=>{const n=newEx(id,x.sets.map(s=>newSet({kind:s.kind})));n.rest=x.rest;n.note=x.note;A.exercises[i]=n;saveActive();render()}})};
-  const mv=d=>{const ex=A.exercises;[ex[i],ex[i+d]]=[ex[i+d],ex[i]];A.restAfter=null;saveActive();o.close();render()};
+  const mv=d=>{const ex=A.exercises;[ex[i],ex[i+d]]=[ex[i+d],ex[i]];ssClean(ex);A.restAfter=null;saveActive();o.close();render()};
   o.querySelector('#mUp')&&(o.querySelector('#mUp').onclick=()=>mv(-1));
   o.querySelector('#mDown')&&(o.querySelector('#mDown').onclick=()=>mv(1));
-  confirmBtn(o.querySelector('#mDel'),'Tap again to remove',()=>{A.exercises.splice(i,1);A.restAfter=null;saveActive();o.close();render()});
+  confirmBtn(o.querySelector('#mDel'),'Tap again to remove',()=>{A.exercises.splice(i,1);ssClean(A.exercises);A.restAfter=null;saveActive();o.close();render()});
 }
 function openSetMenu(i,j){
   const x=ST.active.exercises[i],s=x.sets[j];
@@ -1929,7 +1948,7 @@ function saveRoutineFrom(w){
   const o=sheet(`<div class="sheet-h"><h2>Save as routine</h2><button class="link" data-close>Cancel</button></div>
     <div class="field"><label for="rName">Routine name</label><input class="input" id="rName" value="${esc(w.name)}"></div><button class="primary" id="rSave">Save routine</button>`);
   o.querySelector('#rSave').onclick=()=>{
-    const r={id:'r-'+newId(),name:o.querySelector('#rName').value.trim()||w.name,exercises:w.exercises.map(e=>({exId:e.exId,rest:e.rest??null,note:e.note||'',sets:e.sets.map(s=>({kind:s.kind||'n',w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))}))};
+    const r={id:'r-'+newId(),name:o.querySelector('#rName').value.trim()||w.name,exercises:w.exercises.map(e=>({exId:e.exId,rest:e.rest??null,note:e.note||'',...(e.ss?{ss:e.ss}:{}),sets:e.sets.map(s=>({kind:s.kind||'n',w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))}))};
     putItem('routines',r);o.close();toast('Routine saved');softRender();
   };
 }
@@ -1945,7 +1964,7 @@ function finishWorkout(){
 }
 function saveFinished(){
   const A=ST.active,end=Date.now();
-  const exercises=A.exercises.map(e=>({exId:e.exId,name:exOf(e).name,type:e.type,rest:e.rest,note:e.note,sets:e.sets.filter(s=>s.done).map(s=>({kind:s.kind,w:s.w,r:s.r,t:s.t,d:s.d}))})).filter(e=>e.sets.length);
+  const exercises=A.exercises.map(e=>({exId:e.exId,name:exOf(e).name,type:e.type,rest:e.rest,note:e.note,...(e.ss?{ss:e.ss}:{}),sets:e.sets.filter(s=>s.done).map(s=>({kind:s.kind,w:s.w,r:s.r,t:s.t,d:s.d}))})).filter(e=>e.sets.length);
   const prs=[];
   exercises.forEach(e=>{
     const past=ST.workouts.flatMap(w=>w.exercises.filter(x=>x.exId===e.exId).flatMap(x=>x.sets));
@@ -2023,27 +2042,30 @@ function openRoutineEditor(src,opt={}){
   const rests=[[null,'Default rest'],[0,'No rest'],[30],[45],[60],[90],[120],[180],[240],[300]];
   function draw(){
     const st=body.scrollTop;
+    ssClean(d.exercises);
     body.innerHTML=d.exercises.map((x,i)=>{
-      const ex=EXMAP[x.exId]||{name:'Exercise',muscle:'',type:'w'},type=ex.type,f=TYPES[type]||TYPES.w;
-      return `<section class="ex"><div class="ex-top"><div><b class="ex-name" style="color:var(--fg)">${esc(ex.name)}</b><div class="ex-meta">${esc(ex.muscle)}</div></div>
+      const ex=EXMAP[x.exId]||{name:'Exercise',muscle:'',type:'w'},type=ex.type,f=TYPES[type]||TYPES.w,ss=ssAttrs(d.exercises,i);
+      return `<section class="ex${ss.cls}" style="${ss.style}"><div class="ex-top"><div><b class="ex-name" style="color:var(--fg)">${esc(ex.name)}</b><div class="ex-meta">${ss.tag}${esc(ex.muscle)}</div></div>
         <div class="re-tools">${i>0?`<button class="icon-btn" data-ra="up" data-i="${i}" aria-label="Move up">↑</button>`:''}${i<d.exercises.length-1?`<button class="icon-btn" data-ra="down" data-i="${i}" aria-label="Move down">↓</button>`:''}<button class="icon-btn danger" data-ra="rm" data-i="${i}" aria-label="Remove exercise">✕</button></div></div>
         <select class="input" data-rest="${i}" aria-label="Rest timer">${rests.map(([v,l])=>`<option value="${v}" ${v===(x.rest??null)?'selected':''}>${l||'Rest '+clock(v)}</option>`).join('')}</select>
         <div class="sets"><div class="srow head re" style="--n:${f.length}"><span>Set</span>${f.map(k=>`<span>${colLabel(type,k)}</span>`).join('')}<span></span></div>
-        ${x.sets.map((s,j)=>`<div class="srow re" style="--n:${f.length}"><button class="stag k-${s.kind||'n'}" data-ra="kind" data-i="${i}" data-j="${j}" aria-label="Set type, tap to change">${setLabel(x.sets,j)}</button>${f.map(k=>`<input class="rin" data-i="${i}" data-j="${j}" data-f="${k}" inputmode="decimal" value="${fieldDisp(k,s[k])}" placeholder="—" aria-label="${colLabel(type,k)}">`).join('')}<button class="chk" data-ra="delset" data-i="${i}" data-j="${j}" aria-label="Delete set">✕</button></div>`).join('')}</div>
-        <button class="add-set" data-ra="addset" data-i="${i}">+ Add set</button></section>`;
+        ${x.sets.map((s,j)=>`<div class="srow re" style="--n:${f.length}"><button class="stag k-${s.kind||'n'}" data-ra="kind" data-i="${i}" data-j="${j}" aria-label="Set type, tap to change">${setLabel(x.sets,j)}</button>${f.map(k=>`<input class="rin" data-kp readonly data-i="${i}" data-j="${j}" data-f="${k}" value="${fieldDisp(k,s[k])}" placeholder="—" aria-label="${colLabel(type,k)}">`).join('')}<button class="chk" data-ra="delset" data-i="${i}" data-j="${j}" aria-label="Delete set">✕</button></div>`).join('')}</div>
+        <button class="add-set" data-ra="addset" data-i="${i}">+ Add set</button></section>${ssLinkHTML(d.exercises,i,'ra')}`;
     }).join('')
-    +(d.exercises.length?'':'<p class="empty">Add exercises, then set your target sets, weight and reps. Tap a set number to make it a warm-up, drop or failure set.</p>')
+    +(d.exercises.length?'':'<p class="empty">Add exercises, then set your target sets, weight and reps. Tap a set number to make it a warm-up, drop or failure set. Link exercises into a superset with the button between them.</p>')
     +`<button class="outline" data-ra="add">+ Add exercise</button>`
     +(isNew||opt.workout?'':'<button class="secondary danger" data-ra="del">Delete routine</button>');
     body.scrollTop=st;
+    kpReattach();
   }
   body.addEventListener('click',e=>{
     const b=e.target.closest('[data-ra]');if(!b)return;const i=+b.dataset.i,j=+b.dataset.j,ex=d.exercises;
     switch(b.dataset.ra){
       case'add':openPicker({onDone:ids=>{ids.forEach(id=>ex.push({exId:id,rest:null,note:'',sets:[0,1,2].map(()=>({kind:'n',w:null,r:EXMAP[id]?.type==='t'?null:null,t:null,d:null}))}));dirty=true;draw();body.scrollTop=body.scrollHeight}});return;
-      case'up':[ex[i-1],ex[i]]=[ex[i],ex[i-1]];break;
-      case'down':[ex[i+1],ex[i]]=[ex[i],ex[i+1]];break;
-      case'rm':ex.splice(i,1);break;
+      case'up':[ex[i-1],ex[i]]=[ex[i],ex[i-1]];ssClean(ex);break;
+      case'down':[ex[i+1],ex[i]]=[ex[i],ex[i+1]];ssClean(ex);break;
+      case'rm':ex.splice(i,1);ssClean(ex);break;
+      case'ss':ssToggle(ex,i);break;
       case'kind':{const s=ex[i].sets[j],ks=['n','w','d','f'];s.kind=ks[(ks.indexOf(s.kind||'n')+1)%4];break}
       case'delset':ex[i].sets.splice(j,1);break;
       case'addset':{const l=ex[i].sets[ex[i].sets.length-1];ex[i].sets.push(l?{kind:l.kind==='w'?'n':l.kind,w:l.w,r:l.r,t:l.t,d:l.d}:{kind:'n',w:null,r:null,t:null,d:null});break}
@@ -2052,7 +2074,7 @@ function openRoutineEditor(src,opt={}){
     dirty=true;draw();
   });
   body.addEventListener('change',e=>{const t=e.target;if(t.dataset.rest!=null){const v=t.value;d.exercises[+t.dataset.rest].rest=v==='null'?null:+v;dirty=true}});
-  body.addEventListener('input',e=>{const t=e.target;if(!t.classList.contains('rin'))return;d.exercises[+t.dataset.i].sets[+t.dataset.j][t.dataset.f]=fieldParse(t.dataset.f,t.value);dirty=true});
+  body.addEventListener('input',e=>{const t=e.target;if(!t.classList.contains('rin'))return;const x=d.exercises[+t.dataset.i];x.sets[+t.dataset.j][t.dataset.f]=fieldParse(t.dataset.f,t.value);autofill(x,+t.dataset.i,+t.dataset.j,t.dataset.f,body,false);dirty=true});
   body.addEventListener('focusout',e=>{const t=e.target;if(!t.classList.contains('rin'))return;const s=d.exercises[+t.dataset.i]?.sets[+t.dataset.j];if(s)t.value=fieldDisp(t.dataset.f,s[t.dataset.f])});
   o.querySelector('#reName').addEventListener('input',e=>{d.name=e.target.value;dirty=true});
   const cancel=o.querySelector('#reCancel');
@@ -2060,7 +2082,7 @@ function openRoutineEditor(src,opt={}){
   o.querySelector('#reSave').onclick=()=>{
     if(!d.name.trim()){pulse(o.querySelector('#reName'),'shake');o.querySelector('#reName').focus();toast('Give your routine a name');return}
     if(!d.exercises.length){toast('Add at least one exercise');return}
-    d.name=d.name.trim();d.exercises=d.exercises.filter(x=>x.sets.length);
+    kpClose();d.name=d.name.trim();d.exercises=d.exercises.filter(x=>x.sets.length);ssClean(d.exercises);
     if(opt.workout){d.exercises.forEach(x=>{x.name=x.name||exOf(x).name;x.type=x.type||EXMAP[x.exId]?.type||'w'});delete d.fromPlan;putItem('workouts',d);o.close();toast('Workout updated');softRender();return}
     putItem('routines',d);o.close();toast('Routine saved');setTab('workout');
   };
@@ -5577,11 +5599,12 @@ document.addEventListener('click',e=>{
     case'edit-routine':{const r=ST.routines.find(x=>x.id===b.dataset.id)||TEMPLATES.find(x=>x.id===b.dataset.id);if(r)openRoutineEditor(r);break}
     case'add-ex':openPicker({onDone:ids=>{ids.forEach(id=>A.exercises.push(newEx(id)));saveActive();render();const last=document.querySelectorAll('.ex');last[last.length-1]&&last[last.length-1].scrollIntoView({block:'start'})}});break;
     case'ex-menu':openExMenu(i);break;
+    case'ss':ssToggle(A.exercises,i);A.restAfter=null;saveActive();render();break;
     case'ex-open':openExercise(b.dataset.id);break;
     case'set-menu':openSetMenu(i,j);break;
     case'use-prev':{const x=A.exercises[i],p=prevFor(x.exId,j);if(!p||x.sets[j].done)break;(TYPES[x.type]||TYPES.w).forEach(f=>x.sets[j][f]=p[f]??null);saveActive();render();break}
     case'check':{const s=A.exercises[i].sets[j];if(s.done){s.done=false;s.at=Date.now();saveActive();render();break}
-      if(completeSet(i,j)){render()}else{pulse(document.querySelector(`[data-row="${i}-${j}"]`),'shake');toast('Enter your numbers first')}break}
+      if(completeSet(i,j)){render();const sn=ssAfter(A.exercises,i);if(sn&&!sn.rest)requestAnimationFrame(()=>goToRow(sn.i,sn.j))}else{pulse(document.querySelector(`[data-row="${i}-${j}"]`),'shake');toast('Enter your numbers first')}break}
     case'add-set':{const x=A.exercises[i],last=x.sets[x.sets.length-1];x.sets.push(newSet(last?{kind:last.kind==='w'?'n':last.kind,w:last.w,r:last.r,t:last.t,d:last.d}:null));saveActive();render();break}
     case'finish':finishWorkout();break;
     case'wk-menu':openWkMenu();break;
@@ -5607,7 +5630,7 @@ document.addEventListener('input',e=>{
   const t=e.target,A=ST.active;
   if(t.id==='wkName'&&A){A.name=t.value;saveActive();return}
   if(t.dataset.note!=null&&A){A.exercises[+t.dataset.note].note=t.value;saveActive();return}
-  if(t.classList.contains('fin')&&A){const s=A.exercises[+t.dataset.i].sets[+t.dataset.j];s[t.dataset.f]=fieldParse(t.dataset.f,t.value);s.at=Date.now();saveActive()}
+  if(t.classList.contains('fin')&&A){const x=A.exercises[+t.dataset.i],s=x.sets[+t.dataset.j];s[t.dataset.f]=fieldParse(t.dataset.f,t.value);s.at=Date.now();autofill(x,+t.dataset.i,+t.dataset.j,t.dataset.f,$('#main'),true);saveActive()}
 });
 document.addEventListener('focusout',e=>{
   const t=e.target;if(!t.classList||!t.classList.contains('fin')||!ST.active)return;
@@ -6048,7 +6071,7 @@ function syncWatchCache(now){
   clearTimeout(wcTimer);
   wcTimer=setTimeout(()=>{
     const doc={unit:u(),rest:ST.settings.rest,schedule:{days:(ST.settings.schedule&&ST.settings.schedule.days)||{}},
-      routines:ST.routines.filter(r=>!r.template).slice(0,30).map(r=>({id:r.id,name:r.name,ex:r.exercises.filter(e=>EXMAP[e.exId]).slice(0,20).map(e=>({exId:e.exId,name:exOf(e).name,type:EXMAP[e.exId].type||'w',rest:e.rest??null,note:e.note||'',
+      routines:ST.routines.filter(r=>!r.template).slice(0,30).map(r=>({id:r.id,name:r.name,ex:r.exercises.filter(e=>EXMAP[e.exId]).slice(0,20).map(e=>({exId:e.exId,name:exOf(e).name,type:EXMAP[e.exId].type||'w',rest:e.rest??null,note:e.note||'',ss:e.ss||null,
         sets:e.sets.slice(0,12).map(s=>({kind:s.kind||'n',w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))}))}))};
     const key=JSON.stringify(doc);if(key===LS.get('watchCacheKey',''))return;
     API.putDoc('watch','cache',doc).then(()=>LS.set('watchCacheKey',key)).catch(()=>{});
@@ -7001,6 +7024,146 @@ function openQuickEdit(it){
   const k=fdCur(),d=fdDay(k);
   o.querySelector('#qeGo').onclick=()=>{o.querySelectorAll('[data-q]').forEach(i=>it.per[i.dataset.q]=fdNum(i.value)||0);fdSaveDay(k);o.close();softRender()};
   confirmBtn(o.querySelector('#qeDel'),'Tap again to remove',()=>{d.items=d.items.filter(x=>x.id!==it.id);fdSaveDay(k);o.close();softRender()});
+}
+
+/* ================= supersets ================= */
+// Exercises next to each other with the same "ss" id form a superset. Log a set and you go straight
+// to the next exercise in the superset with no rest. Rest starts after the last one in the round.
+function ssRange(list,i){
+  const g=list[i]&&list[i].ss;if(!g)return null;
+  let a=i,b=i;while(a>0&&list[a-1].ss===g)a--;while(b<list.length-1&&list[b+1].ss===g)b++;
+  return a===b?null:[a,b];
+}
+// Clear superset ids left on a single exercise (after a move or delete).
+function ssClean(list){list.forEach((x,i)=>{if(x.ss&&!ssRange(list,i))delete x.ss})}
+const ssLinked=(list,i)=>!!(list[i]&&list[i+1]&&list[i].ss&&list[i].ss===list[i+1].ss);
+// Link exercise i with the one below it, or unlink them.
+function ssToggle(list,i){
+  if(!list[i]||!list[i+1])return;
+  if(ssLinked(list,i)){const g='s'+newId();for(let k=i+1;k<list.length&&list[k].ss===list[i].ss;k++)list[k].ss=g}
+  else{const g=list[i].ss||list[i+1].ss||('s'+newId()),old=list[i+1].ss;list[i].ss=g;for(let k=i+1;k<list.length&&(k===i+1||(old&&list[k].ss===old));k++)list[k].ss=g}
+  ssClean(list);
+}
+// "A", "B"… in the order supersets appear.
+function ssLetter(list,i){const g=list[i]&&list[i].ss;if(!g||!ssRange(list,i))return'';const seen=[];list.forEach((x,k)=>{if(x.ss&&ssRange(list,k)&&!seen.includes(x.ss))seen.push(x.ss)});return String.fromCharCode(65+seen.indexOf(g))}
+const SS_COLORS=['#B48CFF','#F5B83D','#34E3C8','#FF7A9A','#7FB2FF'];
+function ssAttrs(list,i){const r=ssRange(list,i);if(!r)return{cls:'',style:'',tag:''};const L=ssLetter(list,i),c=SS_COLORS[(L.charCodeAt(0)-65)%SS_COLORS.length];
+  return{cls:` ss${i===r[0]?' ss-first':''}${i===r[1]?' ss-last':''}`,style:`--ss:${c}`,tag:`<span class="ss-tag">Superset ${L}</span>`}}
+function ssLinkHTML(list,i,act){
+  if(i>=list.length-1)return'';
+  const on=ssLinked(list,i);
+  return`<div class="ss-gap${on?' on':''}"><button class="ss-link" data-${act}="ss" data-i="${i}" aria-pressed="${on}">${on?'⛓ Superset · tap to unlink':'+ Superset with next'}</button></div>`;
+}
+const firstUndone=x=>x.sets.findIndex(s=>!s.done);
+// During a workout: where to go after logging a set in exercise i, and whether to rest.
+function ssAfter(list,i){
+  const r=ssRange(list,i);if(!r)return null;
+  for(let k=i+1;k<=r[1];k++){const j=firstUndone(list[k]);if(j>=0)return{i:k,j,rest:false}}
+  for(let k=r[0];k<=r[1];k++){const j=firstUndone(list[k]);if(j>=0)return{i:k,j,rest:true}}
+  return null;
+}
+
+/* ================= number pad ================= */
+// Our own number pad for weight, reps and time, like Hevy and Strong. Next moves through every box
+// in order, so you never have to tap each one. Also works with a computer keyboard.
+const KP={el:null,inp:null,fresh:false,scroller:null,pad:''};
+function kpBuild(){
+  if(KP.el)return KP.el;
+  const keys=['1','2','3','-','4','5','6','+','7','8','9','back','.','0','next'];
+  KP.el=el(`<div class="kp" hidden role="group" aria-label="Number pad"><div class="kp-top"><span id="kpLabel"></span><button class="link" data-k="hide">Done</button></div>
+    <div class="kp-grid">${keys.map(k=>`<button type="button" class="kp-k${k==='next'?' kp-next':''}${'+-'.includes(k)&&k.length===1?' kp-step':''}" data-k="${k}" aria-label="${{'-':'Down','+':'Up',back:'Delete',next:'Next','.':'Decimal point'}[k]||k}">${{'-':'−','+':'+',back:'⌫',next:'Next ›'}[k]||k}</button>`).join('')}</div></div>`);
+  document.body.appendChild(KP.el);
+  // Keep focus where it is: pointerdown on a key would otherwise blur things on some phones.
+  KP.el.addEventListener('pointerdown',e=>e.preventDefault());
+  KP.el.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b)kpKey(b.dataset.k)});
+  return KP.el;
+}
+function kpScope(inp){return inp.closest('.sheet')||$('#main')}
+function kpScroller(inp){let n=inp.parentElement;while(n&&n!==document.body){const s=getComputedStyle(n);if(/(auto|scroll)/.test(s.overflowY)&&n.scrollHeight>n.clientHeight+2)return n;n=n.parentElement}return $('#main')}
+function kpLabelFor(inp){
+  const row=inp.closest('.srow'),tag=row&&row.querySelector('.stag'),ex=inp.closest('.ex')?.querySelector('.ex-name');
+  const col=inp.getAttribute('aria-label')||'';return`${ex?ex.textContent.trim()+' · ':''}${tag?'Set '+tag.textContent.trim()+' · ':''}${col}`;
+}
+function kpOpen(inp){
+  kpBuild();
+  if(KP.inp&&KP.inp!==inp)kpCommit();
+  document.querySelectorAll('.kp-on').forEach(x=>x.classList.remove('kp-on'));
+  KP.inp=inp;KP.fresh=true;inp.classList.add('kp-on');
+  KP.el.querySelector('[data-k="."]').textContent=inp.dataset.f==='t'?':':'.';
+  KP.el.querySelector('#kpLabel').textContent=kpLabelFor(inp);
+  KP.el.hidden=false;document.documentElement.classList.add('kp-open');
+  const sc=kpScroller(inp);
+  if(KP.scroller!==sc){kpUnpad();KP.scroller=sc;KP.pad=sc.style.paddingBottom;sc.style.paddingBottom=(KP.el.offsetHeight+16)+'px'}
+  requestAnimationFrame(()=>{const r=inp.getBoundingClientRect(),top=KP.el.getBoundingClientRect().top;if(r.bottom>top-12)sc.scrollTop+=r.bottom-top+60;else if(r.top<70)sc.scrollTop-=70-r.top});
+}
+function kpUnpad(){if(KP.scroller){KP.scroller.style.paddingBottom=KP.pad;KP.scroller=null}}
+function kpCommit(){const i=KP.inp;if(i&&i.isConnected){const ev=new FocusEvent('focusout',{bubbles:true});i.dispatchEvent(ev)}}
+function kpClose(){if(!KP.el||KP.el.hidden)return;kpCommit();if(KP.inp)KP.inp.classList.remove('kp-on');KP.inp=null;KP.el.hidden=true;document.documentElement.classList.remove('kp-open');kpUnpad()}
+function kpSet(v){const i=KP.inp;i.value=v;i.dispatchEvent(new Event('input',{bubbles:true}))}
+function kpStep(dir){
+  const i=KP.inp,f=i.dataset.f,raw=i.value.trim()||i.placeholder||'';
+  if(f==='t'){const t=parseT(raw)||0;kpSet(clock(Math.max(0,t+dir*15)));return}
+  const n=parseFloat(String(raw).replace(',','.'))||0;
+  const st=f==='w'?(u()==='kg'?2.5:5):f==='d'?(u()==='kg'?0.5:0.25):1;
+  const v=Math.max(0,Math.round((n+dir*st)*100)/100);kpSet(String(v));
+}
+function kpNext(){
+  const i=KP.inp;if(!i)return;
+  const all=[...kpScope(i).querySelectorAll('input[data-kp]')],k=all.indexOf(i);
+  // Skip sets that are already logged.
+  let n=null;for(let x=k+1;x<all.length;x++){const r=all[x].closest('.srow');if(!r||!r.classList.contains('done')){n=all[x];break}}
+  if(n)kpOpen(n);else kpClose();
+}
+function kpKey(k){
+  const i=KP.inp;if(!i||!i.isConnected){kpClose();return}
+  if(k==='hide'){kpClose();return}
+  if(k==='next'){kpNext();return}
+  if(k==='+'||k==='-'){kpStep(k==='+'?1:-1);KP.fresh=false;return}
+  let v=KP.fresh?'':i.value;KP.fresh=false;
+  if(k==='back'){kpSet(v.slice(0,-1));return}
+  if(k==='.'){const sep=i.dataset.f==='t'?':':'.';if(v.includes(sep))return;v=(v||'0')+sep;kpSet(v);return}
+  if(v.length>=7)return;
+  kpSet(v==='0'?k:v+k);
+}
+// After a redraw, put the pad back on the same box (or close it).
+function kpReattach(){
+  if(!KP.inp||KP.inp.isConnected)return;
+  const o=KP.inp,sel=`input[data-kp][data-i="${o.dataset.i}"][data-j="${o.dataset.j}"][data-f="${o.dataset.f}"]`;
+  const n=document.querySelector(sel);
+  if(n){KP.inp=n;n.classList.add('kp-on')}else{KP.inp=null;KP.el.hidden=true;document.documentElement.classList.remove('kp-open');kpUnpad()}
+}
+// These boxes never take real focus (no phone keyboard, no leftover focus outline).
+document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('input[data-kp]'))e.preventDefault()});
+document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('input[data-kp]')){e.target.blur();kpOpen(e.target)}});
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('input[data-kp]');if(t){e.preventDefault();kpOpen(t)}});
+document.addEventListener('pointerdown',e=>{if(!KP.el||KP.el.hidden)return;if(KP.el.contains(e.target)||(e.target.closest&&e.target.closest('input[data-kp]')))return;kpClose()},true);
+document.addEventListener('keydown',e=>{
+  if(!KP.el||KP.el.hidden||!KP.inp)return;
+  const k=e.key;
+  if(/^[0-9]$/.test(k)){kpKey(k)}else if(k==='.'||k===','||k===':')kpKey('.');else if(k==='Backspace')kpKey('back');
+  else if(k==='Enter'||k==='Tab')kpKey('next');else if(k==='Escape')kpKey('hide');else if(k==='ArrowUp')kpKey('+');else if(k==='ArrowDown')kpKey('-');else return;
+  e.preventDefault();
+});
+
+/* ================= autofill ================= */
+// Type a number in a set and the sets below it get the same number, until you change those yourself.
+const AF=new WeakMap();
+function afMark(s,f){let m=AF.get(s);if(!m){m=new Set();AF.set(s,m)}m.add(f)}
+const afManual=(s,f)=>!!(AF.get(s)&&AF.get(s).has(f));
+// onlyEmpty: in a live workout, only fill sets that are still blank and not logged.
+function autofill(x,i,j,f,root,onlyEmpty){
+  const src=x.sets[j];if(!src)return;afMark(src,f);
+  if(src.kind==='w')return;
+  for(let k=j+1;k<x.sets.length;k++){
+    const s=x.sets[k];if(s.kind==='w'||s.done)continue;
+    if(afManual(s,f))break; // you set this one yourself: it and the ones after it stay as they are
+    if(onlyEmpty&&s[f]!=null&&!AF.get(s)?.auto?.has(f))continue;
+    s[f]=src[f];
+    // Remember it was filled for you, so a later change to the first set can update it again.
+    let m=AF.get(s);if(!m){m=new Set();AF.set(s,m)}m.auto=m.auto||new Set();m.auto.add(f);
+    const inp=root&&root.querySelector(`input[data-kp][data-i="${i}"][data-j="${k}"][data-f="${f}"]`);
+    if(inp)inp.value=fieldDisp(f,s[f]);
+  }
 }
 
 /* ================= free tier ================= */
