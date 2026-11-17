@@ -834,6 +834,11 @@ body{font-variant-numeric:tabular-nums}
 @keyframes spSlide{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
 @media (prefers-reduced-motion:reduce){#splash .sp-bar,#splash .sp-arm,#splash .sp-head,#splash .sp-spark,#splash .sp-track i{animation:none}#splash .sp-bar{transform:none}}
 
+/* ---- watch guide ---- */
+.wg-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.wg-step{display:flex;gap:12px;align-items:flex-start}.wg-step b{font-size:16px}.wg-step p{margin:4px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}.wg-step p b{font-size:inherit;color:var(--fg)}
+.wg-n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--body);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
+.wg-help{display:flex;flex-direction:column;gap:8px}.wg-help p{margin:0;font-size:14px;line-height:1.5;color:var(--muted)}.wg-help p b{color:var(--fg)}
 /* ---- meals ---- */
 .scan-ov{position:fixed;inset:0;z-index:120;background:#000;display:flex;flex-direction:column}
 .scan-ov video,.scan-prev{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -894,7 +899,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='38';
+var APP_VERSION='39';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -6054,12 +6059,41 @@ async function refreshWatchLinked(){
   try{const r=await API.watch('devices');const on=!!(r.devices&&r.devices.length);LS.set('watchLinked',on);if(on){syncWatchCache(true);startDocSync()}}catch(e){}
 }
 const watchName=m=>{m=String(m||'').toLowerCase();const P=[['fr','Forerunner '],['fenix','fēnix '],['venu','Venu '],['vivoactive','vívoactive '],['epix','epix '],['instinct','Instinct ']];for(const [k,v] of P)if(m.startsWith(k))return v+m.slice(k.length).replace(/^(\d+)(.*)$/,(x,a,b)=>a+(b?' '+b.toUpperCase():''));return 'Garmin watch'};
+// Paste the Connect IQ Store link here once the watch app is public. Until then the guide says it's coming soon.
+const GARMIN_STORE_URL='';
+const WATCH_MODELS='fēnix 7, Forerunner 165, 255, 265, 955 and 965, Venu 2, Venu 3, Venu 3S and vívoactive 5';
+function openWatchGuide(){
+  const step=(n,title,body)=>`<li class="wg-step"><span class="wg-n">${n}</span><div><b>${title}</b><p>${body}</p></div></li>`;
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">⌚ Garmin setup</span><h2>Get Brainweight on your watch</h2></div><button class="link" data-close>Close</button></div>
+    <p class="muted" style="font-size:14px;margin:0">Works with ${WATCH_MODELS}. Takes about 5 minutes.</p>
+    ${GARMIN_STORE_URL?`<a class="primary" href="${esc(GARMIN_STORE_URL)}" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none">Open in the Connect IQ Store</a>`
+      :'<div class="box-note"><b>Coming soon.</b> The Brainweight watch app is in testing and will be in Garmin’s Connect IQ Store soon. These steps will work as soon as it’s there.</div>'}
+    <ol class="wg-list">
+      ${step(1,'Get the Connect IQ Store app','On your phone, download <b>Connect IQ Store</b> from the App Store or Google Play. It’s free from Garmin. Sign in with the same Garmin account you use in Garmin Connect.')}
+      ${step(2,'Install Brainweight','In the Connect IQ Store app, search <b>Brainweight</b>, tap it, then tap <b>Install</b> and pick your watch.')}
+      ${step(3,'Sync your watch','Open the <b>Garmin Connect</b> app with Bluetooth on and your watch nearby. It sends Brainweight to your watch. This can take a minute or two.')}
+      ${step(4,'Find it on your watch','Press the top-right button to open your activities and scroll to the bottom. New apps start at the end of the list. On some watches it’s under <b>Apps</b> instead. Tip: add it to your favorites so it’s near the top.')}
+      ${step(5,'Open it and get your code','Open Brainweight on your watch. It shows a 6-digit code.')}
+      ${step(6,'Link it here','In Brainweight on your phone, tap the gear at the top right, then <b>Brainweight watch app</b>. Enter the code and tap <b>Link</b>. Your routines and weekly schedule show up on your watch.')}
+      ${step(7,'Start lifting','Pick a routine on your watch, preview it and tap <b>Start workout</b>. It opens on your phone too, and sets you log on either one show up on both.')}
+    </ol>
+    <div class="card wg-help"><span class="eyebrow">If something’s not working</span>
+      <p><b>No code on the watch?</b> Your watch reaches Brainweight through the Garmin Connect app on your phone. Open Garmin Connect, check your phone is online, then close and reopen Brainweight on your watch.</p>
+      <p><b>Code didn’t work?</b> Codes last 30 minutes. Close and reopen Brainweight on your watch for a fresh one.</p>
+      <p><b>Can’t find the app?</b> In Garmin Connect, tap your watch, then <b>Activities &amp; Apps</b> to check it installed. Then sync again.</p>
+      <p><b>No routines on the watch?</b> Open Brainweight on your phone once so your routines sync, then reopen it on your watch.</p>
+      <p><b>During a workout</b>, keep your phone nearby with Garmin Connect running in the background. Sets you log while out of range sync when you’re back.</p>
+    </div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+}
 async function openWatchLink(){
   const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">⌚ Brainweight on your watch</span><h2>Link your Garmin watch</h2></div><button class="link" data-close>Close</button></div>
     <ol class="plan-weeks" style="margin:0"><li>Install the Brainweight app on your Garmin watch.</li><li>Open it. It shows a 6-digit code.</li><li>Enter the code here.</li></ol>
+    <button class="secondary" id="wlGuide">How to get Brainweight on your watch</button>
     <div class="promo-row"><input class="input" id="wlCode" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" aria-label="Code from your watch"><button class="primary" id="wlGo" style="min-height:46px">Link</button></div>
     <div id="wlList"><div class="spinner"></div></div>
     <p class="g-note" style="text-align:left">Start a workout on your watch or your phone and it opens on the other one. Sets you log on either show up on both, and a set logged on your watch starts your rest timer and brain game here.</p>`);
+  o.querySelector('#wlGuide').onclick=()=>openWatchGuide();
   const list=o.querySelector('#wlList');
   const draw=async()=>{
     try{const r=await API.watch('devices');const D=r.devices||[];LS.set('watchLinked',D.length>0);
