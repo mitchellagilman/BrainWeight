@@ -938,7 +938,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='44';
+var APP_VERSION='45';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -7246,6 +7246,8 @@ async function rdFetch(force){
   if(!API.garmin||!LS.get('garminOn',false)||RD.busy)return;
   if(!force&&Date.now()-RD.at<20*60e3)return;
   RD.busy=true;
+  // Once per account: ask Garmin to resend the last 30 days so readiness knows your normal right away.
+  if(!LS.get('rdBackfill',false)){LS.set('rdBackfill',true);API.garmin('backfill',{days:30}).catch(()=>{});setTimeout(()=>rdFetch(true),5*60e3)}
   try{const r=await API.garmin('health',{days:45});RD.rows=Array.isArray(r&&r.health)?r.health:[];RD.at=Date.now();LS.set('rdRows',RD.rows);LS.set('rdAt',RD.at);if(ST.tab==='workout'&&!ST.active)softRender()}
   catch(e){}finally{RD.busy=false}
 }
@@ -7402,7 +7404,7 @@ function readinessCardHTML(){
     const lbl=esc(today.name),act=today.kind==='plan'?`data-act="rd-start" data-kind="plan" data-i="${today.i}"`:`data-act="rd-start" data-kind="routine" data-id="${today.id}"`;
     if(z.k==='push'||z.k==='light'){
       rec=z.k==='push'?`Today: ${lbl}, with 1 extra set and about 2.5% more weight on your first 2 lifts.`:`Today: ${lbl}, with 1 less set and about 10% less weight.`;
-      btns=paid?`<button class="primary" ${act} data-z="${z.k}">Start ${lbl} · ${z.k==='push'?'push':'lighter'}</button><button class="secondary" ${act} data-z="plan">Do it as planned</button>`
+      btns=paid?`<button class="primary" ${act} data-z="${z.k}">Start ${lbl} (${z.k==='push'?'harder':'lighter'})</button><button class="secondary" ${act} data-z="plan">Do it as planned</button>`
         :`<button class="primary" data-act="member" data-why="readiness">Adjust it for me with Member</button><button class="secondary" ${act} data-z="plan">Start ${lbl}</button>`;
     }else if(z.k==='rest'){
       rec=`Swap ${lbl} for easy cardio or mobility today, or take a full rest day.`;
@@ -7411,7 +7413,7 @@ function readinessCardHTML(){
   }else{
     const sg=z.k==='rest'?null:rdSuggest();
     if(z.k==='rest'){rec='No workout planned, and a recovery day fits. Easy cardio or mobility will help you bounce back.';btns=`<button class="primary" data-act="start-routine" data-id="tpl-stretch">Full-body stretch</button><button class="secondary" data-act="start-routine" data-id="tpl-zone2">Easy cardio</button>`}
-    else if(sg&&sg.routine){rec=`Suggested: ${esc(sg.name)}. ${esc(sg.why)}`;btns=`<button class="primary" data-act="rd-start" data-kind="${ST.routines.includes(sg.routine)?'routine':'tpl'}" data-id="${sg.routine.id}" data-z="${z.k==='light'&&paid?'light':'plan'}">Start ${esc(sg.routine.name)}${z.k==='light'&&paid?' · lighter':''}</button>`}
+    else if(sg&&sg.routine){rec=`Suggested: ${esc(sg.name)}. ${esc(sg.why)}`;btns=`<button class="primary" data-act="rd-start" data-kind="${ST.routines.includes(sg.routine)?'routine':'tpl'}" data-id="${sg.routine.id}" data-z="${z.k==='light'&&paid?'light':'plan'}">Start ${esc(sg.routine.name)}${z.k==='light'&&paid?' (lighter)':''}</button>`}
     else rec='Everything still needs rest. Try mobility or easy cardio.';
   }
   const parts=R.parts.filter(p=>p.k!=='check');
