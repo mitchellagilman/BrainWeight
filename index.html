@@ -914,7 +914,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='40';
+var APP_VERSION='41';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -1881,6 +1881,10 @@ function sheet(inner,opts={}){
   return o;
 }
 function confirmBtn(btn,label,fn){btn.onclick=()=>{if(btn.dataset.armed){fn()}else{btn.dataset.armed='1';btn.textContent=label}}}
+// Replace an exercise but keep its sets: reps and time carry over, weight is cleared
+// (a different exercise needs a different weight).
+function swapSetVals(s,id){const t=EXMAP[id]?.type||'w',f=TYPES[t]||TYPES.w;return{w:null,r:f.includes('r')?s.r??null:null,t:f.includes('t')?s.t??null:null,d:f.includes('d')?s.d??null:null}}
+function swapExercise(x,id){return Object.assign({},x,{exId:id,sets:x.sets.map(s=>Object.assign({kind:s.kind},swapSetVals(s,id)))})}
 function openPicker({single,title,onDone}){
   const f={q:'',muscle:'All',equip:'All'},sel=[];
   const o=sheet(`<div class="sheet-h"><h2>${title||'Add exercises'}</h2><button class="link" data-close>Cancel</button></div>${filtersHTML(f,'p')}<div class="pick-list" id="pList"></div>
@@ -1924,7 +1928,7 @@ function openExMenu(i){
   o.querySelector('#mHow').onclick=()=>{o.close();openHowTo(x.exId)};
   const mp=o.querySelector('#mPlate');if(mp)mp.onclick=()=>{const s=x.sets.find(s=>!s.done&&s.w)||x.sets.find(s=>s.w);o.close();openTools('plates',s?dispW(s.w):'')};
   o.querySelector('#mSwap').onclick=()=>{o.close();openSwapFinder({exId:x.exId,onPick:id=>{const n=newEx(id,x.sets.map(s=>newSet({kind:s.kind})));n.rest=x.rest;n.note=x.note;A.exercises[i]=n;saveActive();render();toast('Swapped')}})};
-  o.querySelector('#mRep').onclick=()=>{o.close();openPicker({single:true,title:'Replace with',onDone:([id])=>{const n=newEx(id,x.sets.map(s=>newSet({kind:s.kind})));n.rest=x.rest;n.note=x.note;A.exercises[i]=n;saveActive();render()}})};
+  o.querySelector('#mRep').onclick=()=>{o.close();openPicker({single:true,title:'Replace with',onDone:([id])=>{const n=newEx(id,x.sets.map(s=>newSet(Object.assign(swapSetVals(s,id),{kind:s.kind}))));n.rest=x.rest;n.note=x.note;if(x.ss)n.ss=x.ss;A.exercises[i]=n;saveActive();render()}})};
   const mv=d=>{const ex=A.exercises;[ex[i],ex[i+d]]=[ex[i+d],ex[i]];ssClean(ex);A.restAfter=null;saveActive();o.close();render()};
   o.querySelector('#mUp')&&(o.querySelector('#mUp').onclick=()=>mv(-1));
   o.querySelector('#mDown')&&(o.querySelector('#mDown').onclick=()=>mv(1));
@@ -2046,7 +2050,7 @@ function openRoutineEditor(src,opt={}){
     body.innerHTML=d.exercises.map((x,i)=>{
       const ex=EXMAP[x.exId]||{name:'Exercise',muscle:'',type:'w'},type=ex.type,f=TYPES[type]||TYPES.w,ss=ssAttrs(d.exercises,i);
       return `<section class="ex${ss.cls}" style="${ss.style}"><div class="ex-top"><div><b class="ex-name" style="color:var(--fg)">${esc(ex.name)}</b><div class="ex-meta">${ss.tag}${esc(ex.muscle)}</div></div>
-        <div class="re-tools">${i>0?`<button class="icon-btn" data-ra="up" data-i="${i}" aria-label="Move up">↑</button>`:''}${i<d.exercises.length-1?`<button class="icon-btn" data-ra="down" data-i="${i}" aria-label="Move down">↓</button>`:''}<button class="icon-btn danger" data-ra="rm" data-i="${i}" aria-label="Remove exercise">✕</button></div></div>
+        <div class="re-tools">${i>0?`<button class="icon-btn" data-ra="up" data-i="${i}" aria-label="Move up">↑</button>`:''}${i<d.exercises.length-1?`<button class="icon-btn" data-ra="down" data-i="${i}" aria-label="Move down">↓</button>`:''}<button class="icon-btn re-swap" data-ra="swap" data-i="${i}" aria-label="Replace exercise">⇄</button><button class="icon-btn danger" data-ra="rm" data-i="${i}" aria-label="Remove exercise">✕</button></div></div>
         <select class="input" data-rest="${i}" aria-label="Rest timer">${rests.map(([v,l])=>`<option value="${v}" ${v===(x.rest??null)?'selected':''}>${l||'Rest '+clock(v)}</option>`).join('')}</select>
         <div class="sets"><div class="srow head re" style="--n:${f.length}"><span>Set</span>${f.map(k=>`<span>${colLabel(type,k)}</span>`).join('')}<span></span></div>
         ${x.sets.map((s,j)=>`<div class="srow re" style="--n:${f.length}"><button class="stag k-${s.kind||'n'}" data-ra="kind" data-i="${i}" data-j="${j}" aria-label="Set type, tap to change">${setLabel(x.sets,j)}</button>${f.map(k=>`<input class="rin" data-kp readonly data-i="${i}" data-j="${j}" data-f="${k}" value="${fieldDisp(k,s[k])}" placeholder="—" aria-label="${colLabel(type,k)}">`).join('')}<button class="chk" data-ra="delset" data-i="${i}" data-j="${j}" aria-label="Delete set">✕</button></div>`).join('')}</div>
@@ -2066,6 +2070,7 @@ function openRoutineEditor(src,opt={}){
       case'down':[ex[i+1],ex[i]]=[ex[i],ex[i+1]];ssClean(ex);break;
       case'rm':ex.splice(i,1);ssClean(ex);break;
       case'ss':ssToggle(ex,i);break;
+      case'swap':openPicker({single:true,title:'Replace '+(EXMAP[ex[i].exId]?.name||'exercise'),onDone:([id])=>{if(!id)return;ex[i]=swapExercise(ex[i],id);dirty=true;draw()}});return;
       case'kind':{const s=ex[i].sets[j],ks=['n','w','d','f'];s.kind=ks[(ks.indexOf(s.kind||'n')+1)%4];break}
       case'delset':ex[i].sets.splice(j,1);break;
       case'addset':{const l=ex[i].sets[ex[i].sets.length-1];ex[i].sets.push(l?{kind:l.kind==='w'?'n':l.kind,w:l.w,r:l.r,t:l.t,d:l.d}:{kind:'n',w:null,r:null,t:null,d:null});break}
