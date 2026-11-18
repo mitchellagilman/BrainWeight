@@ -849,6 +849,12 @@ input[data-kp].kp-on{border-color:var(--body);background:rgba(47,134,255,.16);bo
 .ss-gap{display:flex;justify-content:center;margin:-6px 0}
 .ss-link{font-size:12px;font-weight:600;color:var(--muted);padding:6px 12px;border-radius:999px;border:1px dashed var(--line)}
 .ss-gap.on .ss-link{color:var(--fg);border-style:solid;border-color:var(--line);background:var(--surface-2)}
+.gm-perms{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.gm-perm{display:flex;gap:10px;align-items:flex-start}.gm-perm b{display:block;font-size:15px}.gm-perm span:not(.gm-ic){font-size:13px;color:var(--muted);line-height:1.4}
+.gm-ic{flex:none;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;background:rgba(52,227,200,.15);color:var(--mind)}
+.gm-perm.off .gm-ic{background:rgba(255,107,107,.15);color:#FF6B6B}.gm-perm.off b{color:#FF8A8A}
+.gm-tip .gm-ic{background:rgba(47,134,255,.15);color:var(--body)}
+.gm-warn{border:1px solid rgba(255,107,107,.45);display:flex;flex-direction:column;gap:8px}.gm-warn p,.gm-warn ol{margin:0;font-size:14px;line-height:1.5;color:var(--muted)}.gm-warn ol{padding-left:18px}.gm-warn ol b,.gm-warn p b{color:var(--fg)}
 /* ---- watch guide ---- */
 .wg-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
 .wg-step{display:flex;gap:12px;align-items:flex-start}.wg-step b{font-size:16px}.wg-step p{margin:4px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}.wg-step p b{font-size:inherit;color:var(--fg)}
@@ -899,6 +905,24 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
 .fd-frame{position:absolute;left:12%;right:12%;top:30%;bottom:30%;border:3px solid var(--body);border-radius:14px;box-shadow:0 0 0 999px rgba(0,0,0,.35)}
 .fd-file{display:flex;align-items:center;justify-content:center;grid-column:1/-1;min-height:46px;cursor:pointer}
 
+.rd-card{gap:12px;border-color:color-mix(in srgb,var(--rd,var(--mind)) 45%,transparent)}
+.rd-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rd-main{display:flex;gap:14px;align-items:center}.rd-main p{margin:2px 0 0;font-size:14px;color:var(--muted);line-height:1.4}
+.rd-ring{--p:0;flex:0 0 auto;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--rd) calc(var(--p)*1%),rgba(255,255,255,.08) 0)}
+.rd-ring b{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--card,#141821);font-size:24px}
+.rd-zone{font-size:19px;color:var(--rd)}
+.rd-parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.rd-parts>div{display:flex;flex-direction:column;gap:1px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.04)}
+.rd-parts span{font-size:12px;color:var(--muted)}.rd-parts b{font-size:16px}.rd-parts small{font-size:11px;color:var(--muted)}
+.rd-ask{font-size:17px}.rd-sub{display:flex;flex-direction:column;gap:6px}
+.rd-check{display:flex;flex-direction:column;gap:8px}.rd-q{display:flex;align-items:center;justify-content:space-between;gap:10px}.rd-q>span{font-size:14px;min-width:70px}
+.rd-dots{display:flex;gap:6px}.rd-dots button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:14px}
+.rd-dots button[aria-pressed="true"]{background:var(--mind);border-color:var(--mind);color:#04110f;font-weight:700}
+.rd-rec{margin:0;font-size:15px;line-height:1.4}.rd-btns{display:flex;flex-direction:column;gap:8px}
+.rd-lock{text-align:left;font:inherit;font-size:13px;padding:10px 12px;border-radius:12px;border:1px dashed var(--line);background:transparent;color:var(--muted)}
+.rd-week{display:flex;justify-content:space-between;align-items:flex-end;height:52px;padding:0 4px}
+.rd-week>div{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}.rd-week i{width:10px;border-radius:4px 4px 2px 2px}.rd-week span{font-size:11px;color:var(--muted)}
+.rd-note{margin:0;font-size:12px}
 </style>
 <div id="splash" role="status" aria-label="Loading Brainweight">
   <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -914,7 +938,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='41';
+var APP_VERSION='43';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -1495,6 +1519,7 @@ const newSet=(base)=>({id:newId(),kind:base?.kind||'n',w:base?.w??null,r:base?.r
 const newEx=(exId,sets)=>({uid:newId(),exId,name:EXMAP[exId]?.name,type:EXMAP[exId]?.type||'w',rest:null,note:'',sets:sets||[newSet()]});
 function startWorkout(from){
   if(ST.active){toast('Finish or discard your current workout first.');return}
+  if(from&&typeof RD!=='undefined'&&RD.next){from=readyAdjust(from,RD.next);RD.next=null}
   const h=new Date().getHours();
   const name=from?.name||(h<11?'Morning workout':h<17?'Afternoon workout':'Evening workout');
   ST.active={id:newId(),name,start:Date.now(),exercises:(from?.exercises||[]).filter(e=>EXMAP[e.exId]).map(e=>Object.assign(newEx(e.exId,e.sets.map(s=>newSet(s))),{rest:e.rest??null,note:e.note||''},e.ss?{ss:e.ss}:{})),restEnd:0,restTotal:0,restAfter:null,restOver:false};
@@ -1569,10 +1594,11 @@ function startHTML(){
   const mine=ST.routines.slice().sort((a,b)=>a.name.localeCompare(b.name));
   const wkStart=(()=>{const x=new Date();x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x.getTime()})();
   const wk=ST.workouts.filter(w=>w.start>=wkStart),h=new Date().getHours();
-  const hint=installHint();
+  const hint=installHint();setTimeout(()=>rdFetch(),0);
   return `${hint}<section class="hero"><span class="eyebrow">${h<12?'Good morning':h<18?'Good afternoon':'Good evening'} · Train your muscles &amp; mind</span><h2>Sharp <span class="m">mind</span>.<br>Strong <span class="b">body</span>.</h2>
     <div class="hero-stats"><div><b>${wk.length}</b><span class="eyebrow">This week</span></div><div><b>${fmtVol(wk.reduce((a,w)=>a+volOf(w),0))}</b><span class="eyebrow">Volume</span></div><div><b>${ST.workouts.length}</b><span class="eyebrow">All time</span></div></div>
     <button class="primary" data-act="start-empty">Start a workout</button></section>
+  ${readinessCardHTML()}
   ${planCardHTML()}
   ${scheduleCardHTML()}
   <div class="quick-row"><button class="secondary" data-act="swap-finder">🔁 Find a swap</button><button class="secondary" data-act="max-warmup">🎯 Max-out warm-up</button><button class="secondary" data-act="tools" data-tool="plates">🧮 Calculators</button><button class="secondary" data-act="invite">🎁 Invite</button></div>
@@ -2323,7 +2349,7 @@ const DemoAPI=(()=>{
     async logScore(){},
     async scanEquipment(images){if(!images||!images.length)throw new Error('Add a photo first');return wait({items:{dumbbells:{max_lb:25},bench:{},bands:{}},seen:['dumbbells up to 25 lb','adjustable bench','resistance bands']},900)},
     async watch(action,extra){if(action==='devices')return wait({devices:D.watches||[]});if(action==='claim'){if(!/^\d{6}$/.test(extra.code||''))throw new Error('Enter the 6-digit code from your watch.');D.watches=[{id:'w1',model:'venu3',linked_at:new Date().toISOString()}];save();return wait({ok:true})}if(action==='unlink'){D.watches=[];save();return wait({ok:true})}if(action==='push')return wait({active:extra.active});return wait({})},
-    async garmin(action,extra){if(action==='activities')return wait({activities:D.garminActs||[]});if(action==='send_schedule'){const n=(extra.items||[]).reduce((a,i)=>a+i.dates.length,0);return wait({workouts:(extra.items||[]).length,scheduled:n,failed:0})}if(action==='start'){D.garmin={connected:true,connected_at:new Date().toISOString()};save();toast('Preview: Garmin connected (no real sign-in).');return{url:'#garmin-connected'}}if(action==='disconnect'){D.garmin=null;save();return{connected:false}}if(action==='send_workout'){D.garminSent=(D.garminSent||0)+1;save();return wait({workoutId:1,scheduled:true})}return wait(D.garmin||{connected:false})},
+    async garmin(action,extra){if(action==='activities')return wait({activities:D.garminActs||[]});if(action==='health')return wait({health:demoHealth()});if(action==='send_schedule'){const n=(extra.items||[]).reduce((a,i)=>a+i.dates.length,0);return wait({workouts:(extra.items||[]).length,scheduled:n,failed:0})}if(action==='start'){D.garmin={connected:true,connected_at:new Date().toISOString()};save();toast('Preview: Garmin connected (no real sign-in).');return{url:'#garmin-connected'}}if(action==='disconnect'){D.garmin=null;save();return{connected:false}}if(action==='send_workout'){D.garminSent=(D.garminSent||0)+1;save();return wait({workoutId:1,scheduled:true})}return wait(D.garmin||{connected:false})},
     async dailySubmit(puzzle,guesses,pattern){D.daily={puzzle,guesses,pattern};save()},
     async puzzleSubmit(game,puzzle,solved,score,detail){D.pz=D.pz||{};D.pz[game]={puzzle,solved,score,detail};save()},
     async puzzleBoard(game,puzzle){const m=D.pz&&D.pz[game]&&D.pz[game].puzzle===puzzle?[Object.assign({},D.me,{user_id:'me',solved:D.pz[game].solved,score:D.pz[game].score,is_me:true})]:[];
@@ -2624,7 +2650,7 @@ async function enterApp(){
   if(!legalOK())setTimeout(openLegalUpdate,LS.get('welcomed',false)?400:0);
   refreshPushFlag();setTimeout(()=>routeHash(),300);setTimeout(maybePushPrompt,1500);
   // Remember whether Garmin is connected so routines can show Send to Garmin.
-  if(API.live&&API.garmin)API.garmin('status').then(st=>{const on=!!(st&&st.connected);if(on!==LS.get('garminOn',false)){LS.set('garminOn',on);softRender()}if(on)refreshGarminActs(true)}).catch(()=>{});
+  if(API.live&&API.garmin)API.garmin('status').then(st=>{const on=!!(st&&st.connected);if(on!==LS.get('garminOn',false)){LS.set('garminOn',on);softRender()}if(on){refreshGarminActs(true);gmCheckPerms(st);rdFetch(true)}}).catch(()=>{});
   if(API.live){if(LS.get('watchLinked',false))startDocSync();refreshWatchLinked()}
 }
 async function signOut(){
@@ -5647,6 +5673,24 @@ new MutationObserver(()=>{const q=document.getElementById('xQ');if(q&&!q.dataset
 /* ================= Garmin Connect ================= */
 // Connect, see status and disconnect. Garmin's agreement requires telling people what goes to Garmin,
 // linking Garmin's privacy notice and getting a clear OK before connecting.
+// The three things Brainweight asks Garmin for. Garmin's sign-in page has a switch for each.
+const GM_PERMS=[
+  {key:'ACTIVITY_EXPORT',name:'Activities',why:'Brings strength workouts from your watch into History.'},
+  {key:'WORKOUT_IMPORT',name:'Workout import',why:'Sends your workouts and weekly schedule to your watch.'},
+  {key:'HEALTH_EXPORT',name:'Daily health stats',why:'Sleep, HRV, resting heart rate, stress and Body Battery for your daily readiness.'},
+];
+const gmMissing=st=>st&&st.connected&&Array.isArray(st.permissions)?GM_PERMS.filter(p=>!st.permissions.includes(p.key)):[];
+function gmPermList(st){
+  return`<div class="gm-perms">${GM_PERMS.map(p=>{const on=!st||!st.connected?null:(st.permissions||[]).includes(p.key);
+    return`<div class="gm-perm${on===false?' off':''}"><span class="gm-ic" aria-hidden="true">${on===null?'○':on?'✓':'✕'}</span><div><b>${p.name}${on===false?' · off':''}</b><span>${p.why}</span></div></div>`}).join('')}</div>`;
+}
+async function gmReconnect(btn){btn.disabled=true;btn.textContent='Opening Garmin…';try{const r=await API.garmin('start');location.href=r.url}catch(e){toast(e.message||'Couldn’t reach Garmin. Try again.');btn.disabled=false;btn.textContent='Reconnect Garmin'}}
+// Once a day, if someone turned a Garmin permission off, tell them and show how to fix it.
+function gmCheckPerms(st){
+  const miss=gmMissing(st);if(!miss.length)return;
+  const today=new Date().toDateString();if(LS.get('gmPermWarn','')===today)return;LS.set('gmPermWarn',today);
+  setTimeout(()=>{if(!document.querySelector('.sheet-ov'))openGarmin()},1200);
+}
 async function openGarmin(){
   const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Connected apps</span><h2>Garmin Connect</h2></div><button class="link" data-close>Done</button></div><div id="gmBox" class="stack"><p class="muted">Loading…</p></div>`);
   const box=o.querySelector('#gmBox');
@@ -5655,21 +5699,28 @@ async function openGarmin(){
   if(!!st.connected!==LS.get('garminOn',false)){LS.set('garminOn',!!st.connected);try{softRender()}catch(e){}}
   if(!o.isConnected)return;
   if(st.connected){
-    box.innerHTML=`<div class="card"><div style="display:flex;align-items:center;gap:10px"><span class="pz-ok" aria-hidden="true">✓</span><div><b>Connected to Garmin Connect</b><div class="muted" style="font-size:13px">Since ${new Date(st.connected_at).toLocaleDateString()}</div></div></div></div>
-      <div class="card"><b>What happens now</b><div class="lines"><span>Strength activities you record on your Garmin device are added to Brainweight.</span><span>Send any plan day or routine to your watch with ⌚ Send to Garmin.</span></div></div>
-      <p class="g-note" style="text-align:left">Garmin data stays private to you and is never sold or used for AI. <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a></p>
+    const miss=gmMissing(st);
+    box.innerHTML=`${miss.length?`<div class="card gm-warn"><b>${miss.length===1?`${miss[0].name} is turned off`:`${miss.length} Garmin permissions are off`}</b>
+        <p>Brainweight can’t ${miss.map(p=>({ACTIVITY_EXPORT:'bring in your Garmin workouts',WORKOUT_IMPORT:'send workouts to your watch',HEALTH_EXPORT:'read your sleep, HRV and stress'})[p.key]).join(' or ')} until it’s on. Fix it either way:</p>
+        <ol><li>In the <b>Garmin Connect</b> app, tap <b>More</b> (☰), then <b>Settings</b>, then <b>Connected Apps</b>, then <b>Brainweight</b>, and turn on ${miss.map(p=>`<b>${p.name}</b>`).join(' and ')}.</li><li>Or tap <b>Reconnect Garmin</b> below and leave every switch on.</li></ol>
+        <button class="primary" id="gmRe">Reconnect Garmin</button></div>`:''}
+      <div class="card"><div style="display:flex;align-items:center;gap:10px"><span class="pz-ok" aria-hidden="true">✓</span><div><b>Connected to Garmin Connect</b><div class="muted" style="font-size:13px">Since ${new Date(st.connected_at).toLocaleDateString()}</div></div></div></div>
+      <div class="card"><b>What Brainweight can use</b>${gmPermList(st)}</div>
+      <p class="g-note" style="text-align:left">Garmin data stays private to you and is never sold, used for ads or used for AI. <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a></p>
       <button class="secondary danger" id="gmOff">Disconnect Garmin</button>`;
+    const re=box.querySelector('#gmRe');if(re)re.onclick=()=>gmReconnect(re);
     confirmBtn(box.querySelector('#gmOff'),'Tap again to disconnect',async()=>{
       try{await API.garmin('disconnect');LS.set('garminOn',false);toast('Garmin disconnected. Your Garmin data was removed.');o.close()}catch(e){toast(e.message||'Couldn’t disconnect. Try again.')}});
     return;
   }
-  box.innerHTML=`<p class="muted" style="margin:0">Connect your Garmin account to send your plan workouts to your watch and bring strength activities from your watch into Brainweight.</p>
+  box.innerHTML=`<p class="muted" style="margin:0">Connect your Garmin account to send your plan workouts to your watch, bring strength activities from your watch into Brainweight, and use your sleep, HRV and stress for daily readiness.</p>
+    <div class="card gm-tip"><b>On Garmin’s page, leave all 3 switches on</b><p class="muted" style="margin:4px 0 0;font-size:14px">Garmin asks what to share with Brainweight. If one is off, that part won’t work. You can change it later in Garmin Connect.</p>${gmPermList(null)}</div>
     <div class="card"><b>Before you connect</b><div class="lines">
-      <span>Brainweight will send the workouts you choose (exercises, sets, reps and weights) to your Garmin Connect account, and receive your strength activities from it.</span>
+      <span>Brainweight will send the workouts you choose (exercises, sets, reps and weights) to your Garmin Connect account, and receive your strength activities and daily health stats (sleep, HRV, resting heart rate, stress and Body Battery) from it.</span>
       <span>Data sent to Garmin is covered by the <a href="https://www.garmin.com/privacy/connect" target="_blank" rel="noopener">Garmin Connect privacy notice</a>.</span>
       <span>Don’t upload data to your Garmin Connect account if you aren’t allowed to.</span>
       <span>You can disconnect any time here or in Garmin Connect.</span></div></div>
-    <label class="terms-agree"><input type="checkbox" id="gmOk"><span>I agree to send my workout data to Garmin and receive my Garmin strength activities.</span></label>
+    <label class="terms-agree"><input type="checkbox" id="gmOk"><span>I agree to send my workout data to Garmin and receive my Garmin strength activities and daily health stats.</span></label>
     <button class="primary" id="gmGo" disabled>Connect Garmin</button>
     <p class="g-note" style="text-align:left">You’ll sign in on Garmin’s own page. Brainweight never sees your Garmin password.</p>`;
   const ok=box.querySelector('#gmOk'),go=box.querySelector('#gmGo');
@@ -7171,6 +7222,238 @@ function autofill(x,i,j,f,root,onlyEmpty){
   }
 }
 
+/* ================= daily readiness (recovery planner) ================= */
+// Each morning: a 0–100 readiness score from the person's own data, compared with their own normal.
+//   Garmin (paid): last night's sleep, overnight HRV, resting heart rate, yesterday's stress.
+//   Everyone: how much they lifted in the last 2 days vs. usual, and a 2-tap check-in (energy, soreness).
+// It then suggests Push / Train as planned / Go lighter / Recovery and can adjust today's workout.
+// Garmin data arrives through the garmin function ('health' action), a few minutes after each watch sync.
+const RD={rows:LS.get('rdRows',[]),at:LS.get('rdAt',0),busy:false,next:null};
+const RD_ZONES=[
+  {k:'push',min:80,name:'Push',color:'var(--mind)',tip:'You’re well recovered. A good day to add a set or a little weight.'},
+  {k:'plan',min:60,name:'Train as planned',color:'var(--body)',tip:'You’re recovered enough for your normal workout.'},
+  {k:'light',min:40,name:'Go lighter',color:'#F5B83D',tip:'Your body is still catching up. Train, but take one set off and about 10% off the weight.'},
+  {k:'rest',min:0,name:'Recovery day',color:'#FF7A7A',tip:'Your body needs a break. Easy cardio, mobility or a full rest day will help more than a hard session.'},
+];
+const rdNum=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
+const rdClamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+const rdMedian=a=>{const s=a.filter(x=>x!=null).sort((x,y)=>x-y);if(!s.length)return null;const m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+const rdDayKey=d=>{const x=d||new Date();return`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
+const rdShift=(k,n)=>{const [a,b,c]=k.split('-').map(Number);const d=new Date(a,b-1,c);d.setDate(d.getDate()+n);return rdDayKey(d)};
+const rdPaid=()=>{try{return isMember()}catch(e){return false}};
+
+async function rdFetch(force){
+  if(!API.garmin||!LS.get('garminOn',false)||RD.busy)return;
+  if(!force&&Date.now()-RD.at<20*60e3)return;
+  RD.busy=true;
+  try{const r=await API.garmin('health',{days:45});RD.rows=Array.isArray(r&&r.health)?r.health:[];RD.at=Date.now();LS.set('rdRows',RD.rows);LS.set('rdAt',RD.at);if(ST.tab==='workout'&&!ST.active)softRender()}
+  catch(e){}finally{RD.busy=false}
+}
+
+// Garmin summaries -> one record per day. Field names vary a little between summary versions,
+// so each value checks the common spellings.
+function rdDays(){
+  const by={};const g=d=>by[d]||(by[d]={});
+  for(const r of RD.rows){
+    if(!r||!r.day)continue;const x=r.data||{},o=g(r.day);
+    if(r.kind==='dailies'){
+      const rhr=rdNum(x.restingHeartRateInBeatsPerMinute);if(rhr&&rhr>25)o.rhr=rhr;
+      const st=rdNum(x.averageStressLevel);if(st!=null&&st>=0)o.stress=st;
+      const bb=rdNum(x.bodyBatteryChargedValue);if(bb!=null)o.bbCharged=bb;
+    }else if(r.kind==='sleeps'){
+      let secs=rdNum(x.durationInSeconds);
+      if(!secs){const parts=['deepSleepDurationInSeconds','lightSleepDurationInSeconds','remSleepInSeconds','remSleepDurationInSeconds'].map(k=>rdNum(x[k])||0);secs=parts.reduce((a,b)=>a+b,0)||null}
+      if(secs&&secs>3600&&(!o.sleepS||secs>o.sleepS))o.sleepS=secs;
+      const sc=rdNum(x.overallSleepScore?.value??x.sleepScores?.overall?.value??x.sleepScore?.value??x.overallSleepScore);
+      if(sc!=null&&sc>0)o.sleepScore=sc;
+    }else if(r.kind==='hrv'||r.kind==='hrvSummaries'){
+      const h=rdNum(x.lastNightAvg??x.lastNightAverage??x.hrvSummary?.lastNightAvg??x.weeklyAvg);if(h&&h>5)o.hrv=h;
+    }
+  }
+  return by;
+}
+
+// Hard sets per day from Brainweight history (and which muscles they hit).
+function rdLoad(){
+  const per={},mus={};const now=Date.now();
+  for(const w of ST.workouts||[]){
+    if(!w.start||now-w.start>35*864e5)continue;
+    const k=rdDayKey(new Date(w.start));let n=0;
+    for(const e of w.exercises||[]){
+      const sets=(e.sets||[]).filter(s=>s.kind!=='w').length;n+=sets;
+      if(now-w.start<72*3600e3&&e.exId){const m=exMuscles(e.exId);const hrs=(now-w.start)/3600e3;for(const p of m.p){(mus[p]=mus[p]||[]).push({sets,hrs})}}
+    }
+    per[k]=(per[k]||0)+n;
+  }
+  return{per,mus};
+}
+const RD_GROUPS={push:['chest','delts','triceps'],pull:['lats','upper','traps','rear','biceps','forearms'],legs:['quads','hamstrings','glutes','calves','adductors','abductors','lower']};
+const RD_GROUP_NAME={push:'Push (chest, shoulders, triceps)',pull:'Pull (back, biceps)',legs:'Legs'};
+// Which muscle groups are still recovering: 6+ hard sets in the last 48 hours, or 10+ in 72.
+function rdTired(){
+  const {mus}=rdLoad();const out={};
+  for(const [g,list] of Object.entries(RD_GROUPS)){
+    let s48=0,s72=0,last=null;
+    for(const m of list)for(const x of mus[m]||[]){s72+=x.sets;if(x.hrs<48)s48+=x.sets;last=last==null?x.hrs:Math.min(last,x.hrs)}
+    out[g]={tired:s48>=6||s72>=10,last};
+  }
+  return out;
+}
+
+function rdCheckins(){return ST.settings.checkins||{}}
+function rdSaveCheckin(k,v){const c=Object.assign({},rdCheckins());c[k]=Object.assign({},c[k]||{},v);const keys=Object.keys(c).sort();keys.slice(0,Math.max(0,keys.length-60)).forEach(x=>delete c[x]);ST.settings.checkins=c;saveSettings()}
+
+// The score for one day. Each part is 0–100 (50 = your normal), weighted, using only what's available.
+function rdScore(k){
+  k=k||rdDayKey();
+  const days=rdDays(),t=days[k]||{},prev=[];for(let i=1;i<=28;i++)prev.push(days[rdShift(k,-i)]||{});
+  const base=f=>{const v=prev.map(d=>d[f]).filter(x=>x!=null);return v.length>=4?rdMedian(v):null};
+  const parts=[],paid=rdPaid();
+  if(paid){
+    const bh=base('hrv');
+    if(t.hrv!=null){const pct=bh?(t.hrv/bh-1)*100:null;parts.push({k:'hrv',w:.3,label:'HRV',val:`${Math.round(t.hrv)} ms`,diff:pct!=null?`${pct>=0?'+':''}${Math.round(pct)}% vs normal`:'Building your normal',score:pct!=null?rdClamp(50+pct*2):null,
+      why:pct==null?null:pct<=-10?`HRV is ${Math.round(-pct)}% below your normal`:pct>=10?`HRV is ${Math.round(pct)}% above your normal`:null})}
+    const br=base('rhr');
+    if(t.rhr!=null){const d=br?t.rhr-br:null;parts.push({k:'rhr',w:.15,label:'Resting HR',val:`${Math.round(t.rhr)} bpm`,diff:d!=null?`${d>=0?'+':''}${Math.round(d)} vs normal`:'Building your normal',score:d!=null?rdClamp(50-d*8):null,
+      why:d==null?null:d>=4?`Resting heart rate is ${Math.round(d)} bpm higher than usual`:d<=-3?'Resting heart rate is lower than usual':null})}
+    if(t.sleepS||t.sleepScore){const h=t.sleepS?t.sleepS/3600:null;const sc=t.sleepScore!=null?t.sleepScore:rdClamp((h-4)/4*100);
+      parts.push({k:'sleep',w:.25,label:'Sleep',val:h?`${Math.floor(h)}h ${String(Math.round((h%1)*60)).padStart(2,'0')}m`:'—',diff:t.sleepScore!=null?`Score ${Math.round(t.sleepScore)}`:'',score:sc,
+        why:h&&h<6?`You slept ${Math.floor(h)}h ${Math.round((h%1)*60)}m`:sc<50?'Your sleep score was low':h&&h>=7.5?'You got a full night of sleep':null})}
+    const y=days[rdShift(k,-1)]||{};
+    if(y.stress!=null){const bs=base('stress');parts.push({k:'stress',w:.1,label:'Stress (yesterday)',val:`${Math.round(y.stress)}`,diff:bs!=null?`Normal ${Math.round(bs)}`:'',score:rdClamp(100-(y.stress-(bs??25))*2.5-25),
+      why:y.stress>=50?'Yesterday was a high-stress day':null})}
+  }
+  // Training load: last 2 days of hard sets vs. your usual 2 days.
+  const {per}=rdLoad();
+  const two=(per[k]||0)+(per[rdShift(k,-1)]||0);let tot=0;for(let i=0;i<28;i++)tot+=per[rdShift(k,-i)]||0;
+  const usual=tot/14;
+  if(tot>0){const r=usual?two/usual:1;parts.push({k:'load',w:.1,label:'Training load',val:`${two} sets in 2 days`,diff:usual?`Usual ${Math.round(usual)}`:'',score:rdClamp(100-(r-0.5)*50),
+    why:r>=1.6?'You’ve trained a lot the last 2 days':two===0&&usual>8?'You’ve had a couple of rest days':null})}
+  // Check-in (free).
+  const c=rdCheckins()[k];
+  if(c&&(c.e||c.s)){const sc=rdClamp(((c.e||3)-1)/4*60+(5-(c.s||3))/4*40);parts.push({k:'check',w:paid&&parts.some(p=>p.k==='hrv'||p.k==='sleep')?.1:.6,label:'How you feel',val:`Energy ${c.e||'–'}/5`,diff:`Soreness ${c.s||'–'}/5`,score:sc,
+    why:c.s>=4?'You’re feeling sore':c.e<=2?'Your energy is low':c.e>=4&&c.s<=2?'You’re feeling fresh':null})}
+  const used=parts.filter(p=>p.score!=null);
+  if(!used.length)return{k,score:null,zone:null,parts,why:[]};
+  const W=used.reduce((a,p)=>a+p.w,0),score=Math.round(used.reduce((a,p)=>a+p.score*p.w,0)/W);
+  const zone=RD_ZONES.find(z=>score>=z.min);
+  const why=used.filter(p=>p.why).sort((a,b)=>Math.abs(b.score-50)*b.w-Math.abs(a.score-50)*a.w).slice(0,2).map(p=>p.why);
+  return{k,score,zone,parts,why,garmin:parts.some(p=>['hrv','rhr','sleep','stress'].includes(p.k))};
+}
+
+// Today's workout: the plan's next day, or today's scheduled routine.
+function rdToday(){
+  try{const p=myPlan();if(p&&!planDone(p)){const i=planNextIndex(p);return{kind:'plan',i,name:p.days[i].name,src:p.days[i]}}}catch(e){}
+  const r=schedRoutine(new Date().getDay());return r?{kind:'routine',id:r.id,name:r.name,src:r}:null;
+}
+// When nothing is planned: the freshest muscle group, and a routine or template that trains it.
+function rdSuggest(){
+  const t=rdTired();
+  const order=Object.keys(RD_GROUPS).filter(g=>!t[g].tired).sort((a,b)=>(t[b].last??999)-(t[a].last??999));
+  const g=order[0];if(!g)return null;
+  const fit=r=>{const ex=(r.exercises||[]).filter(e=>EXMAP[e.exId]);if(!ex.length)return 0;let hit=0;for(const e of ex){const m=exMuscles(e.exId).p;if(m.some(x=>RD_GROUPS[g].includes(x)))hit++}return hit/ex.length};
+  const mine=ST.routines.map(r=>({r,f:fit(r)})).filter(x=>x.f>=.6).sort((a,b)=>b.f-a.f)[0];
+  const tpl=TEMPLATES.find(x=>x.id==='tpl-'+g);
+  const tiredNames=Object.keys(RD_GROUPS).filter(x=>t[x].tired).map(x=>({push:'upper-body pushing muscles',pull:'back and biceps',legs:'legs'})[x]);
+  return{g,name:RD_GROUP_NAME[g],routine:mine?mine.r:tpl,why:tiredNames.length?`Your ${tiredNames.join(' and ')} ${tiredNames.length>1?'are':'is'} still recovering.`:'Everything is recovered.'};
+}
+
+// Change a workout to match the day. Weights stay in kg internally; round to plate steps.
+function rdRound(kg){const step=u()==='kg'?2.5:2.26796;return Math.round(kg/step)*step}
+function readyAdjust(src,zone){
+  const r=JSON.parse(JSON.stringify(src));
+  if(zone==='push'){
+    let n=0;for(const e of r.exercises){const ex=EXMAP[e.exId];if(!ex||ex.type!=='w'||n>=2)continue;n++;
+      const work=e.sets.filter(s=>s.kind!=='w');if(!work.length)continue;
+      work.forEach(s=>{if(s.w)s.w=rdRound(s.w*1.025)});e.sets.push(Object.assign({},work[work.length-1]));
+      e.note=[e.note,'Push day: 1 extra set and about 2.5% more weight.'].filter(Boolean).join(' ')}
+  }else if(zone==='light'){
+    for(const e of r.exercises){const work=e.sets.filter(s=>s.kind!=='w');
+      if(work.length>2){const last=e.sets.lastIndexOf(work[work.length-1]);e.sets.splice(last,1)}
+      e.sets.forEach(s=>{if(s.kind!=='w'&&s.w)s.w=rdRound(s.w*0.9)});
+    }
+    if(r.exercises[0])r.exercises[0].note=[r.exercises[0].note,'Lighter day: 1 less set and about 10% less weight. Stop 2–3 reps short of failure.'].filter(Boolean).join(' ');
+  }
+  return r;
+}
+// startWorkout picks this up once, so plan days and routines start already adjusted.
+function rdStartNext(zone,fn){RD.next=zone;try{fn()}finally{RD.next=null}}
+
+/* ---------- the card on the Workout tab ---------- */
+function readinessCardHTML(){
+  const R=rdScore(),k=rdDayKey(),c=rdCheckins()[k]||{},garminOn=LS.get('garminOn',false),paid=rdPaid();
+  const today=rdToday();
+  const chips=(f,v,lbl)=>`<div class="rd-q"><span>${lbl}</span><div class="rd-dots">${[1,2,3,4,5].map(n=>`<button data-rd="${f}" data-v="${n}" aria-pressed="${c[f]===n}" aria-label="${lbl} ${n} of 5">${n}</button>`).join('')}</div></div>`;
+  const check=`<div class="rd-check">${chips('e',c.e,'Energy')}${chips('s',c.s,'Soreness')}</div>`;
+  if(R.score==null){
+    return`<section class="card rd-card"><div class="rd-top"><span class="eyebrow">Daily readiness</span>${garminOn?'':`<button class="link" data-act="rd-garmin">Use Garmin data</button>`}</div>
+      <b class="rd-ask">How are you feeling today?</b>${check}
+      <p class="muted rd-note">${garminOn&&paid?'Your sleep and HRV show up here after your watch syncs.':'Two taps and we’ll tell you whether to push or take it easy.'}</p></section>`;
+  }
+  const z=R.zone;
+  // What to do about it.
+  let rec='',btns='';
+  if(today){
+    const lbl=esc(today.name),act=today.kind==='plan'?`data-act="rd-start" data-kind="plan" data-i="${today.i}"`:`data-act="rd-start" data-kind="routine" data-id="${today.id}"`;
+    if(z.k==='push'||z.k==='light'){
+      rec=z.k==='push'?`Today: ${lbl}, with 1 extra set and about 2.5% more weight on your first 2 lifts.`:`Today: ${lbl}, with 1 less set and about 10% less weight.`;
+      btns=paid?`<button class="primary" ${act} data-z="${z.k}">Start ${lbl} · ${z.k==='push'?'push':'lighter'}</button><button class="secondary" ${act} data-z="plan">Do it as planned</button>`
+        :`<button class="primary" data-act="member" data-why="readiness">Adjust it for me with Member</button><button class="secondary" ${act} data-z="plan">Start ${lbl}</button>`;
+    }else if(z.k==='rest'){
+      rec=`Swap ${lbl} for easy cardio or mobility today, or take a full rest day.`;
+      btns=`<button class="primary" data-act="start-routine" data-id="tpl-stretch">Full-body stretch</button><button class="secondary" data-act="start-routine" data-id="tpl-zone2">Easy cardio</button><button class="link" ${act} data-z="light" style="align-self:center">Train anyway, lighter</button>`;
+    }else{rec=`Today: ${lbl}, as planned.`;btns=`<button class="primary" ${act} data-z="plan">Start ${lbl}</button>`}
+  }else{
+    const sg=z.k==='rest'?null:rdSuggest();
+    if(z.k==='rest'){rec='No workout planned, and a recovery day fits. Easy cardio or mobility will help you bounce back.';btns=`<button class="primary" data-act="start-routine" data-id="tpl-stretch">Full-body stretch</button><button class="secondary" data-act="start-routine" data-id="tpl-zone2">Easy cardio</button>`}
+    else if(sg&&sg.routine){rec=`Suggested: ${esc(sg.name)}. ${esc(sg.why)}`;btns=`<button class="primary" data-act="rd-start" data-kind="${ST.routines.includes(sg.routine)?'routine':'tpl'}" data-id="${sg.routine.id}" data-z="${z.k==='light'&&paid?'light':'plan'}">Start ${esc(sg.routine.name)}${z.k==='light'&&paid?' · lighter':''}</button>`}
+    else rec='Everything still needs rest. Try mobility or easy cardio.';
+  }
+  const parts=R.parts.filter(p=>p.k!=='check');
+  const week=[];for(let i=6;i>=0;i--){const d=rdShift(k,-i);const s=i===0?R.score:rdScore(d).score;week.push({d,s})}
+  return`<section class="card rd-card" style="--rd:${z.color}">
+    <div class="rd-top"><span class="eyebrow">Daily readiness</span><button class="link" data-act="rd-info">How it works</button></div>
+    <div class="rd-main"><div class="rd-ring" style="--p:${R.score}"><b>${R.score}</b></div><div><b class="rd-zone">${z.name}</b><p>${esc(R.why.length?R.why.join('. ')+'.':z.tip)}</p></div></div>
+    ${parts.length?`<div class="rd-parts">${parts.map(p=>`<div><span>${p.label}</span><b>${p.val}</b><small>${p.diff||''}</small></div>`).join('')}</div>`:''}
+    ${!paid&&garminOn?`<button class="rd-lock" data-act="member" data-why="readiness">🔒 Add your Garmin sleep, HRV and stress with Member</button>`:''}
+    ${c.e&&c.s?'':`<div class="rd-sub"><b>Quick check-in</b>${check}</div>`}
+    ${rec?`<p class="rd-rec">${rec}</p>`:''}${btns?`<div class="rd-btns">${btns}</div>`:''}
+    <div class="rd-week" aria-label="Last 7 days">${week.map(x=>`<div><i style="height:${x.s==null?4:Math.max(6,x.s*.36)}px;background:${x.s==null?'var(--line)':(RD_ZONES.find(z=>x.s>=z.min)||{}).color}"></i><span>${'SMTWTFS'[new Date(x.d+'T12:00').getDay()]}</span></div>`).join('')}</div>
+    <p class="muted rd-note">A training suggestion, not medical advice.</p></section>`;
+}
+function openReadinessInfo(){
+  sheet(`<div class="sheet-h"><h2>How readiness works</h2><button class="link" data-close>Close</button></div>
+    <p class="muted" style="margin:0;font-size:15px;line-height:1.5">Each morning Brainweight compares your numbers with <b>your own normal</b>, the middle of your last 4 weeks, not anyone else’s.</p>
+    <ul class="cues" style="margin:0">
+      <li><b>HRV</b>: higher than your normal usually means you’re recovered. Lower can mean stress, poor sleep, illness or hard training.</li>
+      <li><b>Resting heart rate</b>: a few beats above normal can mean your body is still recovering.</li>
+      <li><b>Sleep</b>: Garmin’s sleep score, or your hours if there’s no score.</li>
+      <li><b>Stress</b>: yesterday’s average stress from your watch.</li>
+      <li><b>Training load</b>: sets you did in the last 2 days compared with your usual.</li>
+      <li><b>Check-in</b>: how your energy and soreness feel today.</li>
+    </ul>
+    <p class="muted" style="margin:0;font-size:14px">It takes about a week of watch data to learn your normal. Readiness is a training suggestion only. It isn’t medical advice and can’t detect illness or injury. If you feel unwell, rest and check with a doctor.</p>`,{full:true}).querySelector('.sheet').style.overflowY='auto';
+}
+document.addEventListener('click',e=>{
+  const q=e.target.closest&&e.target.closest('[data-rd]');
+  if(q){rdSaveCheckin(rdDayKey(),{[q.dataset.rd]:+q.dataset.v});softRender();return}
+  const b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act;
+  if(a==='rd-info')openReadinessInfo();
+  else if(a==='rd-garmin')openGarmin();
+  else if(a==='rd-start'){
+    const z=b.dataset.z||'plan',kind=b.dataset.kind;
+    const go=()=>{if(kind==='plan')planStart(+b.dataset.i);else{const r=ST.routines.find(x=>x.id===b.dataset.id)||TEMPLATES.find(x=>x.id===b.dataset.id);if(r)startWorkout(r)}};
+    if(z==='push'||z==='light')rdStartNext(z,go);else go();
+  }
+});
+
+
+// Preview mode: 5 weeks of made-up watch data so the readiness card has something to show.
+function demoHealth(){const out=[];const now=new Date();for(let i=34;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);const k=rdDayKey(d),w=Math.sin(i*1.7)+Math.cos(i*.9);
+  out.push({kind:'dailies',day:k,data:{restingHeartRateInBeatsPerMinute:Math.round(54+w*1.5+(i===0?3:0)),averageStressLevel:Math.round(28+w*6),bodyBatteryChargedValue:Math.round(60+w*10)}});
+  out.push({kind:'sleeps',day:k,data:{durationInSeconds:Math.round((7.2+w*.4-(i===0?.9:0))*3600),overallSleepScore:{value:Math.round(78+w*6-(i===0?12:0))}}});
+  out.push({kind:'hrv',day:k,data:{lastNightAvg:Math.round(62+w*4-(i===0?7:0))}})}return out}
 /* ================= free tier ================= */
 // Free accounts: workout logging, up to 3 saved routines, the feed and messages, Quick math, Reaction and the Daily word.
 // Member unlocks every game, unlimited routines, the plan builder, programs, progress charts and leaderboards.
@@ -7186,9 +7469,10 @@ const MEMBER_WHY={
   leaderboard:['Compete on leaderboards','See where you rank against friends and everyone on Brainweight, and challenge people to beat your score.'],
   programs:['Unlock recommended programs','Ready-made programs you can start with one tap.'],
   puzzles:['Unlock every daily puzzle','Free includes the Daily word and Groups. Member adds the Mini grid, Hive and Sudoku every day.'],
+  readiness:['Train for how you recovered','Member adds your Garmin sleep, HRV, resting heart rate and stress to your daily readiness, and adjusts today’s workout for you.'],
   plan_more:['Upgrade to Member','Unlock everything Brainweight has to offer.'],
 };
-const MEMBER_LIST=['All 8 brain games','Every daily puzzle','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and PR history','Leaderboards and challenges'];
+const MEMBER_LIST=['All 8 brain games','Every daily puzzle','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and PR history','Daily readiness from your Garmin data','Leaderboards and challenges'];
 function openMember(reason){
   const w=MEMBER_WHY[reason]||MEMBER_WHY.plan_more,had=!!ME.access?.subscription?.had_trial;let iv='month';
   const o=sheet(`<span class="badge teal" style="align-self:flex-start">Member</span><h2>${esc(w[0])}</h2><p class="muted">${esc(w[1])}</p>
