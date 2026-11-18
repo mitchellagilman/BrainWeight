@@ -938,7 +938,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='43';
+var APP_VERSION='44';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -7266,10 +7266,15 @@ function rdDays(){
       if(secs&&secs>3600&&(!o.sleepS||secs>o.sleepS))o.sleepS=secs;
       const sc=rdNum(x.overallSleepScore?.value??x.sleepScores?.overall?.value??x.sleepScore?.value??x.overallSleepScore);
       if(sc!=null&&sc>0)o.sleepScore=sc;
+    }else if(r.kind==='stressDetails'&&Array.isArray(x.bodyBatteryActivityEvents)){
+      // Backup for sleep length when the sleep summary hasn't arrived: the watch logs last night as a SLEEP event.
+      const sl=x.bodyBatteryActivityEvents.filter(e=>e&&e.eventType==='SLEEP').reduce((a,e)=>a+(rdNum(e.durationInSeconds)||0),0);
+      if(sl>3600)o.sleepBackup=sl;
     }else if(r.kind==='hrv'||r.kind==='hrvSummaries'){
       const h=rdNum(x.lastNightAvg??x.lastNightAverage??x.hrvSummary?.lastNightAvg??x.weeklyAvg);if(h&&h>5)o.hrv=h;
     }
   }
+  for(const o of Object.values(by))if(!o.sleepS&&o.sleepBackup)o.sleepS=o.sleepBackup;
   return by;
 }
 
