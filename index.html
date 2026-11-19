@@ -923,6 +923,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
 .rd-week{display:flex;justify-content:space-between;align-items:flex-end;height:52px;padding:0 4px}
 .rd-week>div{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}.rd-week i{width:10px;border-radius:4px 4px 2px 2px}.rd-week span{font-size:11px;color:var(--muted)}
 .rd-note{margin:0;font-size:12px}
+.rest-pick{display:flex;gap:12px;justify-content:center}.rest-pick label{display:flex;align-items:center;gap:8px;font-size:15px}.rest-pick select{width:96px;font-size:22px;text-align:center}
 </style>
 <div id="splash" role="status" aria-label="Loading Brainweight">
   <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -938,7 +939,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='45';
+var APP_VERSION='46';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -1545,11 +1546,13 @@ function completeSet(i,j){
   Object.assign(s,filled);s.done=true;s.at=Date.now();
   startRest(i,j);return true;
 }
-function startRest(i,j){
+function startRest(i,j,since){
   // In a superset, no rest until the last exercise of the round.
+  // "since": when the set was logged, if that was earlier (on the watch), so both timers end together.
   const A=ST.active,x=A.exercises[i],sn=ssAfter(A.exercises,i),rest=sn&&!sn.rest?0:(x.rest??ST.settings.rest);
+  const from=since&&since<Date.now()?since:Date.now();
   A.restAfter={i,j};A.restOver=false;
-  if(rest>0){A.restEnd=Date.now()+rest*1000;A.restTotal=rest*1000;restFired=false;warned=false;ensureAudio();if(ST.settings.autoGame)openGame()}
+  if(rest>0&&from+rest*1000>Date.now()){A.restEnd=from+rest*1000;A.restTotal=rest*1000;restFired=false;warned=false;ensureAudio();if(ST.settings.autoGame)openGame()}
   else{A.restEnd=0}
   markRest();
   if(A.restEnd)N('restStart',A.restEnd,restLabel());else N('restCancel');
@@ -1944,13 +1947,23 @@ function openCustom(after){
   };
   setTimeout(()=>o.querySelector('#cName').focus(),50);
 }
+// Any rest length you want, like 1:05: minute and second wheels.
+function openRestPicker(cur,onPick){
+  cur=cur>0?cur:90;const m=Math.floor(cur/60),sec=Math.round(cur%60);
+  const o=sheet(`<div class="sheet-h"><h2>Custom rest</h2><button class="link" data-close>Cancel</button></div>
+    <div class="rest-pick"><label><select class="input" id="rpM" aria-label="Minutes">${Array.from({length:16},(_,v)=>`<option value="${v}" ${v===m?'selected':''}>${v}</option>`).join('')}</select><span>min</span></label>
+    <label><select class="input" id="rpS" aria-label="Seconds">${Array.from({length:60},(_,v)=>`<option value="${v}" ${v===sec?'selected':''}>${String(v).padStart(2,'0')}</option>`).join('')}</select><span>sec</span></label></div>
+    <button class="primary" id="rpGo">Set rest</button>`);
+  o.querySelector('#rpGo').onclick=()=>{const v=+o.querySelector('#rpM').value*60+(+o.querySelector('#rpS').value);o.close();if(v>0)onPick(v);else toast('Pick at least 1 second')};
+}
 function openExMenu(i){
   const A=ST.active,x=A.exercises[i],cur=x.rest;
   const opts=[[null,'Default'],[0,'Off'],[30],[45],[60],[90],[120],[180],[240],[300]];
   const o=sheet(`<div class="sheet-h"><h2>${esc(exOf(x).name)}</h2><button class="link" data-close>Done</button></div>
-    <div class="field"><label>Rest timer for this exercise</label><div class="chips">${opts.map(([v,l])=>`<button class="chip" data-rest="${v}" aria-pressed="${v===cur}">${l||clock(v)}</button>`).join('')}</div></div>
+    <div class="field"><label>Rest timer for this exercise</label><div class="chips">${opts.map(([v,l])=>`<button class="chip" data-rest="${v}" aria-pressed="${v===cur}">${l||clock(v)}</button>`).join('')}${(()=>{const c=cur!=null&&!opts.some(o=>o[0]===cur);return`<button class="chip" id="mRestC" aria-pressed="${c}">${c?clock(cur):'Custom'}</button>`})()}</div></div>
     <div class="menu"><button id="mHow">How to do it</button>${x.type==='w'?'<button id="mPlate">Plate calculator</button>':''}<button id="mSwap">Find a swap</button><button id="mRep">Replace exercise</button>${i>0?'<button id="mUp">Move up</button>':''}${i<A.exercises.length-1?'<button id="mDown">Move down</button>':''}<button id="mDel" class="danger">Remove exercise</button></div>`);
   o.querySelectorAll('[data-rest]').forEach(b=>b.onclick=()=>{x.rest=b.dataset.rest==='null'?null:+b.dataset.rest;o.querySelectorAll('[data-rest]').forEach(c=>c.setAttribute('aria-pressed',c===b));saveActive();render()});
+  o.querySelector('#mRestC').onclick=()=>{o.close();openRestPicker(x.rest??ST.settings.rest,v=>{x.rest=v;saveActive();render();toast(`Rest set to ${clock(v)}`)})};
   o.querySelector('#mHow').onclick=()=>{o.close();openHowTo(x.exId)};
   const mp=o.querySelector('#mPlate');if(mp)mp.onclick=()=>{const s=x.sets.find(s=>!s.done&&s.w)||x.sets.find(s=>s.w);o.close();openTools('plates',s?dispW(s.w):'')};
   o.querySelector('#mSwap').onclick=()=>{o.close();openSwapFinder({exId:x.exId,onPick:id=>{const n=newEx(id,x.sets.map(s=>newSet({kind:s.kind})));n.rest=x.rest;n.note=x.note;A.exercises[i]=n;saveActive();render();toast('Swapped')}})};
@@ -2077,7 +2090,7 @@ function openRoutineEditor(src,opt={}){
       const ex=EXMAP[x.exId]||{name:'Exercise',muscle:'',type:'w'},type=ex.type,f=TYPES[type]||TYPES.w,ss=ssAttrs(d.exercises,i);
       return `<section class="ex${ss.cls}" style="${ss.style}"><div class="ex-top"><div><b class="ex-name" style="color:var(--fg)">${esc(ex.name)}</b><div class="ex-meta">${ss.tag}${esc(ex.muscle)}</div></div>
         <div class="re-tools">${i>0?`<button class="icon-btn" data-ra="up" data-i="${i}" aria-label="Move up">↑</button>`:''}${i<d.exercises.length-1?`<button class="icon-btn" data-ra="down" data-i="${i}" aria-label="Move down">↓</button>`:''}<button class="icon-btn re-swap" data-ra="swap" data-i="${i}" aria-label="Replace exercise">⇄</button><button class="icon-btn danger" data-ra="rm" data-i="${i}" aria-label="Remove exercise">✕</button></div></div>
-        <select class="input" data-rest="${i}" aria-label="Rest timer">${rests.map(([v,l])=>`<option value="${v}" ${v===(x.rest??null)?'selected':''}>${l||'Rest '+clock(v)}</option>`).join('')}</select>
+        <select class="input" data-rest="${i}" aria-label="Rest timer">${rests.map(([v,l])=>`<option value="${v}" ${v===(x.rest??null)?'selected':''}>${l||'Rest '+clock(v)}</option>`).join('')}${x.rest!=null&&!rests.some(o=>o[0]===x.rest)?`<option value="${x.rest}" selected>Rest ${clock(x.rest)}</option>`:''}<option value="custom">Custom…</option></select>
         <div class="sets"><div class="srow head re" style="--n:${f.length}"><span>Set</span>${f.map(k=>`<span>${colLabel(type,k)}</span>`).join('')}<span></span></div>
         ${x.sets.map((s,j)=>`<div class="srow re" style="--n:${f.length}"><button class="stag k-${s.kind||'n'}" data-ra="kind" data-i="${i}" data-j="${j}" aria-label="Set type, tap to change">${setLabel(x.sets,j)}</button>${f.map(k=>`<input class="rin" data-kp readonly data-i="${i}" data-j="${j}" data-f="${k}" value="${fieldDisp(k,s[k])}" placeholder="—" aria-label="${colLabel(type,k)}">`).join('')}<button class="chk" data-ra="delset" data-i="${i}" data-j="${j}" aria-label="Delete set">✕</button></div>`).join('')}</div>
         <button class="add-set" data-ra="addset" data-i="${i}">+ Add set</button></section>${ssLinkHTML(d.exercises,i,'ra')}`;
@@ -2104,7 +2117,7 @@ function openRoutineEditor(src,opt={}){
     }
     dirty=true;draw();
   });
-  body.addEventListener('change',e=>{const t=e.target;if(t.dataset.rest!=null){const v=t.value;d.exercises[+t.dataset.rest].rest=v==='null'?null:+v;dirty=true}});
+  body.addEventListener('change',e=>{const t=e.target;if(t.dataset.rest!=null){const v=t.value,x=d.exercises[+t.dataset.rest];if(v==='custom'){openRestPicker(x.rest??ST.settings.rest,n=>{x.rest=n;dirty=true;draw()});draw();return}x.rest=v==='null'?null:+v;dirty=true}});
   body.addEventListener('input',e=>{const t=e.target;if(!t.classList.contains('rin'))return;const x=d.exercises[+t.dataset.i];x.sets[+t.dataset.j][t.dataset.f]=fieldParse(t.dataset.f,t.value);autofill(x,+t.dataset.i,+t.dataset.j,t.dataset.f,body,false);dirty=true});
   body.addEventListener('focusout',e=>{const t=e.target;if(!t.classList.contains('rin'))return;const s=d.exercises[+t.dataset.i]?.sets[+t.dataset.j];if(s)t.value=fieldDisp(t.dataset.f,s[t.dataset.f])});
   o.querySelector('#reName').addEventListener('input',e=>{d.name=e.target.value;dirty=true});
@@ -2124,7 +2137,7 @@ function openSettings(){
   const o=sheet(`<div class="sheet-h"><h2>Settings</h2><button class="link" data-close>Done</button></div>
     ${ME.user?accountHTML():''}
     <div class="field"><label>Weight units</label><div class="seg"><button data-u="lb" aria-pressed="${S.unit==='lb'}">lb · mi</button><button data-u="kg" aria-pressed="${S.unit==='kg'}">kg · km</button></div></div>
-    <div class="field"><label>Default rest timer</label><div class="chips">${rests.map(v=>`<button class="chip" data-r="${v}" aria-pressed="${v===S.rest}">${v?clock(v):'Off'}</button>`).join('')}</div></div>
+    <div class="field"><label>Default rest timer</label><div class="chips">${rests.map(v=>`<button class="chip" data-r="${v}" aria-pressed="${v===S.rest}">${v?clock(v):'Off'}</button>`).join('')}<button class="chip" id="sRestC" aria-pressed="${!rests.includes(S.rest)}">${rests.includes(S.rest)?'Custom':clock(S.rest)}</button></div></div>
     <label class="toggle"><span>Open a game when rest starts</span><input type="checkbox" id="sAuto" ${S.autoGame?'checked':''}></label>
     <label class="toggle"><span>Beep and buzz when rest ends</span><input type="checkbox" id="sSound" ${S.sound?'checked':''}></label>
     ${STANDALONE?`<div class="field"><label>Your data</label><p class="muted" style="font-size:13px">${API.live?'Your log is saved to your account and follows you to any phone. You can also keep a backup file.':'Your log lives on this device. Save a backup now and then, and use it to move to a new phone.'}</p>
@@ -2134,7 +2147,8 @@ function openSettings(){
   if(ME.user)wireAccount(o);
   if(STANDALONE){o.querySelector('#sExp').onclick=exportBackup;o.querySelector('#sImp').onchange=e=>{const f=e.target.files[0];if(f)importBackup(f)};o.querySelector('#sShare').onclick=shareApp}
   o.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{S.unit=b.dataset.u;o.querySelectorAll('[data-u]').forEach(c=>c.setAttribute('aria-pressed',c===b));saveSettings();render()});
-  o.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{S.rest=+b.dataset.r;o.querySelectorAll('[data-r]').forEach(c=>c.setAttribute('aria-pressed',c===b));saveSettings();render()});
+  o.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{S.rest=+b.dataset.r;o.querySelectorAll('[data-r]').forEach(c=>c.setAttribute('aria-pressed',c===b));const c=o.querySelector('#sRestC');c.setAttribute('aria-pressed','false');c.textContent='Custom';saveSettings();render()});
+  o.querySelector('#sRestC').onclick=()=>openRestPicker(S.rest,v=>{S.rest=v;saveSettings();render();const c=o.querySelector('#sRestC');if(c){o.querySelectorAll('[data-r]').forEach(x=>x.setAttribute('aria-pressed','false'));c.setAttribute('aria-pressed','true');c.textContent=clock(v)}});
   o.querySelector('#sAuto').onchange=e=>{S.autoGame=e.target.checked;saveSettings()};
   o.querySelector('#sSound').onchange=e=>{S.sound=e.target.checked;saveSettings();ensureAudio()};
 }
@@ -6080,8 +6094,11 @@ function watchApplyRemote(R){
   }
   ST.active=M;LS.set('active',M);
   if(restNew){renderDock();syncPause();updateLock()}
-  // A set logged on the watch starts the rest timer (and a brain game) here.
-  if(fresh&&R.lastWatchSet&&Date.now()-R.lastWatchSet.at<90e3)startRest(fresh.i,fresh.j);
+  // A set logged on the watch starts the rest timer here too, counted from when it was logged on the
+  // watch, so opening the phone later doesn't restart it. Skip it if the watch already changed the rest
+  // (skipped or extended) after that set, or if the rest is already over.
+  const ws=R.lastWatchSet,watchRestLater=R.restSync&&R.restSync.by==='watch'&&ws&&R.restSync.at>=ws.at;
+  if(fresh&&ws&&!watchRestLater)startRest(fresh.i,fresh.j,ws.at);
   softRender();try{updateLock()}catch(e){}
 }
 function onDocChange(p){
