@@ -271,7 +271,7 @@ button.card:hover{border-color:#2D3746}
 .pz-row{display:flex;align-items:center;gap:12px;padding:12px 14px;text-align:left;width:100%;border-bottom:1px solid var(--line)}
 .pz-row:last-child{border-bottom:0}
 .pz-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font:700 16px var(--display);flex:none}
-.pz-word{background:var(--mind-dim);color:var(--mind)}.pz-groups{background:rgba(160,120,255,.16);color:#B9A0FF}.pz-mini{background:var(--body-dim);color:var(--body)}.pz-hive{background:rgba(255,192,46,.15);color:var(--p15)}.pz-sudoku{background:var(--surface-2);color:var(--fg)}
+.pz-word{background:var(--mind-dim);color:var(--mind)}.pz-groups{background:rgba(160,120,255,.16);color:#B9A0FF}.pz-mini{background:var(--body-dim);color:var(--body)}.pz-hive{background:rgba(255,192,46,.15);color:var(--p15)}.pz-sudoku{background:var(--surface-2);color:var(--fg)}.pz-queens{background:rgba(255,122,154,.15)}.pz-chess{background:rgba(127,178,255,.15);color:#7FB2FF;font-size:22px}
 .pz-t{display:flex;flex-direction:column;min-width:0;flex:1}
 .pz-t b{font-size:15px}
 .pz-t span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -924,6 +924,39 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
 .rd-week>div{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}.rd-week i{width:10px;border-radius:4px 4px 2px 2px}.rd-week span{font-size:11px;color:var(--muted)}
 .rd-note{margin:0;font-size:12px}
 .rest-pick{display:flex;gap:12px;justify-content:center}.rest-pick label{display:flex;align-items:center;gap:8px;font-size:15px}.rest-pick select{width:96px;font-size:22px;text-align:center}
+.prompt.sm{font-size:clamp(24px,7vw,32px)}
+.bar-vis{display:flex;align-items:center;justify-content:center;height:120px;gap:0}
+.bv-bar{width:44%;height:10px;border-radius:5px;background:linear-gradient(#C9CED6,#7E8794)}
+.bv-side{display:flex;align-items:center;gap:2px;height:100%;min-width:0}.bv-side.l{justify-content:flex-end}
+.bv-side i{display:block;width:12px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.bar-sum{text-align:center;margin:0;font-size:15px;color:var(--muted);min-height:22px}.bar-sum b{color:var(--fg)}
+.bar-plates{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.bar-pl{width:60px;height:60px;border-radius:50%;background:var(--c);color:#0b0e12;font:800 16px var(--mono);border:3px solid rgba(0,0,0,.25)}
+.br-wrap{position:relative;display:grid;place-items:center;width:min(100%,300px);aspect-ratio:1;margin:8px auto;border-radius:50%;border:1px solid var(--line);background:var(--surface)}
+.br-orb{position:absolute;width:38%;height:38%;border-radius:50%;background:radial-gradient(circle,var(--mind),transparent 70%);opacity:.55;transition:transform 4s ease-in-out}
+.br-orb.big{transform:scale(2.3)}
+.br-txt{position:relative;display:flex;flex-direction:column;gap:6px;text-align:center}.br-txt b{font:700 24px var(--display)}.br-txt small{font-size:14px;color:var(--muted)}
+.hl{display:flex;flex-direction:column;gap:8px}.hl-or{text-align:center;font-size:13px;color:var(--muted)}
+.hl-card{min-height:86px;border-radius:16px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px;font-size:17px;text-align:center}
+.hl-v{font:700 15px var(--mono);color:var(--muted);min-height:18px}.hl-card.win{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface))}.hl-card.lose{opacity:.6}
+.mg{display:grid;gap:6px;width:min(100%,340px);aspect-ratio:1;margin:0 auto}
+.mg button{border-radius:10px;border:1px solid var(--line);background:var(--surface);min-width:0;min-height:0;transition:background .15s}
+.mg button.lit{background:var(--mind);border-color:var(--mind)}.mg button.reveal{outline:3px solid var(--mind);outline-offset:-3px}.mg button.miss{background:var(--bad)}
+.ar-row{display:flex;justify-content:center;gap:6px;min-height:96px;align-items:center;font:700 52px/1 var(--mono)}.ar-row span{opacity:.75}.ar-row span.mid{opacity:1;color:var(--mind)}.ar-row b{font:600 17px var(--display)}
+.ar-time{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}.ar-time i{display:block;height:100%;width:0;background:var(--mind)}
+.ar-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ar-btns button{min-height:96px;border-radius:18px;border:1px solid var(--line);background:var(--surface);font:700 44px var(--mono)}
+.g-chal{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--mind);background:var(--mind-dim)}
+.g-chal b{display:block;font-size:14px}.ch-btns{display:flex;align-items:center;gap:8px;flex:0 0 auto}.g-chal .primary.sm{min-height:36px;padding:0 12px;font-size:13px}
+.g-chnew{align-self:center;font-size:14px}
+.qn{display:grid;grid-auto-rows:1fr;width:min(100%,400px);aspect-ratio:1;margin:0 auto;border:3px solid #0b0e12;border-radius:10px;overflow:hidden}
+.qn-c{background:var(--qc);min-width:0;min-height:0;border:1px solid rgba(0,0,0,.18);font-size:clamp(18px,6vw,28px);display:grid;place-items:center;color:#0b0e12}
+.qn-c.t{border-top:3px solid #0b0e12}.qn-c.b{border-bottom:3px solid #0b0e12}.qn-c.l{border-left:3px solid #0b0e12}.qn-c.r{border-right:3px solid #0b0e12}
+.qn-c i{font-style:normal;font-size:.6em;opacity:.55}.qn-c.bad{box-shadow:inset 0 0 0 3px var(--bad)}
+.cb{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:min(100%,400px);aspect-ratio:1;margin:0 auto;border-radius:8px;overflow:hidden}
+.cb-s{position:relative;min-width:0;min-height:0;aspect-ratio:1;overflow:hidden;display:grid;place-items:center;padding:0}
+.cb-s.lt{background:#E9DDC4}.cb-s.dk{background:#B08A63}.cb-s.sel{box-shadow:inset 0 0 0 4px var(--mind)}.cb-s.hint{box-shadow:inset 0 0 0 4px var(--good)}
+.pc{font-size:clamp(26px,9vw,40px);line-height:1}.pc.w{color:#fff;text-shadow:0 0 2px #000,0 0 1px #000,0 1px 2px rgba(0,0,0,.6)}.pc.b{color:#14161a}
+.cb-s i{position:absolute;font:700 9px var(--mono);color:rgba(0,0,0,.45);font-style:normal}.cb-s .rk{left:3px;top:2px}.cb-s .fl{right:3px;bottom:1px}
 </style>
 <div id="splash" role="status" aria-label="Loading Brainweight">
   <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -939,7 +972,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='46';
+var APP_VERSION='47';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -1007,7 +1040,9 @@ var APP_VERSION='46';
     </div>
     <div class="g-free" id="gFree" hidden><span class="eyebrow">Brain gym · free play</span><b id="gFreeName">Quick math</b></div>
     <div class="chips scroll" id="gChips"></div>
+    <div class="g-chal" id="gChal" hidden></div>
     <div class="game" id="gameRoot"></div>
+    <button class="link g-chnew" id="gChNew" data-ch="new">⚔ Challenge a friend to this exact run</button>
   </div>
   <div class="lock" id="lock" hidden>
     <div class="lock-in">
@@ -1029,8 +1064,10 @@ const N=(name,...a)=>{try{if(window.BWPushHook)window.BWPushHook(name,...a)}catc
 const LOGO_SVG='<span class="mark" role="img" aria-label="Brainweight logo"></span>';
 const $=s=>document.querySelector(s);
 const LS={get(k,d){try{const v=localStorage.getItem('bs2_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('bs2_'+k,JSON.stringify(v))}catch(e){}}};
-const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+// Game randomness goes through GR so a challenge can replay the exact same run (see "challenges").
+let GR=Math.random;
+const rnd=(a,b)=>a+Math.floor(GR()*(b-a+1));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(GR()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const el=html=>{const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild};
 const pulse=(n,c)=>{if(!n)return;n.classList.remove(c);void n.offsetWidth;n.classList.add(c)};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1725,7 +1762,7 @@ document.addEventListener('pointerdown',ensureAudio,{once:true});
 /* ================= games ================= */
 const G={paused:true,game:null,id:null};
 const isPaused=()=>G.paused;
-function bestG(id,val,lower){const k='best_'+id,cur=LS.get(k,null);if(val==null)return cur;try{logScore(id,val)}catch(e){}if(cur==null||(lower?val<cur:val>cur)){LS.set(k,val);return val}return cur}
+function bestG(id,val,lower){const k='best_'+id,cur=LS.get(k,null);if(val==null)return cur;try{logScore(id,val)}catch(e){}try{chNote(id,val)}catch(e){}if(cur==null||(lower?val<cur:val>cur)){LS.set(k,val);return val}return cur}
 function mathProblem(level){
   const ops=level<2?['+','−']:level<4?['+','−','×']:['+','−','×','÷'];
   const op=ops[rnd(0,ops.length-1)],m=Math.min(level,6);let a,b,ans;
@@ -1761,7 +1798,7 @@ function mountStroop(root){
   const INK=[{n:'Red',v:'var(--p25)'},{n:'Blue',v:'var(--p20)'},{n:'Yellow',v:'var(--p15)'},{n:'Green',v:'var(--p10)'}];let score=0,cur;
   root.innerHTML=`<div class="g-head"><span>Streak <b data-s>0</b></span><span>Best <b data-b>${bestG('stroop')??0}</b></span></div><div class="prompt" data-w style="text-transform:uppercase"></div><div class="choices" data-c></div><p class="hint">Tap the color of the ink, not the word you read.</p>`;
   const w=root.querySelector('[data-w]'),c=root.querySelector('[data-c]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
-  function next(){const word=rnd(0,3);let ink=word;if(Math.random()<.78){while(ink===word)ink=rnd(0,3)}cur=ink;w.textContent=INK[word].n;w.style.color=INK[ink].v;c.innerHTML='';shuffle([0,1,2,3]).forEach(i=>{const b=el(`<button class="choice word">${INK[i].n}</button>`);b.onclick=()=>pick(b,i);c.appendChild(b)})}
+  function next(){const word=rnd(0,3);let ink=word;if(GR()<.78){while(ink===word)ink=rnd(0,3)}cur=ink;w.textContent=INK[word].n;w.style.color=INK[ink].v;c.innerHTML='';shuffle([0,1,2,3]).forEach(i=>{const b=el(`<button class="choice word">${INK[i].n}</button>`);b.onclick=()=>pick(b,i);c.appendChild(b)})}
   function pick(b,i){if(isPaused())return;if(i===cur){score++;sEl.textContent=score;bEl.textContent=bestG('stroop',score);pulse(b,'good');setTimeout(next,170)}else{score=0;sEl.textContent=0;pulse(b,'bad');pulse(w,'shake')}}
   next();return{};
 }
@@ -1792,7 +1829,7 @@ function mountOdd(root){
   let level=1,odd,tm=null;
   root.innerHTML=`<div class="g-head"><span>Level <b data-s>1</b></span><span>Best <b data-b>${bestG('odd')??0}</b></span></div><div class="odd" data-g></div><p class="hint">One tile is a slightly different shade. The gap shrinks every level.</p>`;
   const g=root.querySelector('[data-g]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
-  function next(){const n=Math.min(7,3+Math.floor((level-1)/3)),d=Math.max(3,20-level*1.3),hue=rnd(0,359),sat=rnd(45,70),li=rnd(40,58),ol=li+(Math.random()<.5?d:-d);odd=rnd(0,n*n-1);g.style.gridTemplateColumns=g.style.gridTemplateRows=`repeat(${n},1fr)`;g.innerHTML='';sEl.textContent=level;
+  function next(){const n=Math.min(7,3+Math.floor((level-1)/3)),d=Math.max(3,20-level*1.3),hue=rnd(0,359),sat=rnd(45,70),li=rnd(40,58),ol=li+(GR()<.5?d:-d);odd=rnd(0,n*n-1);g.style.gridTemplateColumns=g.style.gridTemplateRows=`repeat(${n},1fr)`;g.innerHTML='';sEl.textContent=level;
     for(let i=0;i<n*n;i++){const b=el('<button aria-label="tile"></button>');b.style.background=`hsl(${hue} ${sat}% ${i===odd?ol:li}%)`;b.onclick=()=>{if(tm||isPaused())return;if(i===odd){bEl.textContent=bestG('odd',level);level++;next()}else{g.children[odd].classList.add('reveal');pulse(g,'shake');tm=setTimeout(()=>{tm=null;level=1;next()},900)}};g.appendChild(b)}}
   next();return{destroy(){clearTimeout(tm)}};
 }
@@ -1819,6 +1856,227 @@ function mountPairs(root){
     else{lock=true;tm=setTimeout(unflip,750)}}
   start();return{pause(){if(tm)unflip()},destroy(){clearTimeout(tm)}};
 }
+/* ================= more rest games: load the bar, heart rate drop, higher or lower, memory grid, arrows, 10-second guess ================= */
+
+/* ---------- Load the bar ---------- */
+// Hit the target with the fewest plates. Going over, or using more plates than needed, resets the streak.
+function mountBar(root){
+  const kg=u()==='kg',unit=kg?'kg':'lb',bar=kg?20:45,PL=kg?[25,20,15,10,5,2.5,1.25]:[45,35,25,10,5,2.5];
+  const q=kg?4:2,step=v=>Math.round(v*q); // whole steps of the smallest plate
+  const COL=['var(--p25)','var(--p20)','var(--p15)','var(--p10)','#C9CED6','#8E96A3','#5E6673'];
+  const H=[100,92,82,70,56,46,38];
+  let score=0,target,per,side=[],minN,lock=false,tm=null;
+  // Fewest plates for one side (coin-change: plain "biggest first" isn't always fewest, e.g. 60 lb = 35 + 25).
+  function fewest(w){const n=step(w),best=Array(n+1).fill(Infinity);best[0]=0;
+    for(let i=1;i<=n;i++)for(const p of PL){const s=step(p);if(s<=i&&best[i-s]+1<best[i])best[i]=best[i-s]+1}return best[n]}
+  root.innerHTML=`<div class="g-head"><span>Streak <b data-s>0</b></span><span>Best <b data-b>${bestG('bar')??0}</b></span></div>
+    <div class="prompt" data-q></div><div class="bar-vis" data-v></div><p class="bar-sum" data-t></p>
+    <div class="bar-plates" data-p>${PL.map((p,i)=>`<button class="bar-pl" data-w="${p}" style="--c:${COL[i]}">${p}</button>`).join('')}</div>
+    <div class="grow"><button data-undo>Undo</button><button data-clear>Clear</button></div>
+    <p class="hint">Plates go on both sides. Use the fewest plates you can. Going over resets your streak.</p>`;
+  const $q=root.querySelector('[data-q]'),$v=root.querySelector('[data-v]'),$t=root.querySelector('[data-t]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
+  function next(){
+    const lvl=1+Math.floor(score/3),n=1+Math.floor(GR()*Math.min(2+Math.floor(lvl/2),6));
+    const pool=PL.slice(0,lvl<3?PL.length-1:PL.length);
+    let s=0;for(let i=0;i<n;i++)s+=pool[Math.floor(GR()*pool.length)];
+    per=s;target=bar+2*s;minN=fewest(s);side=[];lock=false;draw();
+  }
+  const fmt=v=>String(+v.toFixed(2));
+  function draw(msg){
+    $q.textContent=`Load ${fmt(target)} ${unit}`;
+    const plates=side.map(p=>{const i=PL.indexOf(p);return`<i style="height:${H[i]}%;background:${COL[i]}"></i>`});
+    $v.innerHTML=`<div class="bv-side l">${plates.slice().reverse().join('')}</div><div class="bv-bar"></div><div class="bv-side">${plates.join('')}</div>`;
+    const tot=bar+2*side.reduce((a,b)=>a+b,0);
+    $t.innerHTML=msg||`Bar ${bar} + ${fmt(tot-bar)} = <b>${fmt(tot)} ${unit}</b>`;
+  }
+  function add(p){
+    if(lock||isPaused())return;side.push(p);side.sort((a,b)=>b-a);
+    const tot=bar+2*side.reduce((a,b)=>a+b,0);
+    if(tot>target+1e-6){lock=true;draw(`Over by ${fmt(tot-target)} ${unit}. Streak reset.`);pulse($v,'shake');score=0;sEl.textContent=0;tm=setTimeout(next,1300);return}
+    if(Math.abs(tot-target)<1e-6){
+      if(side.length===minN){score++;sEl.textContent=score;bEl.textContent=bestG('bar',score);lock=true;draw(`Loaded in ${minN} plate${minN>1?'s':''} a side.`);pulse($v,'good');tm=setTimeout(next,650)}
+      else{lock=true;draw(`Right weight, but ${minN} plate${minN>1?'s':''} a side would do it. Streak reset.`);pulse($v,'shake');score=0;sEl.textContent=0;tm=setTimeout(next,1800)}
+      return}
+    draw();
+  }
+  root.querySelector('[data-p]').onclick=e=>{const b=e.target.closest('[data-w]');if(b)add(+b.dataset.w)};
+  root.querySelector('[data-undo]').onclick=()=>{if(lock||isPaused())return;side.pop();draw()};
+  root.querySelector('[data-clear]').onclick=()=>{if(lock||isPaused())return;side=[];draw()};
+  next();return{destroy(){clearTimeout(tm)}};
+}
+
+/* ---------- Heart rate drop ---------- */
+// Breathe in for 4, out for 6 for one minute. With the Brainweight watch app, it scores how far your
+// heart rate came down. A slow exhale is one of the quickest ways to bring it down between sets.
+let LIVE_HR=null; // {v, at} from the watch, about every 5 seconds while resting
+const liveHR=()=>LIVE_HR&&Date.now()-LIVE_HR.at<20e3?LIVE_HR.v:null;
+function mountBreath(root){
+  let state='idle',t0=0,start=null,low=null,raf=null,phaseAt=0,inhale=true,breaths=0;
+  const LEN=60e3,IN=4e3,OUT=6e3;
+  root.innerHTML=`<div class="g-head"><span>Heart rate <b data-h>—</b></span><span>Drop <b data-d>—</b></span><span>Best <b data-b>${bestG('hrdrop')!=null?'−'+bestG('hrdrop'):'—'}</b></span></div>
+    <button class="br-wrap" data-go aria-label="Start"><span class="br-orb" data-o></span><span class="br-txt" data-x><b>Tap to start</b><small>One minute of slow breathing</small></span></button>
+    <p class="hint" data-n></p>`;
+  const $h=root.querySelector('[data-h]'),$d=root.querySelector('[data-d]'),$b=root.querySelector('[data-b]'),$o=root.querySelector('[data-o]'),$x=root.querySelector('[data-x]'),$n=root.querySelector('[data-n]');
+  const note=()=>{$n.textContent=liveHR()!=null?'Breathe in as the circle grows, out as it shrinks. Your watch tracks how far your heart rate drops.':'Breathe in as the circle grows, out as it shrinks. Open the Brainweight app on your watch to score how far your heart rate drops.'};
+  note();
+  function loop(){
+    const now=performance.now(),hr=liveHR();$h.textContent=hr!=null?hr:'—';
+    if(state==='run'){
+      if(hr!=null){if(start==null)start=hr;low=low==null?hr:Math.min(low,hr);$d.textContent=start!=null?'−'+Math.max(0,start-low):'—'}
+      if(now-phaseAt>=(inhale?IN:OUT)){if(!inhale)breaths++;inhale=!inhale;phaseAt=now;setPhase()}
+      const left=Math.max(0,Math.ceil((LEN-(now-t0))/1000));$x.innerHTML=`<b>${inhale?'Breathe in':'Breathe out'}</b><small>${left}s</small>`;
+      if(now-t0>=LEN)finish();
+    }
+    raf=requestAnimationFrame(loop);
+  }
+  function setPhase(){$o.style.transitionDuration=(inhale?IN:OUT)+'ms';$o.classList.toggle('big',inhale)}
+  function go(){if(isPaused()||state==='run')return;note();state='run';t0=phaseAt=performance.now();inhale=true;breaths=0;start=liveHR();low=start;setPhase()}
+  function finish(){
+    state='done';$o.classList.remove('big');
+    if(start!=null&&low!=null){const d=Math.max(0,start-low);const nb=bestG('hrdrop',d);$b.textContent='−'+nb;$x.innerHTML=`<b>−${d} bpm</b><small>${start} → ${low} · tap to go again</small>`}
+    else $x.innerHTML=`<b>${breaths} slow breaths</b><small>Tap to go again</small>`;
+    note();
+  }
+  root.querySelector('[data-go]').onclick=go;
+  loop();
+  return{pause(){if(state==='run'){state='idle';$o.classList.remove('big');$x.innerHTML='<b>Tap to start</b><small>One minute of slow breathing</small>'}},destroy(){cancelAnimationFrame(raf)}};
+}
+
+/* ---------- Higher or lower ---------- */
+// Pick the bigger one. Values are typical amounts per serving (USDA-style averages), so close calls are left out.
+const HILO=[
+  {q:'More calories?',u:'cal',items:[['Large egg',72],['Medium banana',105],['Medium apple',95],['Cup of cooked white rice',205],['Cup of cooked oatmeal',165],['Slice of white bread',75],['Plain bagel',280],['Tablespoon of peanut butter',95],['Tablespoon of olive oil',120],['Cup of whole milk',150],['Cup of skim milk',85],['12 oz can of cola',140],['1 oz of cheddar',115],['Medium avocado',240],['Cup of broccoli',30],['4 oz cooked chicken breast',185],['Big Mac',590],['Slice of pepperoni pizza',300],['1 oz of almonds',165],['Medium baked potato',160],['Cup of cooked pasta',220],['12 oz regular beer',155],['12 oz light beer',105],['5 oz glass of red wine',125],['Full-size Snickers bar',250],['Scoop of whey protein',120],['Cup of strawberries',50],['Cup of blueberries',85],['Medium orange',62],['Tablespoon of butter',100],['Glazed donut',190],['Cup of black coffee',2]]},
+  {q:'More protein?',u:'g',items:[['Large egg',6],['4 oz cooked chicken breast',35],['Cup of plain Greek yogurt',23],['Cup of milk',8],['Tablespoon of peanut butter',4],['1 oz of almonds',6],['Cup of cooked black beans',15],['Cup of cottage cheese',25],['3 oz cooked salmon',22],['Scoop of whey protein',24],['Cup of cooked quinoa',8],['1 oz of cheddar',7],['3 oz cooked lean beef',22],['Cup of cooked lentils',18],['Slice of white bread',2],['Medium banana',1],['3 oz firm tofu',9],['Cup of edamame',18],['Cup of cooked oatmeal',6],['Big Mac',25]]},
+  {q:'Which is more?',u:'',items:[['Bones in an adult human',206],['Adult teeth',32],['Players on a soccer team',11],['Players on a basketball court per team',5],['Squares on a chessboard',64],['Keys on a piano',88],['Days in a leap year',366],['Minutes in a day',1440],['Feet in a mile',5280],['Miles in a marathon',26.2],['Cards in a deck',52],['Weeks in a year',52.1],['Pounds in a 20 kg plate',44],['Inches in a yard',36],['Hours in a week',168],['Stripes on the US flag',13],['Stars on the US flag',50],['Holes on a golf course',18],['Players on a baseball field per team',9],['Seconds in an hour',3600]]},
+];
+function mountHilo(root){
+  let score=0,cat,a,b,lock=false,tm=null;
+  root.innerHTML=`<div class="g-head"><span>Streak <b data-s>0</b></span><span>Best <b data-b>${bestG('hilo')??0}</b></span></div><div class="prompt sm" data-q></div><div class="hl" data-c></div><p class="hint">Tap the bigger one. A miss resets your streak.</p>`;
+  const $q=root.querySelector('[data-q]'),$c=root.querySelector('[data-c]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
+  const show=v=>`${String(v).replace(/\B(?=(\d{3})+(?!\d))/g,',')}${cat.u?' '+cat.u:''}`;
+  function next(){
+    cat=HILO[Math.floor(GR()*HILO.length)];
+    do{a=cat.items[Math.floor(GR()*cat.items.length)];b=cat.items[Math.floor(GR()*cat.items.length)]}
+    while(a===b||Math.max(a[1],b[1])<Math.min(a[1],b[1])*1.15);
+    $q.textContent=cat.q;lock=false;
+    $c.innerHTML=[a,b].map((x,i)=>`<button class="hl-card" data-i="${i}"><b>${esc(x[0])}</b><span class="hl-v"></span></button>`).join('<span class="hl-or">or</span>');
+  }
+  $c.onclick=e=>{const t=e.target.closest('[data-i]');if(!t||lock||isPaused())return;lock=true;
+    const pick=+t.dataset.i,win=[a,b][pick][1]>[a,b][1-pick][1];
+    $c.querySelectorAll('.hl-card').forEach((c,i)=>{c.querySelector('.hl-v').textContent='About '+show([a,b][i][1]);c.classList.add([a,b][i][1]>[a,b][1-i][1]?'win':'lose')});
+    if(win){score++;sEl.textContent=score;bEl.textContent=bestG('hilo',score);tm=setTimeout(next,1100)}
+    else{score=0;sEl.textContent=0;pulse(t,'shake');tm=setTimeout(next,1700)}};
+  next();return{destroy(){clearTimeout(tm)}};
+}
+
+/* ---------- Memory grid ---------- */
+// Cells light up, then tap them back. One more cell each level, and the grid grows.
+function mountGrid(root){
+  let level=1,cells=[],got=new Set(),state='show',tm=[];
+  root.innerHTML=`<div class="g-head"><span>Level <b data-s>1</b></span><span>Best <b data-b>${bestG('grid')??0}</b></span></div><p class="status" data-st></p><div class="mg" data-g></div><p class="hint">Remember the lit squares, then tap them. A miss starts you over.</p>`;
+  const g=root.querySelector('[data-g]'),st=root.querySelector('[data-st]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
+  const later=(f,ms)=>tm.push(setTimeout(f,ms)),clear=()=>{tm.forEach(clearTimeout);tm=[]};
+  function round(){
+    clear();const n=Math.min(6,3+Math.floor((level-1)/3)),k=Math.min(n*n-2,2+level);
+    cells=shuffle([...Array(n*n).keys()]).slice(0,k);got=new Set();state='show';sEl.textContent=level;st.textContent='Watch…';
+    g.style.gridTemplateColumns=`repeat(${n},1fr)`;g.innerHTML=[...Array(n*n)].map((_,i)=>`<button data-i="${i}" aria-label="square"></button>`).join('');
+    later(()=>cells.forEach(i=>g.children[i].classList.add('lit')),350);
+    later(()=>{cells.forEach(i=>g.children[i].classList.remove('lit'));state='input';st.textContent=`Tap the ${k} squares`},350+900+k*120);
+  }
+  g.onclick=e=>{const b=e.target.closest('[data-i]');if(!b||state!=='input'||isPaused())return;const i=+b.dataset.i;if(got.has(i))return;
+    if(cells.includes(i)){got.add(i);b.classList.add('lit');if(got.size===cells.length){state='show';bEl.textContent=bestG('grid',level);st.textContent='Nice. One more square.';pulse(g,'good');level++;later(round,700)}}
+    else{state='show';b.classList.add('miss');cells.forEach(j=>g.children[j].classList.add('reveal'));pulse(g,'shake');st.textContent=`Missed at level ${level}. Starting over.`;level=1;later(round,1500)}};
+  round();
+  return{pause(){clear()},resume(){if(state!=='input')round()},destroy:clear};
+}
+
+/* ---------- Arrows ---------- */
+// Tap the way the middle arrow points. The ones around it try to throw you off. It speeds up as you go.
+function mountArrows(root){
+  let score=0,dir=0,tm=null,state='idle',t0=0;
+  root.innerHTML=`<div class="g-head"><span>Streak <b data-s>0</b></span><span>Best <b data-b>${bestG('arrows')??0}</b></span></div>
+    <div class="ar-row" data-a><b>Tap a button to start</b></div><div class="ar-time"><i data-t></i></div>
+    <div class="ar-btns"><button data-d="0" aria-label="Left">←</button><button data-d="1" aria-label="Right">→</button></div>
+    <p class="hint">Answer for the middle arrow only. Too slow or wrong resets your streak.</p>`;
+  const A=root.querySelector('[data-a]'),T=root.querySelector('[data-t]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
+  const limit=()=>Math.max(650,1800-score*45);
+  function next(){
+    dir=GR()<.5?0:1;const same=GR()<.4,f=same?dir:1-dir,ch=d=>d?'→':'←';
+    A.innerHTML=[f,f,dir,f,f].map((d,i)=>`<span class="${i===2?'mid':''}">${ch(d)}</span>`).join('');
+    state='go';t0=performance.now();T.style.transition='none';T.style.width='100%';void T.offsetWidth;T.style.transition=`width ${limit()}ms linear`;T.style.width='0%';
+    clearTimeout(tm);tm=setTimeout(()=>miss('Too slow'),limit());
+  }
+  function miss(why){state='wait';clearTimeout(tm);score=0;sEl.textContent=0;pulse(A,'shake');A.innerHTML=`<b>${why}. Tap to go again</b>`;T.style.transition='none';T.style.width='0%'}
+  root.querySelector('.ar-btns').onclick=e=>{const b=e.target.closest('[data-d]');if(!b||isPaused())return;
+    if(state!=='go'){next();return}
+    if(+b.dataset.d===dir){score++;sEl.textContent=score;bEl.textContent=bestG('arrows',score);clearTimeout(tm);next()}else miss('Wrong way')};
+  return{pause(){clearTimeout(tm);if(state==='go'){state='wait';A.innerHTML='<b>Tap a button to start</b>';T.style.transition='none';T.style.width='0%'}},destroy(){clearTimeout(tm)}};
+}
+
+/* ---------- 10-second guess ---------- */
+// Start the clock, it hides after 3 seconds, and you stop it when you think 10 seconds have passed.
+function mountTen(root){
+  let state='idle',t0=0,raf=null;const fb=v=>v==null?'—':(v/1000).toFixed(2)+'s off';
+  root.innerHTML=`<div class="g-head"><span>Last <b data-l>—</b></span><span>Best <b data-b>${fb(bestG('tensec'))}</b></span></div>
+    <button class="react" data-p><b>Tap to start</b><small>Stop it at exactly 10 seconds</small></button>`;
+  const p=root.querySelector('[data-p]'),lEl=root.querySelector('[data-l]'),bEl=root.querySelector('[data-b]');
+  const show=(big,small)=>{p.innerHTML=`<b>${big}</b><small>${small}</small>`};
+  function loop(){if(state==='run'){const s=(performance.now()-t0)/1000;show(s<3?s.toFixed(1):'?.?',s<3?'Watch the first 3 seconds…':'Tap at 10.0')}raf=requestAnimationFrame(loop)}
+  p.onclick=()=>{if(isPaused())return;
+    if(state==='run'){const ms=performance.now()-t0,off=Math.round(Math.abs(ms-10000));state='idle';lEl.textContent=fb(off);bEl.textContent=fb(bestG('tensec',off,true));
+      show((ms/1000).toFixed(2)+'s',off<100?'Spot on. Tap to go again':`${ms<10000?'Early':'Late'} by ${(off/1000).toFixed(2)}s · tap to go again`);return}
+    state='run';t0=performance.now()};
+  loop();
+  return{pause(){if(state==='run'){state='idle';show('Tap to start','Stop it at exactly 10 seconds')}},destroy(){cancelAnimationFrame(raf)}};
+}
+
+/* ================= challenges: the same run, head to head ================= */
+// "Challenge a friend" plays a run with a fixed seed. Your friend gets a link that replays the
+// exact same plates, problems and patterns, with your score to beat.
+let CH=null; // {g, s: seed, t: score to beat or null, from: user id, name, best}
+const chLower=g=>['hunt','react','pairs','tensec'].includes(g);
+function chBetter(g,a,b){return b==null||(chLower(g)?a<b:a>b)}
+function chNote(id,val){if(!CH||CH.g!==id||val==null)return;if(chBetter(id,val,CH.best)){CH.best=val;chBanner()}}
+function chBanner(){
+  const box=$('#gChal');if(!box)return;
+  if(!CH||CH.g!==G.id){box.hidden=true;return}
+  const g=GAMES.find(x=>x.id===CH.g),mine=CH.best!=null?gameFmt(CH.g,CH.best):'—';
+  box.hidden=false;
+  if(CH.t==null){
+    box.innerHTML=`<div><span class="eyebrow">Challenge run</span><b>Your score: ${esc(mine)}</b></div><div class="ch-btns"><button class="primary sm" data-ch="send" ${CH.best==null?'disabled':''}>Send to a friend</button><button class="link" data-ch="end">End</button></div>`;
+  }else{
+    const beat=CH.best!=null&&chBetter(CH.g,CH.best,CH.t)&&CH.best!==CH.t;
+    box.innerHTML=`<div><span class="eyebrow">${beat?'You beat it':'Challenge'} · ${esc(g.name)}</span><b>${esc(CH.name||'Your friend')}: ${esc(gameFmt(CH.g,CH.t))} · You: ${esc(mine)}</b></div><div class="ch-btns">${CH.from&&CH.best!=null?`<button class="primary sm" data-ch="reply">Send my score</button>`:''}<button class="link" data-ch="end">End</button></div>`;
+    if(beat&&!CH.cheered){CH.cheered=true;toast(`You beat ${CH.name||'your friend'}!`);beep(880,.12)}
+  }
+}
+function chStart(c){CH=Object.assign({best:null},c);if(!overlayOpen())openGame(true,c.g);if(overlayOpen())mountGame(c.g);chBanner()}
+function chEnd(){CH=null;GR=Math.random;if(overlayOpen()&&G.id)mountGame(G.id);chBanner()}
+function chLink(){return `brainweight.fit/#ch-${CH.g}.${CH.s}.${CH.best}.${ME.user?ME.user.id:''}`}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest&&e.target.closest('[data-ch]');if(!b||!CH)return;
+  const g=GAMES.find(x=>x.id===CH.g);
+  if(b.dataset.ch==='end'){chEnd();return}
+  if(b.dataset.ch==='new'){if(gameLocked(G.id)){openMember('games');return}chStart({g:G.id,s:1+Math.floor(Math.random()*2e9),t:null});return}
+  if(b.dataset.ch==='send'){
+    const text=`🧠 Challenge: I got ${gameFmt(CH.g,CH.best)} in ${g.name}. Same run for you, can you beat it? ${chLink()}`;
+    openPeopleSearch({onPick:async p=>{try{const tid=await API.openDM(p.id);await API.sendMessage(tid,text);toast(`Challenge sent to @${p.username}`)}catch(err){toast(errMsg(err))}}});
+    return}
+  if(b.dataset.ch==='reply'){
+    const won=chBetter(CH.g,CH.best,CH.t)&&CH.best!==CH.t;
+    try{const tid=await API.openDM(CH.from);await API.sendMessage(tid,`${won?'🏆':'💪'} I got ${gameFmt(CH.g,CH.best)} on your ${g.name} challenge (you had ${gameFmt(CH.g,CH.t)}). ${won?'Your move.':'You win this one.'}`);toast('Score sent')}catch(err){toast(errMsg(err))}
+  }
+});
+// Opening a challenge link: #ch-game.seed.score.userId
+async function openChallengeLink(code){
+  const [g,s,t,from]=code.split('.');
+  if(!GAMES.some(x=>x.id===g)||!(+s>0))return;
+  let name='Your friend';
+  try{if(from&&API.profile){const p=await API.profile(from);if(p)name=p.display_name||('@'+p.username)}}catch(e){}
+  if(from&&ME.user&&from===ME.user.id)name='You';
+  setTab('games');chStart({g,s:+s,t:t===''||t==='null'?null:+t,from:from&&ME.user&&from!==ME.user.id?from:null,name});
+}
+
 const GAMES=[
   {id:'math',name:'Quick math',skill:'Arithmetic speed',icon:'±',mount:mountMath,best:v=>`Best streak ${v}`},
   {id:'plates',name:'Plate sequence',skill:'Working memory',icon:'◎',mount:mountSeq,best:v=>`Best length ${v}`},
@@ -1828,13 +2086,21 @@ const GAMES=[
   {id:'odd',name:'Odd tile',skill:'Visual precision',icon:'▦',mount:mountOdd,best:v=>`Best level ${v}`},
   {id:'react',name:'Reaction',skill:'Reaction time',icon:'⚡︎',mount:mountReact,best:v=>`Best ${v} ms`},
   {id:'pairs',name:'Pairs',skill:'Short-term memory',icon:'◆',mount:mountPairs,best:v=>`Best ${v} moves`},
+  {id:'bar',name:'Load the bar',skill:'Plate math',icon:'⊣⊢',mount:mountBar,best:v=>`Best streak ${v}`},
+  {id:'hrdrop',name:'Heart rate drop',skill:'Recovery breathing',icon:'♥',mount:mountBreath,best:v=>`Best −${v} bpm`},
+  {id:'hilo',name:'Higher or lower',skill:'Food and fitness facts',icon:'⇅',mount:mountHilo,best:v=>`Best streak ${v}`},
+  {id:'grid',name:'Memory grid',skill:'Visual memory',icon:'▣',mount:mountGrid,best:v=>`Best level ${v}`},
+  {id:'arrows',name:'Arrows',skill:'Focus and speed',icon:'→',mount:mountArrows,best:v=>`Best streak ${v}`},
+  {id:'tensec',name:'10-second guess',skill:'Time sense',icon:'10',mount:mountTen,best:v=>`Best ${(v/1000).toFixed(2)}s off`},
 ];
 function mountGame(id){
   if(G.game&&G.game.destroy)G.game.destroy();
   const g=GAMES.find(x=>x.id===id)||GAMES[0];G.id=g.id;ST.settings.game=g.id;saveSettings();
+  GR=CH&&CH.g===g.id?pzRand(CH.s):Math.random;
   $('#gameRoot').innerHTML='';G.paused=true;G.game=g.mount($('#gameRoot'))||{};G.game.pause&&G.game.pause();
   $('#gFreeName').textContent=g.name;
   $('#gChips').innerHTML=GAMES.map(x=>`<button class="chip" data-game="${x.id}" aria-pressed="${x.id===g.id}">${gameLocked(x.id)?'🔒 ':''}${x.name}</button>`).join('');
+  $('#gChNew').hidden=!!(CH&&CH.g===g.id)||!API.live;chBanner();
   syncPause();
 }
 const overlayOpen=()=>!$('#gameov').hidden;
@@ -1846,7 +2112,7 @@ function openGame(free,id){
   if(id&&id!==G.id)mountGame(id);else if(!G.game)mountGame(ST.settings.game);
   updateLock();syncPause();tick();
 }
-function closeGame(){$('#gameov').hidden=true;syncPause();G.free=false}
+function closeGame(){$('#gameov').hidden=true;syncPause();G.free=false;if(CH){CH=null;GR=Math.random}}
 function syncPause(){const p=!(overlayOpen()&&(G.free||resting()));if(p===G.paused)return;G.paused=p;if(G.game){if(p&&G.game.pause)G.game.pause();if(!p&&G.game.resume)G.game.resume()}}
 function updateLock(){
   const A=ST.active,show=!G.free&&!!A&&!resting();
@@ -2567,7 +2833,7 @@ function paywallHTML(msg){
   return `${GATE_LOGO}${!API.live?'<span class="preview-tag">Preview mode</span>':''}<h1>Choose your plan</h1>
     <div class="seg wide" style="grid-template-columns:1fr 1fr"><button data-int="month" aria-pressed="${!y}">Monthly</button><button data-int="year" aria-pressed="${y}">Yearly · save 33%</button></div>
     <div class="plans">
-      ${card('member','Member',['All 8 brain games between sets','Every daily puzzle: Mini grid, Hive and Sudoku','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and leaderboards'])}
+      ${card('member','Member',['All 14 brain games between sets','Every daily puzzle: Mini grid, Hive, Sudoku, Queens and Mate in 1','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and leaderboards'])}
       ${card('pro','Pro',['Everything in Member',`${COACH}’s detailed Pro programs`,'New Pro programs as they’re added'])}
     </div>
     <p class="g-err" id="gErr">${esc(msg||'')}</p>
@@ -4036,7 +4302,7 @@ function maybeOnboard(){
 }
 
 /* ---------- leaderboards and challenges ---------- */
-const gameFmt=(id,v)=>v==null?'—':id==='hunt'?`${(v/1000).toFixed(1)}s`:id==='react'?`${v} ms`:id==='pairs'?`${v} moves`:String(v);
+const gameFmt=(id,v)=>v==null?'—':id==='hunt'?`${(v/1000).toFixed(1)}s`:id==='react'?`${v} ms`:id==='pairs'?`${v} moves`:id==='tensec'?`${(v/1000).toFixed(2)}s off`:id==='hrdrop'?`−${v} bpm`:id==='grid'?`Level ${v}`:String(v);
 function openLeaderboard(gameId){
   const st={g:gameId||G.id||GAMES[0].id,scope:'friends',days:7};
   const o=sheet(`<div class="sheet-h"><h2>Leaderboards</h2><button class="link" data-close>Done</button></div>
@@ -4075,8 +4341,10 @@ function openLeaderboard(gameId){
 // Turn challenge links inside messages into a Play button.
 function chatBody(text){
   const t=esc(text);
-  return t.replace(/brainweight\.fit\/#play-([a-z]+)/g,(m,id)=>{const g=GAMES.find(x=>x.id===id);return g?`<button class="chat-play" data-play="${id}">Play ${esc(g.name)} →</button>`:m});
+  return t.replace(/brainweight\.fit\/#play-([a-z]+)/g,(m,id)=>{const g=GAMES.find(x=>x.id===id);return g?`<button class="chat-play" data-play="${id}">Play ${esc(g.name)} →</button>`:m})
+    .replace(/brainweight\.fit\/#ch-([a-z0-9]+\.[0-9]+\.[0-9.]*\.[0-9a-f-]*)/g,(m,code)=>{const g=GAMES.find(x=>x.id===code.split('.')[0]);return g?`<button class="chat-play" data-chlink="${esc(code)}">Play this ${esc(g.name)} run →</button>`:m});
 }
+document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('[data-chlink]');if(!c)return;document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());openChallengeLink(c.dataset.chlink)});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-play]');if(!b)return;
   document.querySelectorAll('.sheet-ov').forEach(o=>o.remove());setTab('games');openGame(true,b.dataset.play)});
 
@@ -4247,7 +4515,7 @@ function routeHash(h){
   else if(h==='#requests'){setTab('profile');openPrivacy()}
   else if(h==='#workout')setTab('workout');
   else if(h==='#daily'){setTab('games');openDaily()}
-  else if(/^#puzzle-(mini|hive|groups|sudoku)$/.test(h)){setTab('games');openPuzzle(h.slice(8))}
+  else if(/^#puzzle-(mini|hive|groups|sudoku|queens|chess)$/.test(h)){setTab('games');openPuzzle(h.slice(8))}
   else if(h==='#profile')setTab('profile');
   else if(h.startsWith('#post-')){setTab('feed');openPost(h.slice(6))}
   else if(h==='#coach-portal')openCoachPortal();
@@ -4255,6 +4523,7 @@ function routeHash(h){
   else if(h==='#my-coaching'){setTab('programs');openMyCoaching()}
   else if(h==='#coaching-booked'){setTab('programs');toast('You’re booked! Confirming your payment…');
     let n=0;const poll=async()=>{const ks=await loadMyCoaching();if(ks.some(k=>k.status==='active')||++n>8){softRender();openMyCoaching()}else setTimeout(poll,2500)};poll()}
+  else if(h.startsWith('#ch-'))openChallengeLink(h.slice(4));
   else if(h.startsWith('#play-')){const g=h.slice(6);if(GAMES.some(x=>x.id===g)){setTab('games');openGame(true,g)}}
 }
 window.addEventListener('hashchange',()=>routeHash());
@@ -4426,7 +4695,7 @@ function pzDonePanel(o,box,id,{title,big,stats,shareText}){
   box.querySelector('[data-pz="post"]').onclick=()=>{o.close();openComposer({body:shareText()})};
   pzLoadBoard(box,id,dailyNo());
 }
-const PZ_FMT={mini:r=>r.solved?fmtSecs(r.score):'—',sudoku:r=>r.solved?fmtSecs(r.score):'—',hive:r=>`${r.score} pts`,groups:r=>r.solved?(r.score?`${r.score} miss${r.score>1?'es':''}`:'Perfect'):'Missed'};
+const PZ_FMT={queens:r=>r.solved?fmtSecs(r.score):'—',chess:r=>r.solved?(r.score?`${r.score} miss${r.score>1?'es':''}`:'First try'):'Missed',mini:r=>r.solved?fmtSecs(r.score):'—',sudoku:r=>r.solved?fmtSecs(r.score):'—',hive:r=>`${r.score} pts`,groups:r=>r.solved?(r.score?`${r.score} miss${r.score>1?'es':''}`:'Perfect'):'Missed'};
 async function pzLoadBoard(box,id,n){
   try{
     const b=API.puzzleBoard?await API.puzzleBoard(id,n):null;if(!b||!box.isConnected)return;
@@ -4733,10 +5002,124 @@ function openSudoku(){
   draw();if(st.done)finish();
 }
 
+/* ---------- Queens ---------- */
+// One crown in every row, column and color, and no two crowns touching, even at a corner.
+// A new grid every day from the day number (7×7 on weekdays, 8×8 on weekends), always with exactly one answer.
+function queensSolve(n,reg,limit){let count=0,sol=null;const col=Array(n).fill(false),rg=Array(n).fill(false),pos=[];
+  (function go(r){if(count>=limit)return;if(r===n){count++;sol=pos.slice();return}
+    for(let c=0;c<n;c++){if(col[c]||rg[reg[r*n+c]])continue;if(r>0&&Math.abs(pos[r-1]-c)<=1)continue;col[c]=rg[reg[r*n+c]]=true;pos[r]=c;go(r+1);col[c]=rg[reg[r*n+c]]=false}})(0);
+  return{count,sol}}
+const QN_CACHE={};
+function queensPuzzle(day){
+  if(QN_CACHE[day])return QN_CACHE[day];
+  const dow=(new Date().getDay()),n=dow===0||dow===6?8:7,R=pzRand(day*7919+n);
+  for(let tries=0;tries<20000;tries++){
+    const pos=[],used=Array(n).fill(false);
+    const place=r=>{if(r===n)return true;const cs=pzShuffle([...Array(n).keys()],R);for(const c of cs){if(used[c]||(r&&Math.abs(pos[r-1]-c)<=1))continue;used[c]=true;pos[r]=c;if(place(r+1))return true;used[c]=false}return false};
+    if(!place(0))continue;
+    const reg=Array(n*n).fill(-1),front=[];pos.forEach((c,r)=>{reg[r*n+c]=r;front.push(r*n+c)});
+    let left=n*n-n;
+    while(left>0){const i=Math.floor(R()*front.length),cell=front[i],r=Math.floor(cell/n),c=cell%n;
+      const nb=[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].filter(([a,b])=>a>=0&&b>=0&&a<n&&b<n&&reg[a*n+b]<0);
+      if(!nb.length){front.splice(i,1);continue}
+      const [a,b]=nb[Math.floor(R()*nb.length)];reg[a*n+b]=reg[cell];front.push(a*n+b);left--}
+    const s=queensSolve(n,reg,2);
+    if(s.count===1)return QN_CACHE[day]={n,reg,sol:s.sol};
+  }
+  return null;
+}
+const QN_COLORS=['#B48CFF','#F5B83D','#34E3C8','#FF7A9A','#7FB2FF','#9BE36A','#FF9F5A','#E6E6E6'];
+function openQueens(){
+  if(!pzOpenGuard('queens'))return;
+  const n0=dailyNo(),P=queensPuzzle(n0);if(!P){toast('Today’s Queens isn’t ready. Try again in a bit.');return}
+  const n=P.n,st=pzState('queens',()=>({marks:{}}));
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Daily puzzles · #${st.n}</span><h2>Queens</h2></div><span class="mono pz-time" id="qnTime">${fmtSecs(st.secs)}</span><button class="link" data-close>Close</button></div>
+    <p class="muted" style="margin:0;font-size:14px">One 👑 in each row, column and color. Crowns can’t touch, not even at a corner. Tap once for ✕, twice for 👑.</p>
+    <div class="qn" id="qnGrid" style="grid-template-columns:repeat(${n},1fr)"></div><p class="dw-msg" id="qnMsg" role="status"></p><div id="qnBottom"></div>`,{full:true});
+  o.classList.add('daily-ov');
+  const $o=s=>o.querySelector(s);
+  const crowns=()=>Object.keys(st.marks).filter(k=>st.marks[k]===2).map(Number);
+  function bad(){const cs=crowns(),b=new Set();
+    for(let x=0;x<cs.length;x++)for(let y=x+1;y<cs.length;y++){const a=cs[x],c=cs[y],ar=Math.floor(a/n),ac=a%n,cr=Math.floor(c/n),cc=c%n;
+      if(ar===cr||ac===cc||P.reg[a]===P.reg[c]||(Math.abs(ar-cr)<=1&&Math.abs(ac-cc)<=1)){b.add(a);b.add(c)}}
+    return b}
+  function draw(){
+    const b=bad();
+    $o('#qnGrid').innerHTML=[...Array(n*n)].map((_,i)=>{const r=Math.floor(i/n),c=i%n,g=P.reg[i];
+      const edge=[r>0&&P.reg[i-n]!==g?'t':'',c<n-1&&P.reg[i+1]!==g?'r':'',r<n-1&&P.reg[i+n]!==g?'b':'',c>0&&P.reg[i-1]!==g?'l':''].join(' ');
+      const m=st.marks[i]||0;return `<button class="qn-c ${edge}${b.has(i)?' bad':''}" data-i="${i}" style="--qc:${QN_COLORS[g%QN_COLORS.length]}" aria-label="Row ${r+1}, column ${c+1}${m===2?', crown':m===1?', crossed out':''}">${m===2?'👑':m===1?'<i>✕</i>':''}</button>`}).join('');
+    if(!st.done)$o('#qnBottom').innerHTML=`<div class="pz-tools"><button class="secondary" data-q="clear">Clear</button></div>`;
+  }
+  function finish(){
+    st.done=true;st.solved=true;pzSave('queens',st);draw();
+    const s=pzRecord('queens',st,{solved:true,score:st.secs,detail:`${n}x${n}`});
+    $o('#qnMsg').textContent=`Solved in ${fmtSecs(st.secs)}`;beep(880,.1);
+    pzDonePanel(o,$o('#qnBottom'),'queens',{title:'Solved',big:fmtSecs(st.secs),
+      stats:[[s.played,'Played'],[pzStreakNow('queens'),'Streak'],[s.best!=null?fmtSecs(s.best):'—','Best time']],
+      shareText:()=>`Brainweight Queens #${st.n} 👑 ${fmtSecs(st.secs)}\n\nbrainweight.fit`});
+  }
+  o.addEventListener('click',e=>{
+    const c=e.target.closest('[data-i]');
+    if(c&&!st.done){const i=+c.dataset.i;st.marks[i]=((st.marks[i]||0)+1)%3;if(!st.marks[i])delete st.marks[i];pzSave('queens',st);
+      const cs=crowns();if(cs.length===n&&!bad().size){finish();return}draw();return}
+    const q=e.target.closest('[data-q]');if(q&&!st.done){st.marks={};pzSave('queens',st);draw()}
+  });
+  pzKeys(o,()=>{});
+  pzClock(o,st,'queens',()=>o.querySelector('#qnTime'));
+  draw();if(st.done)finish();
+}
+
+/* ---------- Mate in 1 ---------- */
+// White to move and checkmate in one. Every position has exactly one mating move (checked with a chess engine).
+const CHESS_PZ=[["6k1/3qbppp/8/8/8/2Q3R1/8/4K3","c3g7"],["5Q2/7k/5R2/8/4p1P1/7P/5K2/8","f6h6"],["1k6/pp6/8/5B2/6N1/3Q4/R3K3/8","d3d8"],["5k2/3np3/3N4/5NQ1/8/1R6/5K2/8","g5g7"],["8/k7/4nq2/3K4/r5R1/B1p5/8/1R6","g4a4"],["7k/R6p/N7/8/8/8/K3R2N/8","e2e8"],["3Qbk2/4p1R1/8/6K1/3bp3/p7/6N1/8","d8e7"],["8/8/4Q3/8/1p6/5k2/7K/6R1","g1f1"],["7k/7p/3N2pQ/P7/8/8/N1p3K1/r7","h6f8"],["6k1/6pp/8/7Q/8/8/1K6/5n2","h5e8"],["1q4k1/5pp1/8/3b1N2/7N/7R/4pK2/Q7","a1g7"],["7k/7p/7Q/8/8/4N3/2q3BK/8","h6f8"],["7k/7p/8/5Qb1/7N/6N1/N7/5K2","f5f8"],["k7/2K5/3P1p2/4Q3/3p4/8/6r1/8","e5a5"],["7k/7p/7p/B4Q2/8/p1K5/8/8","f5f8"],["8/1pp5/2pN4/8/1Kp5/3R4/4R3/7k","d3d1"],["kb1R4/p7/7B/RB1p4/8/8/3pK3/r7","b5c6"],["1k6/ppp5/1Q4R1/8/8/3P4/2K3N1/8","g6g8"],["B7/4BK1k/8/8/q2p4/8/5Qp1/1b6","f2h4"],["7k/2R4p/8/8/8/1R6/1K6/8","b3b8"],["7k/R6p/8/8/3R4/1r6/7K/8","d4d8"],["2N1k3/1BQ5/8/8/8/2p5/8/7K","c7e7"],["7k/R6p/P7/8/8/8/K3R2N/8","e2e8"],["4kn2/3p1p2/8/7N/7Q/3R4/8/7K","h5g7"],["6k1/bQ4pp/8/1p6/4R3/Kp6/8/8","e4e8"],["1k6/ppp5/1Q4R1/8/8/3N4/2K3N1/8","g6g8"],["5k2/3rpBp1/1N6/1K6/8/8/1B3R2/8","b6d7"],["1R1B4/4P3/5k1K/8/8/7B/2p5/8","e7e8q"],["k7/8/5Q2/1R4B1/8/p7/p3K3/8","f6a6"],["6k1/5pp1/8/R4Q2/1B6/b1B5/8/5K2","a5a8"],["k7/pp6/B7/8/7q/2Q1K3/8/2N5","c3c8"],["1k6/pp6/8/5N2/6N1/3Q4/R3K3/8","d3d8"],["7k/4Q1p1/3r4/8/8/6R1/2N1N3/1K6","e7g7"],["7k/7p/8/5Qb1/7B/6B1/N7/5K2","f5f8"],["6kn/5ppp/8/8/B3NQ2/2p3K1/8/8","f4b8"],["4k3/4pN2/4K3/8/6n1/8/2N5/3Q4","d1d8"],["1k6/pp6/p4Q2/1r3R2/8/N3p3/4B3/K7","f6d8"],["k7/pp3q2/5R2/2Q4B/1K6/4p3/6B1/8","c5c8"],["7k/6pp/qr6/3N1Q2/8/6K1/8/8","f5f8"],["7k/1Q6/2n5/8/8/8/8/1B3K2","b7h7"],["8/3rN2k/6R1/5p2/3RR3/8/5K2/8","e4h4"],["3k3N/2ppp3/8/8/2Q5/8/8/7K","c4g8"],["2bk4/2p1p3/2P5/4Qpp1/K7/8/8/8","e5h8"],["k7/pp6/N7/8/1QB5/3K4/8/8","b4f8"],["k7/pp6/8/8/2Q3r1/4pB2/2P5/4K3","c4c8"],["1N4k1/5ppp/3R2B1/2nR4/8/7K/8/8","d6d8"],["k2b4/p7/8/8/8/8/B2K3N/2Q5","c1c8"],["1N4k1/5ppp/3R2B1/2nB4/8/7K/8/8","d6d8"],["2k5/1pp1Q3/8/8/2N5/7K/8/1n6","e7e8"],["B2R4/8/1q2P3/7p/8/K5pk/p3Q3/8","e2h5"],["5k2/4pp1R/8/6R1/8/8/8/K7","h7h8"]];
+const CHESS_GLYPH={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+function chessPuzzle(day){const x=CHESS_PZ[((day%CHESS_PZ.length)+CHESS_PZ.length)%CHESS_PZ.length];
+  const rows=x[0].split('/').map(r=>{const out=[];for(const ch of r){if(/\d/.test(ch))for(let k=0;k<+ch;k++)out.push(null);else out.push(ch)}return out});
+  return{board:rows,move:x[1]}}
+const sqName=(r,c)=>'abcdefgh'[c]+(8-r);
+function openChess(){
+  if(!pzOpenGuard('chess'))return;
+  const P=chessPuzzle(dailyNo()),st=pzState('chess',()=>({miss:0,tries:[]}));
+  let sel=null;
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Daily puzzles · #${st.n}</span><h2>Mate in 1</h2></div><span class="mono pz-time" id="chTime">${fmtSecs(st.secs)}</span><button class="link" data-close>Close</button></div>
+    <p class="muted" style="margin:0;font-size:14px">White to move. Find the one move that’s checkmate. Tap a white piece, then where it goes. 3 misses and the answer is shown.</p>
+    <div class="cb" id="cbGrid"></div><p class="dw-msg" id="chMsg" role="status"></p><div id="chBottom"></div>`,{full:true});
+  o.classList.add('daily-ov');
+  const $o=s=>o.querySelector(s),from=P.move.slice(0,2),to=P.move.slice(2,4);
+  function boardAfter(){if(!st.solved&&!st.done)return P.board;const b=P.board.map(r=>r.slice());const fc='abcdefgh'.indexOf(from[0]),fr=8-+from[1],tc='abcdefgh'.indexOf(to[0]),tr=8-+to[1];b[tr][tc]=P.move[4]?P.move[4].toUpperCase():b[fr][fc];b[fr][fc]=null;return b}
+  function draw(){
+    const b=boardAfter();
+    $o('#cbGrid').innerHTML=b.map((row,r)=>row.map((p,c)=>{const sq=sqName(r,c);
+      const cls=['cb-s',(r+c)%2?'dk':'lt',sel===sq?'sel':'',st.done&&(sq===from||sq===to)?'hint':''].filter(Boolean).join(' ');
+      return `<button class="${cls}" data-sq="${sq}" aria-label="${sq}${p?' '+p:''}">${p?`<span class="pc ${p===p.toUpperCase()?'w':'b'}">${CHESS_GLYPH[p]}</span>`:''}${c===0?`<i class="rk">${8-r}</i>`:''}${r===7?`<i class="fl">${'abcdefgh'[c]}</i>`:''}</button>`}).join('')).join('');
+    $o('#chMsg').textContent=st.done?(st.solved?`Checkmate! ${P.move.slice(0,2)} to ${P.move.slice(2,4)}`:`The mate was ${from} to ${to}`):st.miss?`${st.miss} of 3 misses`:'';
+  }
+  function finish(solved){
+    st.done=true;st.solved=solved;pzSave('chess',st);sel=null;draw();
+    const s=pzRecord('chess',st,{solved,score:st.miss,detail:P.move});
+    if(solved)beep(880,.1);
+    pzDonePanel(o,$o('#chBottom'),'chess',{title:solved?'Checkmate':'Answer shown',big:solved?(st.miss?`${st.miss} miss${st.miss>1?'es':''}`:'First try'):'Missed',
+      stats:[[s.played,'Played'],[pzStreakNow('chess'),'Streak'],[fmtSecs(st.secs),'Time']],
+      shareText:()=>`Brainweight Mate in 1 #${st.n} ${solved?'♔ '+(st.miss?st.miss+' miss'+(st.miss>1?'es':''):'first try'):'❌'}\n\nbrainweight.fit`});
+  }
+  o.addEventListener('click',e=>{
+    const b=e.target.closest('[data-sq]');if(!b||st.done)return;
+    const sq=b.dataset.sq,r=8-+sq[1],c='abcdefgh'.indexOf(sq[0]),p=P.board[r][c];
+    if(p&&p===p.toUpperCase()){sel=sq;draw();return}
+    if(!sel)return;
+    if(sel===from&&sq===to){finish(true);return}
+    st.miss++;st.tries.push(sel+sq);sel=null;pzSave('chess',st);pulse($o('#cbGrid'),'shake');
+    if(st.miss>=3){finish(false);return}draw();
+  });
+  pzKeys(o,()=>{});
+  pzClock(o,st,'chess',()=>o.querySelector('#chTime'));
+  draw();if(st.done)finish(st.solved);
+}
+
 /* ---------- Brain gym list ---------- */
 function puzzleRows(){
   const n=dailyNo();
-  const w=dailyState(),m=pzState('mini',()=>({})),h=hiveStatus(),g=pzState('groups',()=>({})),s=pzState('sudoku',()=>({}));
+  const w=dailyState(),m=pzState('mini',()=>({})),h=hiveStatus(),g=pzState('groups',()=>({})),s=pzState('sudoku',()=>({})),q=pzState('queens',()=>({})),c=pzState('chess',()=>({}));
   const done=(st,txt)=>st.done?txt:'';
   return [
     {id:'word',name:'Daily word',icon:'W',sub:w.done?(w.won?`Solved in ${w.guesses.length}`:'Missed'):w.guesses.length?`${w.guesses.length} of 6 guesses`:'Guess the word in six tries',done:w.done,streak:dailyStreakNow()},
@@ -4744,6 +5127,8 @@ function puzzleRows(){
     {id:'mini',name:'Mini grid',icon:'#',sub:done(m,m.solved?`Solved in ${fmtSecs(m.secs)}`:'Revealed')||(m.secs?'In progress':'A 5×5 crossword in a few minutes'),done:m.done,streak:pzStreakNow('mini')},
     {id:'hive',name:'Hive',icon:'⬡',sub:h.st.found.length?`${h.rank} · ${h.sc} pts`:'Make words from 7 letters',done:h.rank==='Genius',streak:pzStreakNow('hive')},
     {id:'sudoku',name:'Sudoku',icon:'9',sub:done(s,`Solved in ${fmtSecs(s.secs)}`)||(s.secs?'In progress':'Fill the grid with 1 to 9'),done:s.done,streak:pzStreakNow('sudoku')},
+    {id:'queens',name:'Queens',icon:'👑',sub:done(q,`Solved in ${fmtSecs(q.secs)}`)||(q.secs?'In progress':'One crown per row, column and color'),done:q.done,streak:pzStreakNow('queens')},
+    {id:'chess',name:'Mate in 1',icon:'♞',sub:done(c,c.solved?(c.miss?`Solved · ${c.miss} miss${c.miss>1?'es':''}`:'Solved first try'):'Missed')||(c.miss?`${c.miss} of 3 misses`:'Find the checkmate in one move'),done:c.done,streak:pzStreakNow('chess')},
   ];
 }
 function puzzlesHTML(){
@@ -4751,7 +5136,7 @@ function puzzlesHTML(){
   return `<section class="pz-sec"><div class="pz-head"><div><span class="eyebrow">Daily puzzles · #${n}</span><h3>Today’s puzzles</h3></div><span class="muted mono" style="font-size:12px">${doneCount}/${rows.length} done</span></div>
     <div class="pz-list">${rows.map(r=>{const lock=puzzleLocked(r.id);return `<button class="pz-row${r.done?' done':''}" data-act="puzzle" data-pz="${r.id}"><span class="pz-ic pz-${r.id}">${r.icon}</span><span class="pz-t"><b>${r.name}</b><span>${lock?'🔒 Member':esc(r.sub)}</span></span>${r.done?'<span class="pz-ok" aria-label="Done">✓</span>':r.streak?`<span class="dc-streak">🔥 ${r.streak}</span>`:'<span class="pz-go">›</span>'}</button>`}).join('')}</div></section>`;
 }
-function openPuzzle(id){({word:openDaily,mini:openMini,hive:openHive,groups:openGroups,sudoku:openSudoku}[id]||openDaily)()}
+function openPuzzle(id){({word:openDaily,mini:openMini,hive:openHive,groups:openGroups,sudoku:openSudoku,queens:openQueens,chess:openChess}[id]||openDaily)()}
 // Puzzle data. Mini grids (first days) and clued word list for generated grids, Hive letters (center first) and words, Groups sets and category bank.
 const MINI_GRIDS=[["off##","nail#","error","#menu","##den"],["the##","wolf#","orbit","#nova","##web"],["##her","#have","loved","open#","ten##"],["are##","loan#","logic","#menu","##rep"],["##her","#give","cared","amen#","bed##"],["#had#","coral","unite","posed","#red#"],["#must","lance","index","agent","rare#"],["#pay#","rapid","upper","belly","#red#"],["##for","#lane","could","ugly#","pot##"],["##how","#papa","alter","been#","sad##"],["##was","#nice","topic","used#","bed##"],["##she","#stay","alone","gold#","owe##"],["##him","#fade","eaten","area#","red##"],["are##","curb#","tired","#note","##ran"],["##but","#case","taken","aged#","per##"],["##and","#trio","thing","ease#","ate##"],["##get","#give","haven","oven#","pen##"],["#bad#","money","eagle","treat","#dry#"],["#put#","final","alike","noted","#ten#"],["##are","#plan","solid","upon#","new##"],["she##","earn#","arrow","#move","##rat"],["##get","#male","house","urge#","bee##"],["#set#","apart","ratio","creep","#end#"],["##his","#monk","party","also#","tee##"],["##the","#then","ahead","test#","eye##"],["##its","#free","loose","aunt#","dry##"],["##can","#solo","fault","ugly#","red##"],["##and","#plea","salad","pier#","any##"],["its##","crew#","eaten","#pure","##pet"],["##any","#tree","great","aunt#","sea##"],["##she","#when","third","wire#","opt##"],["##for","#tape","lived","iron#","per##"],["her##","oval#","wider","#line","##odd"],["##now","#fine","elect","race#","ate##"],["##who","#thin","guide","able#","see##"],["##not","#hope","seven","keen#","ill##"],["##are","#span","stand","park#","art##"],["##two","#swan","shine","post#","yet##"],["off##","lord#","dream","#data","##key"],["##the","#chin","world","idol#","new##"],["own##","what#","limit","#peer","##dry"],["##the","#gray","plate","rode#","owe##"],["end##","girl#","onion","#else","##let"],["##two","#chef","shelf","earl#","ate##"],["#bad#","relay","elite","fleet","#end#"]];
 const MINI_VOCAB="the|and|for|that|you|with|was|are|have|not|but|from|your|all|his|they|one|can|will|just|like|about|out|what|when|more|were|who|had|their|there|her|which|time|get|been|would|she|new|how|some|also|them|now|other|its|our|than|good|only|after|first|him|into|know|see|two|make|over|think|any|then|could|back|these|want|well|said|way|most|much|very|where|even|may|here|need|did|right|work|year|being|day|too|going|off|why|made|still|take|got|many|never|those|life|say|world|down|great|last|while|best|such|love|man|home|long|look|use|same|used|both|every|come|part|state|three|find|help|high|old|since|own|under|game|thing|give|house|place|again|next|each|end|found|must|show|big|feel|sure|team|ever|keep|might|put|money|free|away|left|city|lot|name|night|play|until|doing|few|let|real|set|done|group|top|care|start|week|case|today|full|live|point|read|told|yet|bad|four|hard|mean|once|tell|music|power|seen|stop|water|based|call|head|men|small|took|white|came|far|job|side|try|went|yes|later|less|line|order|party|run|open|thank|area|black|law|war|whole|car|face|five|kind|maybe|per|story|hope|least|able|book|early|local|post|video|young|ago|talk|court|fact|given|half|hand|level|mind|often|body|death|food|guy|pay|south|true|known|large|lost|room|win|wrong|along|else|girl|air|bit|hit|nice|yeah|class|close|idea|past|cause|due|happy|human|move|wait|woman|ask|data|late|leave|north|saw|watch|light|low|short|stay|taken|age|buy|deal|red|soon|third|turn|among|check|form|heart|act|asked|child|fire|fun|major|media|phone|art|easy|near|plan|quite|six|west|final|front|list|ready|son|bring|meet|type|baby|march|song|study|word|clear|gave|month|self|board|cost|cut|field|main|road|town|fight|fine|force|hear|issue|price|rest|space|term|wife|date|land|miss|shot|site|june|total|above|club|film|knew|lead|share|won|dead|hold|sense|star|test|view|break|event|hour|sorry|wish|boy|gold|gone|guess|king|learn|added|alone|bank|east|hot|movie|park|press|role|sent|tried|worth|bill|cool|sound|value|rate|round|save|stand|stuff|tax|blue|drive|eat|fall|fast|felt|green|match|model|size|step|trust|hey|key|page|range|trade|upon|chief|cup|hate|led|lower|send|style|vote|blood|dog|lord|oil|stage|title|add|born|enjoy|met|poor|code|cover|door|hair|legal|lose|pick|race|seem|seven|sign|staff|super|union|walk|bed|built|crazy|daily|die|loss|paper|safe|voice|whose|army|earth|goal|huge|okay|sea|sir|base|below|deep|mark|offer|pass|risk|sleep|table|ten|truth|ball|build|card|dark|mine|note|piece|visit|wall|wrote|pain|river|rock|shall|speak|write|album|cold|eight|eye|funny|peace|spent|store|track|ahead|allow|beat|brown|gas|moved|radio|text|cross|ice|join|kept|loved|sort|speed|drop|fair|kid|link|sale|tour|extra|quick|sell|agree|clean|photo|scene|sold|spend|sun|coach|heavy|train|wide|wow|claim|dad|fear|fit|hotel|judge|lady|named|unit|bar|brain|floor|hurt|image|meant|pro|reach|rule|civil|dance|none|ship|stock|worst|band|beach|cash|ended|fan|lack|older|wear|color|dream|grand|luck|rich|skin|sweet|touch|doubt|drink|fish|glad|grow|shown|sit|trip|basic|carry|crime|fully|male|plant|spot|worse|award|block|holy|lived|shop|sick|avoid|catch|cell|coast|foot|hall|mass|nine|pop|ran|trial|truly|heat|queen|broke|fell|glass|prior|ride|royal|serve|slow|tree|whom|begin|lie|sad|twice|wind|worry|brand|bus|cent|count|fresh|lake|mouth|owner|scale|score|smart|throw|click|faith|fund|hill|jack|metal|pull|push|rose|seat|agent|apply|draw|enter|gain|prime|ring|rise|soul|waste|weird|adult|grade|stone|wild|bag|bet|camp|cast|firm|till|apart|aware|cat|fifth|gift|nor|shut|van|wood|birth|copy|dear|host|labor|lucky|onto|prove|rare|tough|alive|apple|boss|dress|horse|liked|magic|map|net|owned|stick|wake|aid|busy|farm|file|fix|fly|frank|guide|raise|roll|treat|youth|dry|edge|evil|iron|mad|web|wine|arm|bay|core|exist|guard|port|shoot|solid|sport|taste|tea|flat|fuel|hello|ill|kick|mail|pair|plane|shape|sky|upper|zone|bear|boat|cheap|duty|joint|mix|path|rain|steel|tired|vice|warm|beer|crew|crowd|enemy|fixed|limit|moon|ocean|proof|suit|chair|debt|grew|honor|jump|noted|tech|user|email|flow|hero|joke|loan|soft|stuck|sugar|drama|entry|era|feed|grant|grown|lying|pool|route|saved|smoke|squad|teach|angry|fox|hole|laugh|leg|lunch|milk|pack|snow|storm|sub|weak|actor|chain|cook|cute|equal|fake|quiet|split|task|urban|fault|fill|lay|mixed|phase|pure|smile|truck|bird|blame|bowl|dying|false|fired|meat|mode|neck|novel|shirt|zero|cream|giant|jail|mayor|minor|theme|tiny|usual|voted|wave|draft|fail|seek|solo|spoke|upset|wing|cycle|row|salt|armed|aside|bell|blow|bond|cry|empty|mile|nick|prize|rural|admit|favor|flag|frame|guest|kiss|load|plot|rent|teeth|bunch|chat|diet|fruit|index|item|lane|mess|navy|shift|stood|tank|tend|tight|yard|crown|golf|grace|laid|tool|ban|chose|crash|depth|dirty|error|joy|mate|noise|panel|plate|rice|roof|shame|tip|cable|calm|hide|print|quit|sight|sing|wet|bike|broad|burn|cake|drawn|hat|loud|motor|peak|raw|solar|blind|brief|chest|debut|grab|paint|pilot|pink|steam|tall|aim|cap|exact|fed|fee|lock|nose|quote|swear|tie|trend|wise|aged|bread|ford|gang|inner|lift|reply|rid|tower|wheel|bush|coal|faced|filed|hunt|inch|jury|pride|rough|smell|tone|topic|vast|auto|earn|grey|meal|rush|sharp|trick|audio|bone|chart|gap|gate|harm|mount|occur|thin|tied|argue|awful|bound|cloud|drew|egg|gear|hip|loose|moral|shock|thick|threw|wash|acid|angel|duke|flash|fort|gray|gross|math|pet|refer|trail|uncle|badly|bath|chase|ideal|mood|rank|sand|tag|tape|wage|clock|desk|ear|gym|label|pitch|pizza|plain|rear|wire|anger|belt|comic|ghost|kit|lab|newly|odd|skill|soil|solve|trash|ugly|boost|crack|deck|dust|hired|knife|rail|root|saint|steal|bid|buddy|dean|delay|elite|forth|hire|hop|layer|marry|nurse|pot|pray|sake|sheet|bench|bye|medal|pan|shell|silly|angle|forum|grass|hence|mill|pace|pen|pope|rapid|sixth|spin|valid|vital|cop|creek|fraud|honey|hook|log|ratio|scary|seed|sin|spell|sword|ward|begun|coat|daddy|doc|drove|fate|gene|glory|jean|juice|logic|strip|tube|dozen|epic|exit|fancy|input|knock|ought|poll|rep|rob|tear|wolf|ate|bull|deny|ease|fame|flood|rally|sum|swing|tail|twin|alert|arena|boom|brave|fleet|knee|robin|shake|shore|teen|trap|bang|blast|cure|eve|pound|punch|bite|chip|dare|fewer|grave|jazz|mask|mouse|piano|ruin|sec|bat|bow|cape|craft|devil|edit|rated|ruled|sauce|seal|slide|stem|tiger|toy|alien|beast|beef|candy|cited|clay|dated|drag|fifty|fool|jet|loop|mall|relax|rely|sole|tale|ton|wore|acted|alarm|bass|con|dual|globe|gulf|hoped|logo|pin|pump|slip|spare|tap|dawn|huh|opera|pit|quest|sized|tune|weed|anime|bold|clip|exam|lover|menu|oral|panic|rip|scope|worn|aimed|alpha|brick|lion|mercy|outer|pipe|poem|rude|screw|vary|venue|dirt|habit|lazy|naval|noble|pat|robot|shoe|spy|toxic|wider|wound|asset|baker|brush|chef|essay|maker|palm|pole|pub|shed|snake|ultra|usage|bin|canal|climb|dig|fever|fluid|folk|leaf|nasty|sue|twist|unity|woke|arc|blown|dish|duck|fence|hood|hung|lied|nail|poet|sink|skip|snap|stole|swim|swiss|beta|bored|bug|cave|dealt|dose|flesh|flip|forty|hated|laser|loyal|patch|pic|punk|radar|villa|wrap|yoga|adopt|blade|boot|bulk|cargo|coin|corn|cried|humor|lit|mar|nerve|pie|raid|ram|sandy|sheep|taxi|trace|bare|chill|clue|earl|grain|grid|lap|liver|oak|rifle|rival|sadly|slept|soap|spray|suite|verse|bless|chuck|couch|crush|dam|genre|jam|lease|rat|shine|tweet|ash|aunt|flew|icon|react|rocky|shade|shy|tier|vocal|yield|bacon|burst|crop|ion|par|salad|soup|stake|swift|awake|beam|blank|cow|curve|harsh|horn|hurry|lean|mason|organ|pearl|peer|pig|pile|plug|rod|sweat|zoo|alike|arrow|bend|cabin|cage|disc|eagle|eaten|guilt|haven|keen|lip|mere|mud|owe|ski|theft|valve|visa|charm|cruel|deer|delta|dive|ham|heal|prof|rap|rev|ridge|tribe|ace|canon|cared|drum|grip|mild|noon|rage|silk|stamp|thy|urge|voter|witch|ally|array|belly|booth|cam|cliff|derby|fatal|fig|lemon|lung|ore|pine|pose|pour|sang|shark|bee|cult|dairy|diary|drill|hug|leak|meter|mice|olive|riot|setup|skull|slot|smash|basin|breed|bride|bud|chick|dump|duo|fairy|fold|freak|grief|hub|lined|lodge|merit|micro|myth|pale|rebel|toll|tooth|torn|viral|widow|beard|bio|curse|drain|flame|hint|ink|inn|nest|ninth|penny|petty|reed|reign|scan|scare|span|sunny|toe|cheat|cheer|chile|demon|doll|elder|fiber|fried|hull|pulse|realm|rope|shout|alter|beg|bout|brass|buzz|dip|dot|fled|foul|graph|hack|lamp|oven|shook|slim|spam|stack|tent|tide|aging|audit|bolt|bust|cope|dried|echo|nut|soda|spite|burnt|buyer|cease|cloth|eager|elect|fork|fur|junk|lobby|mob|orbit|pill|pork|ranch|tin|trunk|arch|badge|carol|ego|ferry|gauge|goat|gut|heck|lamb|liar|rider|shelf|slam|tire|warn|width|bail|buck|den|disk|loser|pad|sail|sheer|stark|tan|thumb|urged|void|wheat|whip|wipe|wrist|acute|chin|civic|clerk|coup|crude|dash|drone|flour|jerk|pause|puppy|slice|vinyl|barn|bent|deaf|dock|feat|neat|pal|probe|remix|sneak|sore|spark|steep|straw|weigh|adapt|bean|bump|cart|cord|dense|gig|jaw|kitty|lawn|oval|pity|pond|prey|ruby|wade|whale|amber|ankle|armor|berry|clan|clash|grasp|handy|manga|poker|rub|sally|scout|slap|steak|sweep|cheek|curry|drake|eyed|flu|melt|oath|polar|skirt|spa|spike|stir|tab|toast|trek|unto|waist|wit|wreck|amid|blend|brake|cab|chi|cough|depot|drank|feast|frost|hike|lame|lily|plea|purse|ref|sigh|tense|troy|vegan|chess|dull|fare|float|grind|grove|gum|hobby|idol|lance|leap|newer|prep|risky|scam|sided|sober|spice|swap|swept|towel|trio|acre|amen|arise|bloom|bore|clown|dial|dodge|guild|halt|jar|monk|norm|prone|siege|sixty|sonic|spine|admin|baked|boo|crane|donor|hail|lend|mint|nova|pasta|tenth|wax|bake|batch|fury|glow|hay|lone|papa|paste|plaza|rode|sack|stare|sung|toss|wool|yang|blunt|champ|ditch|dome|fog|gif|gosh|lad|opt|rack|scrap|shaft|slope|snack|stern|stiff|sworn|unite|vault|vet|wagon|bury|cod|fist|fond|frog|fry|heir|homer|midst|mommy|moss|onion|rex|rogue|tomb|trim|abbey|baron|blah|bunny|choir|haul|holly|karma|node|shiny|sour|spoon|thief|yale|alley|bully|gem|glen|marsh|messy|owl|roast|saga|salon|tuned|vague|woo|zip|abs|ant|coral|dough|dug|fade|hardy|irony|lime|maid|maple|relay|rig|risen|stunt|surf|sync|wiped|aired|bait|bark|freed|ivory|levy|mock|niche|porch|rim|spit|tub|utter|yell|creep|doe|elbow|envy|exile|gel|goose|grill|heel|hut|mat|ruler|spill|swamp|swan|tasty|bald|boil|cone|decay|flown|imply|isle|ivy|merry|obey|ramp|reef|reset|sage|shave|vodka|zoom|bot|cube|drift|dye|guru|hatch|lace|nap|niece|pier|quiz|scent|slate|surge|tee|token|whoa|woody|yacht|bash|doom|flee|gal|hawk|lid|manor|memo|pony|posed|pupil|sofa|spoil|altar|amp|awe|combo|crow|flush|font|glue|hairy|ounce|peel|seize|spicy|sting|tick|vent|wan|wired|axe|belle|bred|curb|hid|raven|stall|strap|bliss|daisy|faint|foam|forge|jade|notch|omega|queue|stab|trout";
@@ -6104,6 +6489,7 @@ function watchApplyRemote(R){
 function onDocChange(p){
   const r=p&&p.new;if(!r||!r.kind)return;
   if(r.kind==='active'){watchApplyRemote(r.data);return}
+  if(r.kind==='watch'&&r.id==='hr'&&r.data&&r.data.v){LIVE_HR={v:r.data.v,at:Date.now()};return}
   if(r.kind==='workout'&&r.data&&r.data.id){
     const w=r.data,had=ST.workouts.find(x=>x.id===w.id);
     if(had&&JSON.stringify(had)===JSON.stringify(w))return;
@@ -7484,7 +7870,7 @@ function demoHealth(){const out=[];const now=new Date();for(let i=34;i>=0;i--){c
 const FREE_GAMES=['math','react'];
 const FREE_ROUTINES=3;
 const isMember=()=>lvl()>=1||isAdmin()||(typeof isCoachMe==='function'&&isCoachMe());
-const gameLocked=id=>!isMember()&&!FREE_GAMES.includes(id);
+const gameLocked=id=>!isMember()&&!FREE_GAMES.includes(id)&&!(CH&&CH.g===id);
 const MEMBER_WHY={
   games:['Unlock every brain game','Free includes Quick math and Reaction. Member adds 6 more games to play between sets.'],
   routines:['Save unlimited routines',`Free accounts can save up to ${FREE_ROUTINES} routines.`],
@@ -7492,11 +7878,11 @@ const MEMBER_WHY={
   progress:['See your progress','Strength charts, estimated maxes, PR history and brain game trends.'],
   leaderboard:['Compete on leaderboards','See where you rank against friends and everyone on Brainweight, and challenge people to beat your score.'],
   programs:['Unlock recommended programs','Ready-made programs you can start with one tap.'],
-  puzzles:['Unlock every daily puzzle','Free includes the Daily word and Groups. Member adds the Mini grid, Hive and Sudoku every day.'],
+  puzzles:['Unlock every daily puzzle','Free includes the Daily word and Groups. Member adds the Mini grid, Hive, Sudoku, Queens and Mate in 1 every day.'],
   readiness:['Train for how you recovered','Member adds your Garmin sleep, HRV, resting heart rate and stress to your daily readiness, and adjusts today’s workout for you.'],
   plan_more:['Upgrade to Member','Unlock everything Brainweight has to offer.'],
 };
-const MEMBER_LIST=['All 8 brain games','Every daily puzzle','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and PR history','Daily readiness from your Garmin data','Leaderboards and challenges'];
+const MEMBER_LIST=['All 14 brain games','Every daily puzzle','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and PR history','Daily readiness from your Garmin data','Leaderboards and challenges'];
 function openMember(reason){
   const w=MEMBER_WHY[reason]||MEMBER_WHY.plan_more,had=!!ME.access?.subscription?.had_trial;let iv='month';
   const o=sheet(`<span class="badge teal" style="align-self:flex-start">Member</span><h2>${esc(w[0])}</h2><p class="muted">${esc(w[1])}</p>
