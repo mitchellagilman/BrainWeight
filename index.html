@@ -972,7 +972,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='47';
+var APP_VERSION='48';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -2746,9 +2746,9 @@ async function loadAccountData(){
   const uid=ME.user.id,owner=LS.get('owner',null);
   if(owner&&owner!==uid){ST.workouts=[];ST.routines=[];ST.custom=[];ST.active=null;ST.settings=Object.assign({},DEF_SETTINGS);foodFromDocs([],true)}
   const rows=await API.docs();
-  const by={workout:[],routine:[],exercise:[]};let settings=null,active=null;
+  const by={workout:[],routine:[],exercise:[]};let settings=null,active=null,endedMark=null;
   try{foodFromDocs(rows.filter(r=>r.kind==='food'),false)}catch(e){}
-  rows.forEach(r=>{if(r.kind==='settings')settings=r.data;else if(r.kind==='active'){if(r.data&&!r.data.ended)active=r.data}else if(by[r.kind])by[r.kind].push(r.data)});
+  rows.forEach(r=>{if(r.kind==='settings')settings=r.data;else if(r.kind==='active'){if(r.data&&!r.data.ended)active=r.data;else if(r.data&&r.data.ended)endedMark=r.data}else if(by[r.kind])by[r.kind].push(r.data)});
   if(!rows.length&&!owner&&(ST.workouts.length||ST.routines.length||ST.custom.length)){
     // First sign-in on a phone that already has a log: keep it and upload it.
     for(const k of ['workouts','routines','custom'])for(const o of ST[k])await API.putDoc(KIND[k],o.id,o).catch(()=>{});
@@ -2759,6 +2759,8 @@ async function loadAccountData(){
     if(settings)ST.settings=Object.assign({},DEF_SETTINGS,settings);
     if(active&&(!ST.active||(active.updated||0)>(ST.active.updated||0)))ST.active=active;
     if(!active&&owner===uid&&ST.active){/* keep the workout in progress on this phone */}
+    // Finished or discarded on the watch while this app was closed: close it here too.
+    if(endedMark&&ST.active&&ST.active.id===endedMark.id){ST.active=null;setTimeout(()=>toast(endedMark.ended==='discarded'?'Workout discarded on your watch':'Workout finished on your watch'),600)}
   }
   LS.set('owner',uid);['workouts','routines','custom','settings','active'].forEach(k=>LS.set(k,ST[k]));
   rebuildEx();rebuildHistory();
@@ -6492,7 +6494,7 @@ function onDocChange(p){
   if(r.kind==='watch'&&r.id==='hr'&&r.data&&r.data.v){LIVE_HR={v:r.data.v,at:Date.now()};return}
   if(r.kind==='workout'&&r.data&&r.data.id){
     const w=r.data,had=ST.workouts.find(x=>x.id===w.id);
-    if(had&&JSON.stringify(had)===JSON.stringify(w))return;
+    if(had&&JSON.stringify(had)===JSON.stringify(w)){if(ST.active&&ST.active.id===w.id){endActive();toast('Workout saved from your watch');setTab('history')}return}
     ST.workouts=ST.workouts.filter(x=>x.id!==w.id).concat([w]);LS.set('workouts',ST.workouts);rebuildHistory();
     if(ST.active&&ST.active.id===w.id){endActive();toast('Workout saved from your watch');setTab('history');return}
     softRender();
@@ -6503,7 +6505,7 @@ function startDocSync(){
   if(!API.live||!sb||docChan||!ME.user)return;
   const f={schema:'public',table:'user_docs',filter:`user_id=eq.${ME.user.id}`};
   docChan=sb.channel('docs-'+ME.user.id).on('postgres_changes',Object.assign({event:'INSERT'},f),onDocChange).on('postgres_changes',Object.assign({event:'UPDATE'},f),onDocChange).subscribe();
-  clearInterval(watchPoll);watchPoll=setInterval(()=>{if(document.visibilityState==='visible'&&watchLinked())pullActive()},20000);
+  clearInterval(watchPoll);watchPoll=setInterval(()=>{if(document.visibilityState==='visible'&&ST.active)pullActive()},20000);
 }
 function stopDocSync(){try{docChan&&sb.removeChannel(docChan)}catch(e){}docChan=null;clearInterval(watchPoll)}
 async function fetchWatchWorkout(id){
@@ -6511,7 +6513,7 @@ async function fetchWatchWorkout(id){
     if(w&&w.data)onDocChange({new:{kind:'workout',data:w.data}});else if(ST.active&&ST.active.id===id){endActive();render()}}catch(e){}
 }
 async function pullActive(){
-  if(!watchLinked())return;
+  if(!API.live||!ST.active)return;
   try{const {data}=await sb.from('user_docs').select('data').eq('kind','active').eq('id','current').maybeSingle();
     if(data&&data.data)watchApplyRemote(data.data);
     else if(ST.active&&ST.active.watch){
@@ -6522,6 +6524,10 @@ async function pullActive(){
   }catch(e){}
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){pullActive();refreshGarminActs()}});
+// Belt and braces, since phones can drop live updates while the app is in the background:
+// check when the app comes back, and every 20 seconds while a workout is open on screen.
+window.addEventListener('pageshow',()=>pullActive());window.addEventListener('focus',()=>pullActive());
+
 
 // Keep a small copy of routines and the weekly schedule where the watch can read it.
 let wcTimer=null;
