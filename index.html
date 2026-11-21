@@ -957,6 +957,10 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
 .cb-s.lt{background:#E9DDC4}.cb-s.dk{background:#B08A63}.cb-s.sel{box-shadow:inset 0 0 0 4px var(--mind)}.cb-s.hint{box-shadow:inset 0 0 0 4px var(--good)}
 .pc{font-size:clamp(26px,9vw,40px);line-height:1}.pc.w{color:#fff;text-shadow:0 0 2px #000,0 0 1px #000,0 1px 2px rgba(0,0,0,.6)}.pc.b{color:#14161a}
 .cb-s i{position:absolute;font:700 9px var(--mono);color:rgba(0,0,0,.45);font-style:normal}.cb-s .rk{left:3px;top:2px}.cb-s .fl{right:3px;bottom:1px}
+.q-time{margin:-4px 0 2px}
+.g-daily{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font:600 14px var(--display);color:var(--fg)}
+.g-daily span{font:500 12px var(--mono);color:var(--muted)}
+.set-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px}
 </style>
 <div id="splash" role="status" aria-label="Loading Brainweight">
   <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -972,7 +976,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='48';
+var APP_VERSION='49';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -1040,6 +1044,7 @@ var APP_VERSION='48';
     </div>
     <div class="g-free" id="gFree" hidden><span class="eyebrow">Brain gym · free play</span><b id="gFreeName">Quick math</b></div>
     <div class="chips scroll" id="gChips"></div>
+    <button class="g-daily" id="gDaily" data-act="pz-sheet">📅 Today’s puzzles <span id="gDailyN"></span></button>
     <div class="g-chal" id="gChal" hidden></div>
     <div class="game" id="gameRoot"></div>
     <button class="link g-chnew" id="gChNew" data-ch="new">⚔ Challenge a friend to this exact run</button>
@@ -1672,7 +1677,7 @@ function exHTML(x,i){
         ${fields.map(f=>`<input class="fin" data-kp readonly data-i="${i}" data-j="${j}" data-f="${f}" value="${fieldDisp(f,s[f])}" placeholder="${p?fieldDisp(f,p[f]):''}" aria-label="${colLabel(x.type,f)}">`).join('')}
         <button class="chk" data-act="check" data-i="${i}" data-j="${j}" aria-pressed="${s.done}" aria-label="Complete set">${CHECK}</button></div>`}).join('')}
     </div>
-    <button class="add-set" data-act="add-set" data-i="${i}">+ Add set</button>
+    <div class="set-btns"><button class="add-set" data-act="add-set" data-i="${i}">+ Add set</button>${x.sets.length?`<button class="add-set" data-act="rm-set" data-i="${i}">− Remove set</button>`:''}</div>
   </section>`;
 }
 function gamesHTML(){
@@ -1772,13 +1777,25 @@ function mathProblem(level){
   else{b=rnd(2,8+m);ans=rnd(2,8+m);a=b*ans}
   return{text:`${a} ${op} ${b}`,ans};
 }
+// A shrinking bar for streak games: answer before it runs out or the streak resets.
+// It stops while you lift and starts fresh when you're back.
+function qTimer(root,ms,onOut){
+  const bar=el('<div class="ar-time q-time"><i></i></div>');root.querySelector('.g-head').after(bar);const i=bar.firstChild;let tm=null;
+  const o={start(){clearTimeout(tm);const t=ms();i.style.transition='none';i.style.width='100%';void i.offsetWidth;i.style.transition=`width ${t}ms linear`;i.style.width='0%';tm=setTimeout(()=>{if(isPaused())return;if(document.querySelector('.sheet-ov')){o.start();return}onOut()},t)},
+    stop(){clearTimeout(tm);i.style.transition='none';i.style.width='0%'}};
+  return o;
+}
 function mountMath(root){
   let score=0,cur;
   root.innerHTML=`<div class="g-head"><span>Streak <b data-s>0</b></span><span>Best <b data-b>${bestG('math')??0}</b></span></div><div class="prompt" data-q></div><div class="choices" data-c></div><p class="hint">Tap the answer. A miss resets your streak.</p>`;
   const q=root.querySelector('[data-q]'),c=root.querySelector('[data-c]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
-  function next(){cur=mathProblem(1+Math.floor(score/4));q.textContent=cur.text;const opts=new Set([cur.ans]),offs=[1,2,3,4,10,-1,-2,-3,-4,-10];while(opts.size<4){const v=cur.ans+offs[rnd(0,offs.length-1)];if(v>=0)opts.add(v)}c.innerHTML='';shuffle([...opts]).forEach(v=>{const b=el(`<button class="choice">${v}</button>`);b.onclick=()=>pick(b,v);c.appendChild(b)})}
-  function pick(b,v){if(isPaused())return;if(v===cur.ans){score++;sEl.textContent=score;bEl.textContent=bestG('math',score);pulse(b,'good');setTimeout(next,170)}else{score=0;sEl.textContent=0;pulse(b,'bad');pulse(q,'shake')}}
-  next();return{};
+  root.querySelector('.hint').textContent='Tap the answer before the bar runs out. A miss resets your streak.';
+  // 8 seconds to start, down to 4 as the problems get harder.
+  const T=qTimer(root,()=>Math.max(4000,8000-score*150),()=>{score=0;sEl.textContent=0;pulse(q,'shake');q.textContent=`Time! It was ${cur.ans}`;lock=true;setTimeout(()=>{lock=false;next()},1100)});
+  let lock=false;
+  function next(){cur=mathProblem(1+Math.floor(score/4));q.textContent=cur.text;const opts=new Set([cur.ans]),offs=[1,2,3,4,10,-1,-2,-3,-4,-10];while(opts.size<4){const v=cur.ans+offs[rnd(0,offs.length-1)];if(v>=0)opts.add(v)}c.innerHTML='';shuffle([...opts]).forEach(v=>{const b=el(`<button class="choice">${v}</button>`);b.onclick=()=>pick(b,v);c.appendChild(b)});if(!isPaused())T.start()}
+  function pick(b,v){if(isPaused()||lock)return;if(v===cur.ans){T.stop();score++;sEl.textContent=score;bEl.textContent=bestG('math',score);pulse(b,'good');setTimeout(next,170)}else{score=0;sEl.textContent=0;pulse(b,'bad');pulse(q,'shake');T.start()}}
+  next();return{pause(){T.stop()},resume(){if(!lock)T.start()},destroy(){T.stop()}};
 }
 function mountSeq(root){
   const labels=['25','20','15','10'];
@@ -1798,9 +1815,13 @@ function mountStroop(root){
   const INK=[{n:'Red',v:'var(--p25)'},{n:'Blue',v:'var(--p20)'},{n:'Yellow',v:'var(--p15)'},{n:'Green',v:'var(--p10)'}];let score=0,cur;
   root.innerHTML=`<div class="g-head"><span>Streak <b data-s>0</b></span><span>Best <b data-b>${bestG('stroop')??0}</b></span></div><div class="prompt" data-w style="text-transform:uppercase"></div><div class="choices" data-c></div><p class="hint">Tap the color of the ink, not the word you read.</p>`;
   const w=root.querySelector('[data-w]'),c=root.querySelector('[data-c]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
-  function next(){const word=rnd(0,3);let ink=word;if(GR()<.78){while(ink===word)ink=rnd(0,3)}cur=ink;w.textContent=INK[word].n;w.style.color=INK[ink].v;c.innerHTML='';shuffle([0,1,2,3]).forEach(i=>{const b=el(`<button class="choice word">${INK[i].n}</button>`);b.onclick=()=>pick(b,i);c.appendChild(b)})}
-  function pick(b,i){if(isPaused())return;if(i===cur){score++;sEl.textContent=score;bEl.textContent=bestG('stroop',score);pulse(b,'good');setTimeout(next,170)}else{score=0;sEl.textContent=0;pulse(b,'bad');pulse(w,'shake')}}
-  next();return{};
+  root.querySelector('.hint').textContent='Tap the color of the ink, not the word, before the bar runs out.';
+  // 3 seconds to start, down to 1.2 as your streak grows.
+  let lock=false;
+  const T=qTimer(root,()=>Math.max(1200,3000-score*90),()=>{score=0;sEl.textContent=0;pulse(w,'shake');w.textContent='Time!';w.style.color='';lock=true;setTimeout(()=>{lock=false;next()},900)});
+  function next(){const word=rnd(0,3);let ink=word;if(GR()<.78){while(ink===word)ink=rnd(0,3)}cur=ink;w.textContent=INK[word].n;w.style.color=INK[ink].v;c.innerHTML='';shuffle([0,1,2,3]).forEach(i=>{const b=el(`<button class="choice word">${INK[i].n}</button>`);b.onclick=()=>pick(b,i);c.appendChild(b)});if(!isPaused())T.start()}
+  function pick(b,i){if(isPaused()||lock)return;if(i===cur){T.stop();score++;sEl.textContent=score;bEl.textContent=bestG('stroop',score);pulse(b,'good');setTimeout(next,170)}else{score=0;sEl.textContent=0;pulse(b,'bad');pulse(w,'shake');T.start()}}
+  next();return{pause(){T.stop()},resume(){if(!lock)T.start()},destroy(){T.stop()}};
 }
 function mountHunt(root){
   const fb=v=>v==null?'—':(v/1000).toFixed(1)+'s';let target,acc,t0,running,raf;
@@ -2004,7 +2025,7 @@ function mountArrows(root){
     dir=GR()<.5?0:1;const same=GR()<.4,f=same?dir:1-dir,ch=d=>d?'→':'←';
     A.innerHTML=[f,f,dir,f,f].map((d,i)=>`<span class="${i===2?'mid':''}">${ch(d)}</span>`).join('');
     state='go';t0=performance.now();T.style.transition='none';T.style.width='100%';void T.offsetWidth;T.style.transition=`width ${limit()}ms linear`;T.style.width='0%';
-    clearTimeout(tm);tm=setTimeout(()=>miss('Too slow'),limit());
+    clearTimeout(tm);tm=setTimeout(function chk(){if(document.querySelector('.sheet-ov')){tm=setTimeout(chk,500);return}miss('Too slow')},limit());
   }
   function miss(why){state='wait';clearTimeout(tm);score=0;sEl.textContent=0;pulse(A,'shake');A.innerHTML=`<b>${why}. Tap to go again</b>`;T.style.transition='none';T.style.width='0%'}
   root.querySelector('.ar-btns').onclick=e=>{const b=e.target.closest('[data-d]');if(!b||isPaused())return;
@@ -2101,6 +2122,7 @@ function mountGame(id){
   $('#gFreeName').textContent=g.name;
   $('#gChips').innerHTML=GAMES.map(x=>`<button class="chip" data-game="${x.id}" aria-pressed="${x.id===g.id}">${gameLocked(x.id)?'🔒 ':''}${x.name}</button>`).join('');
   $('#gChNew').hidden=!!(CH&&CH.g===g.id)||!API.live;chBanner();
+  try{const rows=puzzleRows();$('#gDailyN').textContent=`${rows.filter(x=>x.done).length}/${rows.length} done`}catch(e){}
   syncPause();
 }
 const overlayOpen=()=>!$('#gameov').hidden;
@@ -4679,7 +4701,6 @@ function pzRecord(id,st,{solved,score,detail,lowerBetter=true,final=true}){
   return s;
 }
 function pzOpenGuard(id){
-  if(ST.active&&!resting()){toast('During a workout, games unlock while you rest.');return false}
   if(puzzleLocked(id)){openMember('puzzles');return false}
   return true;
 }
@@ -6037,6 +6058,11 @@ document.addEventListener('click',e=>{
     case'use-prev':{const x=A.exercises[i],p=prevFor(x.exId,j);if(!p||x.sets[j].done)break;(TYPES[x.type]||TYPES.w).forEach(f=>x.sets[j][f]=p[f]??null);saveActive();render();break}
     case'check':{const s=A.exercises[i].sets[j];if(s.done){s.done=false;s.at=Date.now();saveActive();render();break}
       if(completeSet(i,j)){render();const sn=ssAfter(A.exercises,i);if(sn&&!sn.rest)requestAnimationFrame(()=>goToRow(sn.i,sn.j))}else{pulse(document.querySelector(`[data-row="${i}-${j}"]`),'shake');toast('Enter your numbers first')}break}
+    case'rm-set':{
+      // Removes the last set that isn't logged. To remove a particular set, tap its number.
+      const x=A.exercises[i];let k=-1;for(let j=x.sets.length-1;j>=0;j--)if(!x.sets[j].done){k=j;break}
+      if(k<0){toast('Every set is logged. Tap a set number to delete that set.');break}
+      x.sets.splice(k,1);saveActive();render();toast(`Removed set ${k+1}`);break}
     case'add-set':{const x=A.exercises[i],last=x.sets[x.sets.length-1];x.sets.push(newSet(last?{kind:last.kind==='w'?'n':last.kind,w:last.w,r:last.r,t:last.t,d:last.d}:null));saveActive();render();break}
     case'finish':finishWorkout();break;
     case'wk-menu':openWkMenu();break;
@@ -6049,7 +6075,8 @@ document.addEventListener('click',e=>{
     case'free-play':if(gameLocked(b.dataset.game)){openMember('games');break}openGame(true,b.dataset.game);break;
     case'member':openMember(b.dataset.why);break;
     case'daily':openDaily();break;
-    case'puzzle':openPuzzle(b.dataset.pz);break;
+    case'puzzle':document.querySelectorAll('.pz-pick').forEach(o=>o.remove());openPuzzle(b.dataset.pz);break;
+    case'pz-sheet':{const o=sheet(`<div class="sheet-h"><h2>Daily puzzles</h2><button class="link" data-close>Close</button></div>${puzzlesHTML()}`);o.classList.add('pz-pick');break}
     case'hide-install':LS.set('hideInstall',true);render();break;
     case'install':if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;render()})}break;
     case'new-custom':openCustom();break;
