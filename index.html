@@ -961,6 +961,13 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
 .g-daily{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font:600 14px var(--display);color:var(--fg)}
 .g-daily span{font:500 12px var(--mono);color:var(--muted)}
 .set-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+#enBox{display:flex;flex-direction:column;gap:14px}
+.en-pick{display:flex;flex-direction:row;align-items:center;gap:10px}.en-pick b{flex:1}
+.en-s{display:flex;flex-direction:row;gap:12px;align-items:flex-start;cursor:pointer}.en-s input{width:22px;height:22px;margin-top:2px;flex:0 0 auto;accent-color:var(--mind)}
+.en-s span{display:flex;flex-direction:column;gap:4px;min-width:0}.en-s .muted{font-size:14px;line-height:1.4}.en-s.off b{opacity:.55;text-decoration:line-through}
+.en-list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}.en-list li b{margin-right:6px}.en-list .muted{display:block;font-size:13px}.en-list .badge{font-size:11px}
+.rt-ask{gap:8px}.rt-ask h3{margin:0}.rt-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+.rt-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 </style>
 <div id="splash" role="status" aria-label="Loading Brainweight">
   <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -976,7 +983,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='49';
+var APP_VERSION='52';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -1566,6 +1573,8 @@ function startWorkout(from){
   const h=new Date().getHours();
   const name=from?.name||(h<11?'Morning workout':h<17?'Afternoon workout':'Evening workout');
   ST.active={id:newId(),name,start:Date.now(),exercises:(from?.exercises||[]).filter(e=>EXMAP[e.exId]).map(e=>Object.assign(newEx(e.exId,e.sets.map(s=>newSet(s))),{rest:e.rest??null,note:e.note||''},e.ss?{ss:e.ss}:{})),restEnd:0,restTotal:0,restAfter:null,restOver:false};
+  // Remember which routine this came from and how it started, so we can offer to save changes to it at the end.
+  if(from&&from.id&&ST.routines.some(r=>r.id===from.id)){ST.active.routineId=from.id;ST.active.baseline=rtShape(ST.active.exercises)}
   saveActive(true);setTab('workout');wake();
 }
 function setLabel(sets,j){const k=sets[j].kind;if(k==='w')return'W';if(k==='d')return'D';if(k==='f')return'F';let n=0;for(let i=0;i<=j;i++)if(sets[i].kind==='n')n++;return String(n)}
@@ -1633,7 +1642,7 @@ function routineCard(r){
   const names=r.exercises.map(e=>EXMAP[e.exId]?.name).filter(Boolean);
   return `<div class="card"><div class="row"><h3>${esc(r.name)}</h3><button class="link" data-act="edit-routine" data-id="${r.id}">${r.template?'Customize':'Edit'}</button></div>
   <div class="lines"><span>${esc(names.slice(0,4).join(', '))}${names.length>4?` and ${names.length-4} more`:''}</span></div>
-  <button class="secondary" data-act="start-routine" data-id="${r.id}">Start ${esc(r.name)}</button>${LS.get('garminOn',false)&&!r.template?`<button class="link" data-act="garmin-send" data-id="${r.id}" style="align-self:flex-start">⌚ Send to Garmin</button>`:''}</div>`;
+  <button class="secondary" data-act="start-routine" data-id="${r.id}">Start ${esc(r.name)}</button><button class="link" data-act="enhance" data-id="${r.id}" style="align-self:flex-start">✨ Improve this routine</button>${LS.get('garminOn',false)&&!r.template?`<button class="link" data-act="garmin-send" data-id="${r.id}" style="align-self:flex-start">⌚ Send to Garmin</button>`:''}</div>`;
 }
 function startHTML(){
   const mine=ST.routines.slice().sort((a,b)=>a.name.localeCompare(b.name));
@@ -2294,7 +2303,7 @@ function finishWorkout(){
   o.querySelector('#fGo').onclick=()=>{o.close();saveFinished()};
 }
 function saveFinished(){
-  const A=ST.active,end=Date.now();
+  const A=ST.active,end=Date.now(),rtAsk=rtChanges(A);
   const exercises=A.exercises.map(e=>({exId:e.exId,name:exOf(e).name,type:e.type,rest:e.rest,note:e.note,...(e.ss?{ss:e.ss}:{}),sets:e.sets.filter(s=>s.done).map(s=>({kind:s.kind,w:s.w,r:s.r,t:s.t,d:s.d}))})).filter(e=>e.sets.length);
   const prs=[];
   exercises.forEach(e=>{
@@ -2311,9 +2320,62 @@ function saveFinished(){
   sheet(`<span class="eyebrow">Workout saved</span><h2>${esc(w.name)}</h2>
     <div class="tiles"><div class="tile"><b>${clock((end-A.start)/1000)}</b><span>Duration</span></div><div class="tile"><b>${fmtVol(volOf(w))}</b><span>Volume</span></div><div class="tile"><b>${sets}</b><span>Sets</span></div></div>
     ${prs.length?`<div class="card"><span class="eyebrow">Personal records</span><div class="lines">${prs.map(p=>`<span style="color:var(--fg)">${esc(p)}</span>`).join('')}</div><button class="primary" data-act="pr-share-w" data-id="${esc(w.id)}">Share your PR</button></div>`:''}
+    ${rtAsk?`<div class="card rt-ask" id="rtAsk"><span class="eyebrow">You changed this workout</span><h3>Update ${esc(rtAsk.r.name)} for next time?</h3>
+      <ul class="rt-list">${rtAsk.lines.slice(0,6).map(l=>`<li>${esc(l)}</li>`).join('')}${rtAsk.lines.length>6?`<li>and ${rtAsk.lines.length-6} more</li>`:''}</ul>
+      <div class="rt-btns"><button class="primary" data-act="rt-update" data-id="${esc(rtAsk.r.id)}">Update routine</button><button class="secondary" data-act="rt-keep">Keep it as is</button></div></div>`:''}
     <div id="pushAsk"></div>
     <button class="${prs.length?'secondary':'primary'}" data-act="share-workout" data-id="${esc(w.id)}">Share to feed</button><button class="secondary" data-close>Done</button>`);
+  if(rtAsk)RT_PENDING={id:rtAsk.r.id,exercises:rtAsk.exercises};
   maybeAskForPush().then(h=>{const el=document.getElementById('pushAsk');if(el&&h)el.innerHTML=h});
+}
+/* ---------- update the routine with what you changed ---------- */
+// At the end of a workout started from a routine, compare it with how it started. If you added or removed
+// sets or exercises, changed weight, reps, time or rest, or reordered things, offer to save that to the routine.
+let RT_PENDING=null;
+// Finished on the watch: keep the changes and ask the next time the phone is open.
+function rtRemember(A){try{const c=rtChanges(A);if(c)LS.set('rtAsk',{id:c.r.id,name:c.r.name,lines:c.lines,exercises:c.exercises,at:Date.now()})}catch(e){}}
+function rtAskLater(){
+  const q=LS.get('rtAsk',null);if(!q)return;
+  if(Date.now()-q.at>14*864e5||!ST.routines.some(x=>x.id===q.id)){LS.set('rtAsk',null);return}
+  if(document.visibilityState!=='visible'||ST.active||document.querySelector('.sheet-ov'))return;
+  LS.set('rtAsk',null);RT_PENDING={id:q.id,exercises:q.exercises};
+  sheet(`<span class="eyebrow">Workout from your watch</span><div class="card rt-ask"><span class="eyebrow">You changed this workout</span><h3>Update ${esc(q.name)} for next time?</h3>
+    <ul class="rt-list">${q.lines.slice(0,6).map(l=>`<li>${esc(l)}</li>`).join('')}${q.lines.length>6?`<li>and ${q.lines.length-6} more</li>`:''}</ul>
+    <div class="rt-btns"><button class="primary" data-act="rt-update" data-id="${esc(q.id)}">Update routine</button><button class="secondary" data-act="rt-keep">Keep it as is</button></div></div>
+    <button class="secondary" data-close>Close</button>`);
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(rtAskLater,1500)});
+setTimeout(rtAskLater,4000);
+function rtShape(exs){return exs.map(e=>({uid:e.uid,exId:e.exId,rest:e.rest??null,ss:e.ss||null,sets:e.sets.map(s=>({kind:s.kind||'n',w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))}))}
+function rtChanges(A){
+  const r=A&&A.routineId&&ST.routines.find(x=>x.id===A.routineId);if(!r)return null;
+  // Started on the watch: no snapshot, so compare with the routine itself, matching exercises in order.
+  const used=new Set(),base=A.baseline||rtShape(r.exercises.map((e,i)=>{const m=A.exercises.find(x=>x.exId===e.exId&&!used.has(x.uid));if(m)used.add(m.uid);return Object.assign({uid:m?m.uid:'r'+i},e)}));
+  const now=rtShape(A.exercises),lines=[],nm=id=>EXMAP[id]?EXMAP[id].name:id,wv=v=>v==null?'—':`${dispW(v)} ${u()}`;
+  const byUid=new Map(base.map(e=>[e.uid,e]));
+  now.forEach(e=>{const b=byUid.get(e.uid);
+    if(!b){lines.push(`Added ${nm(e.exId)}`);return}
+    if(b.exId!==e.exId){lines.push(`${nm(b.exId)} → ${nm(e.exId)}`);return}
+    const nb=b.sets.filter(s=>s.kind!=='w').length,nn=e.sets.filter(s=>s.kind!=='w').length;
+    if(nb!==nn)lines.push(`${nm(e.exId)}: ${nn} set${nn===1?'':'s'} (was ${nb})`);
+    const wb=b.sets.find(s=>s.kind!=='w'),wn=e.sets.find(s=>s.kind!=='w');
+    if(wb&&wn){
+      if((wb.w??null)!==(wn.w??null)&&Math.abs((wb.w||0)-(wn.w||0))>0.05)lines.push(`${nm(e.exId)}: ${wv(wn.w)} (was ${wv(wb.w)})`);
+      if((wb.r??null)!==(wn.r??null))lines.push(`${nm(e.exId)}: ${wn.r??'—'} reps (was ${wb.r??'—'})`);
+      if((wb.t??null)!==(wn.t??null))lines.push(`${nm(e.exId)}: ${wn.t?clock(wn.t):'—'} (was ${wb.t?clock(wb.t):'—'})`);
+    }
+    // Any other set that differs from how it started (a heavier last set, more reps on set 2…).
+    else if(JSON.stringify(b.sets)!==JSON.stringify(e.sets))lines.push(`${nm(e.exId)}: sets changed`);
+    if(!lines.some(l=>l.startsWith(nm(e.exId)))&&JSON.stringify(b.sets)!==JSON.stringify(e.sets))lines.push(`${nm(e.exId)}: weights or reps changed`);
+    if((b.rest??null)!==(e.rest??null))lines.push(`${nm(e.exId)}: rest ${e.rest!=null?clock(e.rest):'default'} (was ${b.rest!=null?clock(b.rest):'default'})`);
+  });
+  base.forEach(b=>{if(!now.some(e=>e.uid===b.uid))lines.push(`Removed ${nm(b.exId)}`)});
+  const order=x=>x.filter(e=>byUid.has(e.uid)&&now.some(n=>n.uid===e.uid)).map(e=>e.uid).join();
+  if(order(now)!==order(base))lines.push('New exercise order');
+  if(JSON.stringify(now.map(e=>e.ss))!==JSON.stringify(base.filter(b=>now.some(e=>e.uid===b.uid)).map(e=>e.ss))&&!lines.length)lines.push('Supersets changed');
+  if(!lines.length)return null;
+  const exercises=A.exercises.map(e=>Object.assign({exId:e.exId,rest:e.rest??null,note:e.note||'',sets:e.sets.map(s=>({kind:s.kind||'n',w:s.w??null,r:s.r??null,t:s.t??null,d:s.d??null}))},e.ss?{ss:e.ss}:{}));
+  return{r,lines:[...new Set(lines)],exercises};
 }
 function openHistory(id){
   const w=ST.workouts.find(x=>x.id===id);if(!w)return;
@@ -2425,6 +2487,7 @@ function openSettings(){
   const o=sheet(`<div class="sheet-h"><h2>Settings</h2><button class="link" data-close>Done</button></div>
     ${ME.user?accountHTML():''}
     <div class="field"><label>Weight units</label><div class="seg"><button data-u="lb" aria-pressed="${S.unit==='lb'}">lb · mi</button><button data-u="kg" aria-pressed="${S.unit==='kg'}">kg · km</button></div></div>
+    <div class="field"><label>Lifting experience</label><div class="chips wrap" id="sLvl">${LVL_OPTS.map(([v,l,d])=>`<button class="chip" data-lv="${v}" aria-pressed="${S.level===v}">${l} · ${d}</button>`).join('')}</div><p class="g-note" style="text-align:left;margin:4px 0 0">Used to pick exercises, sets and volume when we build or improve a routine.</p></div>
     <div class="field"><label>Default rest timer</label><div class="chips">${rests.map(v=>`<button class="chip" data-r="${v}" aria-pressed="${v===S.rest}">${v?clock(v):'Off'}</button>`).join('')}<button class="chip" id="sRestC" aria-pressed="${!rests.includes(S.rest)}">${rests.includes(S.rest)?'Custom':clock(S.rest)}</button></div></div>
     <label class="toggle"><span>Open a game when rest starts</span><input type="checkbox" id="sAuto" ${S.autoGame?'checked':''}></label>
     <label class="toggle"><span>Beep and buzz when rest ends</span><input type="checkbox" id="sSound" ${S.sound?'checked':''}></label>
@@ -2436,6 +2499,7 @@ function openSettings(){
   if(STANDALONE){o.querySelector('#sExp').onclick=exportBackup;o.querySelector('#sImp').onchange=e=>{const f=e.target.files[0];if(f)importBackup(f)};o.querySelector('#sShare').onclick=shareApp}
   o.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{S.unit=b.dataset.u;o.querySelectorAll('[data-u]').forEach(c=>c.setAttribute('aria-pressed',c===b));saveSettings();render()});
   o.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{S.rest=+b.dataset.r;o.querySelectorAll('[data-r]').forEach(c=>c.setAttribute('aria-pressed',c===b));const c=o.querySelector('#sRestC');c.setAttribute('aria-pressed','false');c.textContent='Custom';saveSettings();render()});
+  o.querySelectorAll('[data-lv]').forEach(c=>c.onclick=()=>{setLevel(c.dataset.lv);o.querySelectorAll('[data-lv]').forEach(x=>x.setAttribute('aria-pressed',x===c))});
   o.querySelector('#sRestC').onclick=()=>openRestPicker(S.rest,v=>{S.rest=v;saveSettings();render();const c=o.querySelector('#sRestC');if(c){o.querySelectorAll('[data-r]').forEach(x=>x.setAttribute('aria-pressed','false'));c.setAttribute('aria-pressed','true');c.textContent=clock(v)}});
   o.querySelector('#sAuto').onchange=e=>{S.autoGame=e.target.checked;saveSettings()};
   o.querySelector('#sSound').onchange=e=>{S.sound=e.target.checked;saveSettings();ensureAudio()};
@@ -2782,7 +2846,7 @@ async function loadAccountData(){
     if(active&&(!ST.active||(active.updated||0)>(ST.active.updated||0)))ST.active=active;
     if(!active&&owner===uid&&ST.active){/* keep the workout in progress on this phone */}
     // Finished or discarded on the watch while this app was closed: close it here too.
-    if(endedMark&&ST.active&&ST.active.id===endedMark.id){ST.active=null;setTimeout(()=>toast(endedMark.ended==='discarded'?'Workout discarded on your watch':'Workout finished on your watch'),600)}
+    if(endedMark&&ST.active&&ST.active.id===endedMark.id){if(endedMark.ended!=='discarded')rtRemember(ST.active);ST.active=null;setTimeout(rtAskLater,1400);setTimeout(()=>toast(endedMark.ended==='discarded'?'Workout discarded on your watch':'Workout finished on your watch'),600)}
   }
   LS.set('owner',uid);['workouts','routines','custom','settings','active'].forEach(k=>LS.set(k,ST[k]));
   rebuildEx();rebuildHistory();
@@ -3359,6 +3423,8 @@ function planPick(slot,equip,avoid,barOK){
   const base=pre.concat(PLAN_SLOTS[slot]||[]);
   const ok=id=>EXMAP[id]&&!(lim&&lim.avoid.has(id))&&!(sp&&sp.avoid.has(id))&&equipOK(id,equip,barOK);
   let list=base.filter(ok);
+  // Beginners get the simpler lifts first; harder variations only if nothing else fits.
+  if((PLAN_EXP||ST.settings.level)==='new'){const easy=list.filter(id=>!ADV_SWAP[id]);if(easy.length)list=easy}
   if(equip==='mine'){
     // Use what's on the equipment list: same movement and main muscle, weighted options (or the bar) first.
     const alts=kitAlternatives(slot).filter(ok);
@@ -3399,9 +3465,9 @@ function buildSets(exId,sets,reps,opts={}){
   return out;
 }
 function generatePlan(a){
-  PLAN_LIM=planLimits(a);PLAN_SPORT=planSport(a,PLAN_LIM);
+  PLAN_LIM=planLimits(a);PLAN_SPORT=planSport(a,PLAN_LIM);PLAN_EXP=isMoveGoal(a.goal)?null:a.exp;
   if(isMoveGoal(a.goal)){PLAN_LIM=null;PLAN_SPORT=null;return planWeightGoal(generateMovePlan(a),a)}
-  try{const p=generatePlanInner(a);return planWeightGoal(a.equip==='mine'?kitAdjustPlan(p):p,a)}finally{PLAN_LIM=null;PLAN_SPORT=null}
+  try{const p=generatePlanInner(a);return planWeightGoal(a.equip==='mine'?kitAdjustPlan(p):p,a)}finally{PLAN_LIM=null;PLAN_SPORT=null;PLAN_EXP=null}
 }
 // Lose, maintain or gain weight: a little easy cardio to finish lifting days when losing, and a pointer to Meals.
 function planWeightGoal(p,a){
@@ -3604,7 +3670,8 @@ function planDayHTML(d,i){
   return `<div class="card"><div class="row"><h3>${esc(d.name)}</h3></div>${lines}</div>`;
 }
 function openPlanBuilder(prefill){
-  const a=Object.assign({},PLAN_DEF,(myPlan()&&myPlan().answers)||{},prefill||{});
+  const a=Object.assign({},PLAN_DEF,ST.settings.level?{exp:ST.settings.level}:{},(myPlan()&&myPlan().answers)||{},prefill||{});
+  if(ST.settings.level&&!(prefill&&prefill.exp)&&!isMoveGoal(a.goal))a.exp=ST.settings.level;
   if((!a.wgoal||a.wgoal==='none')&&ST.settings.body&&ST.settings.body.goal)a.wgoal=ST.settings.body.goal;
   const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>Build my plan</h2><span style="width:52px"></span></div><div id="pbBox"></div>`,{full:true});
   o.querySelector('.sheet').style.overflowY='auto';
@@ -3657,6 +3724,7 @@ function openPlanBuilder(prefill){
       <p class="g-note" style="text-align:left">General guidance only, not medical or professional advice. Check with a doctor before starting a new program.</p></div>`;
     o.querySelector('.sheet').scrollTop=0;
     const save=start=>{
+      if(!isMoveGoal(a.goal))setLevel(a.exp);
       const rep=box.querySelector('#pbReplace');
       if(had&&(!rep||rep.checked))(had.routineIds||[]).forEach(id=>{if(ST.routines.some(r=>r.id===id))delItem('routines',id)});
       p.routineIds=p.days.map(d=>{const r={id:'r-'+newId(),name:`${p.title} · ${d.name}`,exercises:clone(d.exercises)};putItem('routines',r);return r.id});
@@ -3693,18 +3761,20 @@ function planStart(i){
   // Weights move up automatically: week-by-week targets for the focus lift, and +5 lb (2.5 kg)
   // on anything where you hit every rep last time.
   const adj=planAdjust(p,i);
-  startWorkout({name:`${p.title} · ${d.name}`,exercises:adj.exercises});
+  startWorkout({id:p.routineIds&&p.routineIds[i],name:`${p.title} · ${d.name}`,exercises:adj.exercises});
   if(adj.raised.length)toast(`Weight going up on ${adj.raised.slice(0,2).join(' and ')}${adj.raised.length>2?' and more':''}. You hit every rep last time.`);
 }
 function openNewRoutineChoice(){
   const o=sheet(`<h2>New routine</h2>
     <button class="card choice" id="nrMe"><b>Build it myself</b><span class="muted">Pick your own exercises, sets and reps.</span></button>
     <button class="card choice" id="nrPlan"><b>Build it for me</b><span class="muted">Answer a few questions and get a full 4-week plan, like a bigger bench or more chest.</span></button>
+    <button class="card choice" id="nrEn"><b>Improve a routine I have</b><span class="muted">Pick one of your routines and a goal, like a bigger bench, and get suggestions to get more out of it.</span></button>
     <button class="card choice" id="nrQuick"><b>Quick workout from what I have</b><span class="muted">Tell us (or show us with a photo) what equipment you have, and get one workout for today.</span></button>
     <button class="secondary" data-close>Cancel</button>`);
   o.querySelector('#nrMe').onclick=()=>{o.close();openRoutineEditor(null)};
   o.querySelector('#nrPlan').onclick=()=>{o.close();openPlanBuilder()};
   o.querySelector('#nrQuick').onclick=()=>{o.close();openQuickWorkout()};
+  o.querySelector('#nrEn').onclick=()=>{o.close();openEnhancer()};
 }
 
 /* ================= limitations, goal timelines and the swap finder ================= */
@@ -6049,6 +6119,9 @@ document.addEventListener('click',e=>{
     case'plan-view':openPlanView();break;
     case'plan-start':planStart(+b.dataset.i);break;
     case'plan-next':{const p=myPlan();if(p)openPlanBuilder(nextBlockAnswers(p));break}
+    case'enhance':openEnhancer(b.dataset.id);break;
+    case'rt-update':{const r=ST.routines.find(x=>x.id===b.dataset.id);if(r&&RT_PENDING&&RT_PENDING.id===r.id){putItem('routines',Object.assign({},r,{exercises:RT_PENDING.exercises}));RT_PENDING=null;const c=b.closest('.rt-ask');if(c)c.innerHTML=`<p style="margin:0">✓ ${esc(r.name)} updated for next time.</p>`;render()}break}
+    case'rt-keep':{RT_PENDING=null;const c=b.closest('.rt-ask');if(c)c.remove();break}
     case'edit-routine':{const r=ST.routines.find(x=>x.id===b.dataset.id)||TEMPLATES.find(x=>x.id===b.dataset.id);if(r)openRoutineEditor(r);break}
     case'add-ex':openPicker({onDone:ids=>{ids.forEach(id=>A.exercises.push(newEx(id)));saveActive();render();const last=document.querySelectorAll('.ex');last[last.length-1]&&last[last.length-1].scrollIntoView({block:'start'})}});break;
     case'ex-menu':openExMenu(i);break;
@@ -6521,9 +6594,9 @@ function onDocChange(p){
   if(r.kind==='watch'&&r.id==='hr'&&r.data&&r.data.v){LIVE_HR={v:r.data.v,at:Date.now()};return}
   if(r.kind==='workout'&&r.data&&r.data.id){
     const w=r.data,had=ST.workouts.find(x=>x.id===w.id);
-    if(had&&JSON.stringify(had)===JSON.stringify(w)){if(ST.active&&ST.active.id===w.id){endActive();toast('Workout saved from your watch');setTab('history')}return}
+    if(had&&JSON.stringify(had)===JSON.stringify(w)){if(ST.active&&ST.active.id===w.id){rtRemember(ST.active);endActive();setTimeout(rtAskLater,1400);toast('Workout saved from your watch');setTab('history')}return}
     ST.workouts=ST.workouts.filter(x=>x.id!==w.id).concat([w]);LS.set('workouts',ST.workouts);rebuildHistory();
-    if(ST.active&&ST.active.id===w.id){endActive();toast('Workout saved from your watch');setTab('history');return}
+    if(ST.active&&ST.active.id===w.id){rtRemember(ST.active);endActive();setTimeout(rtAskLater,1400);toast('Workout saved from your watch');setTab('history');return}
     softRender();
   }
 }
@@ -7897,6 +7970,223 @@ function demoHealth(){const out=[];const now=new Date();for(let i=34;i>=0;i--){c
   out.push({kind:'dailies',day:k,data:{restingHeartRateInBeatsPerMinute:Math.round(54+w*1.5+(i===0?3:0)),averageStressLevel:Math.round(28+w*6),bodyBatteryChargedValue:Math.round(60+w*10)}});
   out.push({kind:'sleeps',day:k,data:{durationInSeconds:Math.round((7.2+w*.4-(i===0?.9:0))*3600),overallSleepScore:{value:Math.round(78+w*6-(i===0?12:0))}}});
   out.push({kind:'hrv',day:k,data:{lastNightAvg:Math.round(62+w*4-(i===0?7:0))}})}return out}
+/* ================= lifting experience ================= */
+let PLAN_EXP=null; // set while a plan or suggestion is being built
+// Saved once in settings and used by the plan builder, quick workouts and the lift enhancer.
+const LVL_OPTS=[['new','Beginner','Under 6 months'],['mid','Intermediate','6 months to 2 years'],['adv','Advanced','2+ years']];
+const myLevel=()=>ST.settings.level||(myPlan()&&myPlan().answers&&myPlan().answers.exp)||null;
+function setLevel(l){if(['new','mid','adv'].includes(l)&&ST.settings.level!==l){ST.settings.level=l;saveSettings()}}
+// Technical lifts that beginners should build up to, and the simpler move that trains the same thing.
+const ADV_SWAP={
+  'paused-bench-press':'bench-press-dumbbell','close-grip-bench-press-barbell':'bench-press-dumbbell','pause-squat':'goblet-squat-dumbbell',
+  'paused-deadlift':'romanian-deadlift-dumbbell','deficit-deadlift':'romanian-deadlift-dumbbell','front-squat-barbell':'goblet-squat-dumbbell',
+  'push-press-dumbbell':'overhead-press-dumbbell','pistol-squat':'reverse-lunge-dumbbell','archer-push-up':'push-up',
+  'handstand-hold':'pike-push-up','deficit-push-up':'push-up','bayesian-curl':'biceps-curl-dumbbell','toes-to-bar':'reverse-crunch',
+};
+const advSwapFor=id=>{const s=ADV_SWAP[id];return s&&EXMAP[s]?s:null};
+
+/* ================= lift enhancer ================= */
+// Pick a routine you already have and a goal. It suggests changes to get more out of it:
+// exercise order, sets and reps for the goal, a missing main lift or helper, balance, volume for your level.
+// Each suggestion can be turned off before saving. Everything is rule-based and runs on the phone.
+const EN_GOALS=[['lift','Get stronger at a lift'],['muscle','Hit a muscle harder'],['strength','Get stronger overall'],['size','Build muscle'],['lean','Get lean and fit']];
+const EN_ISO=['Elbow flexion','Elbow extension','Raise','Chest fly','Ankle extension','Grip','Shrug','Hip abduction','Hip adduction','Neck','Knee extension','Knee flexion'];
+const EN_MUSCLE_KEYS={chest:['chest'],back:['lats','upper','traps','rear'],shoulders:['delts','rear'],arms:['biceps','triceps','forearms'],legs:['quads','hamstrings','glutes','calves'],glutes:['glutes'],core:['abs','obliques']};
+const EN_PUSH=['Horizontal push','Vertical push'],EN_PULL=['Horizontal pull','Vertical pull'];
+const EN_LIFT_RX={
+  bench:id=>/bench-press/.test(id)&&!/incline|decline/.test(id),
+  squat:id=>/squat/.test(id)&&!/split|goblet|jump|bodyweight|pistol|sissy|wall/.test(id),
+  deadlift:id=>/deadlift/.test(id)&&!/romanian|single-leg|stiff/.test(id),
+  ohp:id=>/overhead-press|military-press/.test(id),
+  pullup:id=>/pull-up|chin-up/.test(id),
+};
+function enKind(id){
+  const e=EXMAP[id];if(!e)return'x';
+  if(['Cardio','Mobility','Stretching','Yoga','Full body'].includes(e.muscle)&&e.type!=='w')return'x';
+  if(['Abs','Obliques'].includes(e.muscle))return'k';
+  const m=exMuscles(id);
+  if(EN_ISO.includes(m.pattern)||/curl|kickback|pushdown|fly|raise|shrug|extension-machine/.test(id))return'i';
+  const mainIds=['benchMain','squatMain','hinge','ohp','verticalPull'].flatMap(s=>PLAN_SLOTS[s]);
+  return mainIds.includes(id)||Object.values(EN_LIFT_RX).some(f=>f(id))?'m':'c';
+}
+const enWork=x=>x.sets.filter(s=>s.kind!=='w');
+const enTimed=id=>{const t=EXMAP[id]&&EXMAP[id].type;return t==='t'||t==='d'};
+function enEquip(r){
+  const eq=r.exercises.map(x=>EXMAP[x.exId]&&EXMAP[x.exId].equip).filter(Boolean);
+  if(eq.some(e=>!['Dumbbell','Bodyweight','Band','Kettlebell'].includes(e)))return'gym';
+  return eq.some(e=>e!=='Bodyweight')?'db':'bw';
+}
+function enName(id){return EXMAP[id]?EXMAP[id].name:id}
+// Set an exercise to sets × reps (keeping its working weight) with warm-ups in front.
+function enScheme(x,sets,reps,rest,warm){
+  const work=enWork(x),w=(work[0]||{}).w??null,timed=enTimed(x.exId);
+  const out=[];
+  if(warm&&!timed&&w)for(let i=0;i<warm;i++)out.push({kind:'w',w:Math.round(w*(i===0?.5:.7)*4)/4,r:i===0?8:5,t:null,d:null});
+  else x.sets.filter(s=>s.kind==='w').forEach(s=>out.push(Object.assign({},s)));
+  for(let i=0;i<sets;i++){const base=work[Math.min(i,work.length-1)]||{};out.push(timed?{kind:'n',w:base.w??null,r:null,t:base.t||45,d:base.d??null}:{kind:'n',w:base.w??w,r:reps,t:null,d:null})}
+  x.sets=out;if(rest)x.rest=rest;
+}
+function enNewEx(id,sets,reps,rest,note){
+  const timed=enTimed(id);
+  return{exId:id,rest,note:note||'',sets:Array.from({length:sets},()=>timed?{kind:'n',w:null,r:null,t:45,d:null}:{kind:'n',w:null,r:reps,t:null,d:null})};
+}
+const enSetsFor=(r,pred)=>r.exercises.reduce((a,x)=>a+(pred(x)?enWork(x).length:0),0);
+
+function enhanceRoutine(src,a){
+  const lvl=a.level||'mid',goal=a.goal,equip=enEquip(src),barOK=equip==='gym';
+  const S=[];const add=(title,why,apply)=>S.push({id:'s'+S.length,title,why,apply,on:true});
+  const R0=clone(src);
+  const has=id=>R0.exercises.some(x=>x.exId===id);
+  // Exercises already suggested aren't suggested twice.
+  const added=[];
+  const pick=(slot,avoid)=>{const prev=PLAN_EXP;PLAN_EXP=lvl;try{const id=planPick(slot,equip,new Set([...R0.exercises.map(x=>x.exId),...added,...(avoid||[])]),barOK);if(id)added.push(id);return id}finally{PLAN_EXP=prev}};
+  const sch=(g,kind)=>scheme(g,kind,lvl);
+
+  // 1. Beginners: simpler swaps for technical lifts.
+  if(lvl==='new')R0.exercises.forEach(x=>{const to=advSwapFor(x.exId);if(to&&!has(to))add(`Swap ${enName(x.exId)} for ${enName(to)}`,`${enName(x.exId)} is a harder variation. ${enName(to)} trains the same muscles while you learn the basics.`,R=>{const y=R.exercises.find(e=>e.exId===x.exId);if(!y)return;if((EXMAP[to].equip)!==(EXMAP[y.exId].equip))y.sets.forEach(s=>s.w=null);y.exId=to})});
+
+  // 2. Goal-specific changes.
+  if(goal==='lift'&&PLAN_LIFTS[a.lift]){
+    const L=PLAN_LIFTS[a.lift],match=EN_LIFT_RX[a.lift];
+    const idx=R0.exercises.findIndex(x=>match(x.exId));
+    const [ms,mr,mrest]=sch('lift','m');const warm=lvl==='new'?1:2;
+    if(idx<0){
+      const id=pick(L.slot);
+      if(id)add(`Add ${enName(id)} first`,`This routine doesn’t train your ${L.name.toLowerCase()}. To get better at a lift, you need to do it, and first, while you’re fresh.`,R=>{R.exercises.unshift(enNewEx(id,ms,mr,mrest,'Add a little weight when you get all your reps.'))});
+    }else{
+      const x=R0.exercises[idx],first=R0.exercises.findIndex(e=>enKind(e.exId)!=='x');
+      if(idx!==first)add(`Move ${enName(x.exId)} to the start`,`You lift your heaviest when you’re fresh. Doing it first gives your ${L.name.toLowerCase()} the most strength to work with.`,R=>{const i=R.exercises.findIndex(e=>e.exId===x.exId);if(i>0){const [e]=R.exercises.splice(i,1);delete e.ss;R.exercises.unshift(e);ssClean(R.exercises)}});
+      const work=enWork(x);
+      if(!enTimed(x.exId)&&(work.length!==ms||work.some(s=>s.r!==mr)))add(`Make ${enName(x.exId)} ${ms} sets of ${mr}`,`Heavier sets of ${mr} build strength in a lift better than light, high-rep sets. Keep 1 or 2 reps in the tank.`,R=>{const y=R.exercises.find(e=>e.exId===x.exId);if(y)enScheme(y,ms,mr,mrest,0)});
+      if(!x.sets.some(s=>s.kind==='w')&&!enTimed(x.exId))add(`Add ${warm} warm-up set${warm>1?'s':''} to ${enName(x.exId)}`,'Lighter sets first let you lift more on your working sets, and they’re easier on your joints.',R=>{const y=R.exercises.find(e=>e.exId===x.exId);if(y)enScheme(y,enWork(y).length,enWork(y)[0]?.r||mr,null,warm)});
+    }
+    if(lvl!=='new'&&!R0.exercises.some(x=>(PLAN_SLOTS[L.variant]||[]).includes(x.exId))){
+      const id=pick(L.variant),[vs,vr,vrest]=sch('lift','c');
+      if(id)add(`Add ${enName(id)}, ${vs}×${vr}`,`A close variation of your ${L.name.toLowerCase()} works its weak spots without the same wear and tear.`,R=>{const i=R.exercises.findIndex(e=>match(e.exId));R.exercises.splice(i>=0?i+1:1,0,enNewEx(id,vs,vr,vrest))});
+    }
+    let helpers=0;
+    for(const slot of L.helpers){
+      if(helpers>=(lvl==='new'?1:2))break;
+      const lead=(PLAN_SLOTS[slot]||[]).find(id=>EXMAP[id]),want=new Set(lead?exMuscles(lead).p.slice(0,1):[]);
+      if(R0.exercises.some(x=>exMuscles(x.exId).p.some(m=>want.has(m))))continue;
+      const id=pick(slot);if(!id)continue;helpers++;
+      const kind=SLOT_KIND[slot]||'i',[hs,hr,hrest]=sch('lift',kind);
+      add(`Add ${enName(id)}, ${hs}×${hr}`,`It strengthens the ${[...want].slice(0,2).map(m=>(MM_LABEL[m]||m).toLowerCase()).join(' and ')}, which your ${L.name.toLowerCase()} depends on.`,R=>R.exercises.push(enNewEx(id,hs,hr,hrest)));
+    }
+  }
+  if(goal==='muscle'&&PLAN_MUSCLES[a.muscle]){
+    const M=PLAN_MUSCLES[a.muscle],targets=new Set(EN_MUSCLE_KEYS[a.muscle]||[]);
+    const hits=x=>exMuscles(x.exId).p.some(m=>targets.has(m));
+    const now=enSetsFor(R0,hits),goalSets={new:6,mid:9,adv:12}[lvl];
+    let need=goalSets-now,used=[];
+    for(const slot of M.slots){if(need<=0)break;const id=pick(slot,used);if(!id)continue;used.push(id);
+      const kind=SLOT_KIND[slot]||'c',[s2,r2,rest2]=sch('muscle',kind);need-=s2;
+      add(`Add ${enName(id)}, ${s2}×${r2}`,`Your ${M.name.toLowerCase()} gets ${now} hard set${now===1?'':'s'} here. About ${goalSets} a workout is a good amount for your level to grow.`,R=>R.exercises.push(enNewEx(id,s2,r2,rest2)))}
+    // Train the target muscle earlier, when you have the most energy.
+    const firstHit=R0.exercises.findIndex(hits),firstAny=R0.exercises.findIndex(e=>enKind(e.exId)!=='x');
+    if(firstHit>firstAny&&firstHit>0)add(`Move ${enName(R0.exercises[firstHit].exId)} to the start`,`Muscles you train first get your best effort.`,R=>{const id=R0.exercises[firstHit].exId,i=R.exercises.findIndex(e=>e.exId===id);if(i>0){const [e]=R.exercises.splice(i,1);delete e.ss;R.exercises.unshift(e);ssClean(R.exercises)}});
+  }
+  if(['strength','size','lean'].includes(goal)){
+    const changes=[];
+    R0.exercises.forEach(x=>{const k=enKind(x.exId);if(k==='x'||enTimed(x.exId))return;const [s2,r2,rest2]=sch(goal,k==='m'?'m':k);const w=enWork(x);
+      const off=goal==='strength'?(w.some(s=>s.r>(k==='i'?12:8))||(k==='m'&&w.length<s2)):goal==='size'?(w.some(s=>s.r<6||s.r>15)||w.length<3):(w.some(s=>s.r<8)||(x.rest??ST.settings.rest)>90);
+      if(off)changes.push([x.exId,s2,r2,rest2])});
+    if(changes.length){
+      const label={strength:'heavier, lower-rep sets with longer rest',size:'8 to 12 reps for at least 3 sets',lean:'higher reps with shorter rest'}[goal];
+      const why={strength:'Strength comes from heavier sets. Rest 2 to 3 minutes on big lifts so you can keep the weight up.',size:'Most muscle growth happens around 6 to 15 reps, taken close to failure, with enough sets.',lean:'Shorter rest keeps your heart rate up, so the workout burns more and builds fitness too.'}[goal];
+      add(`Switch ${changes.length} exercise${changes.length>1?'s':''} to ${label}`,`${why} Changes: ${changes.slice(0,4).map(c=>`${enName(c[0])} ${c[1]}×${c[2]}`).join(', ')}${changes.length>4?'…':''}.`,R=>changes.forEach(([id,s2,r2,rest2])=>{const y=R.exercises.find(e=>e.exId===id);if(y)enScheme(y,s2,r2,rest2,0)}));
+    }
+    if(goal==='lean'){
+      const iso=R0.exercises.map((x,i)=>[x,i]).filter(([x])=>['i','k'].includes(enKind(x.exId))&&!x.ss);
+      if(iso.length>=2){const [a1,b1]=[iso[0][0].exId,iso[1][0].exId];
+        add(`Superset ${enName(a1)} with ${enName(b1)}`,'Going straight from one to the other with no rest saves time and keeps your heart rate up.',R=>{const i=R.exercises.findIndex(e=>e.exId===a1),j=R.exercises.findIndex(e=>e.exId===b1);if(i<0||j<0)return;const [e]=R.exercises.splice(j,1);const at=R.exercises.findIndex(x=>x.exId===a1);R.exercises.splice(at+1,0,e);const g='s'+newId();R.exercises[at].ss=g;R.exercises[at+1].ss=g})}
+      if(!R0.exercises.some(x=>(PLAN_SLOTS.finisher||[]).includes(x.exId))){const id=pick('finisher');if(id)add(`Finish with ${enName(id)}, 3×15`,'A fast finisher at the end burns more and builds conditioning.',R=>R.exercises.push(enNewEx(id,3,15,45)))}
+    }
+  }
+
+  // 3. Order: big lifts before small ones.
+  const order={m:0,c:1,i:2,k:3,x:4};
+  const sorted=R0.exercises.map((x,i)=>[x,i]).sort((p,q)=>(order[enKind(p[0].exId)]-order[enKind(q[0].exId)])||(p[1]-q[1]));
+  const outOfOrder=sorted.some(([x],i)=>x!==R0.exercises[i])&&!R0.exercises.some(x=>x.ss);
+  if(outOfOrder){const firstIso=R0.exercises.find((x,i)=>['i','k'].includes(enKind(x.exId))&&R0.exercises.slice(i+1).some(y=>['m','c'].includes(enKind(y.exId))));
+    if(firstIso)add('Do your big lifts before the small ones',`Right now ${enName(firstIso.exId)} comes before bigger lifts. Tiring small muscles first makes your big lifts weaker.`,R=>{const o2=R.exercises.map((x,i)=>[x,i]).sort((p,q)=>(order[enKind(p[0].exId)]-order[enKind(q[0].exId)])||(p[1]-q[1]));R.exercises=o2.map(p=>p[0])})}
+
+  // 4. Balance pushing with pulling.
+  const pat=x=>exMuscles(x.exId).pattern;
+  const push=enSetsFor(R0,x=>EN_PUSH.includes(pat(x))),pull=enSetsFor(R0,x=>EN_PULL.includes(pat(x))||exMuscles(x.exId).p.includes('rear'));
+  const addsPull=added.some(id=>EN_PULL.includes(exMuscles(id).pattern)||exMuscles(id).p.includes('rear'));
+  if(push>=6&&pull<push/2&&!addsPull){const id=pick('rearDelt')||pick('row2');if(id)add(`Add ${enName(id)}, 3×15`,`You do ${push} sets of pushing and ${pull} of pulling. A little more pulling keeps your shoulders healthy and your posture balanced.`,R=>R.exercises.push(enNewEx(id,3,15,60)))}
+
+  // 5. Volume for your level.
+  const total=enSetsFor(R0,x=>enKind(x.exId)!=='x'),cap={new:16,mid:22,adv:28}[lvl];
+  if(total>cap){const over=total-cap;
+    add(`Trim ${over} set${over>1?'s':''} from the smaller exercises`,`${total} hard sets is a lot for ${({new:'a beginner',mid:'one workout',adv:'one workout'})[lvl]}. Past about ${cap}, extra sets add fatigue more than results.`,R=>{let left=over;for(let i=R.exercises.length-1;i>=0&&left>0;i--){const x=R.exercises[i];if(!['i','k'].includes(enKind(x.exId)))continue;while(enWork(x).length>2&&left>0){const w=x.sets.map(s=>s.kind).lastIndexOf('n');x.sets.splice(w>=0?w:x.sets.length-1,1);left--}}})}
+
+  // 6. Warm-ups on the first big lift (beginners included).
+  const firstBig=R0.exercises.find(x=>enKind(x.exId)==='m'&&!enTimed(x.exId));
+  if(firstBig&&!firstBig.sets.some(s=>s.kind==='w')&&!S.some(s=>s.title.includes('warm-up'))&&enWork(firstBig)[0]?.w)
+    add(`Add warm-up sets to ${enName(firstBig.exId)}`,'Two lighter sets first get you ready for your working weight.',R=>{const y=R.exercises.find(e=>e.exId===firstBig.exId);if(y)enScheme(y,enWork(y).length,enWork(y)[0]?.r||5,null,lvl==='new'?1:2)});
+
+  return S;
+}
+function enApply(src,S){const R=clone(src);S.filter(s=>s.on).forEach(s=>{try{s.apply(R)}catch(e){}});ssClean(R.exercises);return R}
+function enSummary(x){const w=enWork(x),f=w[0]||{};if(!w.length)return'';if(enTimed(x.exId))return`${w.length}×${f.t?clock(f.t):'—'}`;return`${w.length}×${f.r??'—'}${f.w?` @ ${dispW(f.w)} ${u()}`:''}${x.sets.some(s=>s.kind==='w')?' + warm-up':''}`}
+
+function openEnhancer(routineId){
+  const st={id:routineId||null,goal:'lift',lift:'bench',muscle:'chest',level:myLevel()||'',S:null};
+  const o=sheet(`<div class="sheet-h"><button class="link" data-close>Cancel</button><h2>Improve a routine</h2><span style="width:52px"></span></div><div id="enBox"></div>`,{full:true});
+  o.querySelector('.sheet').style.overflowY='auto';
+  const box=o.querySelector('#enBox');
+  const src=()=>ST.routines.find(r=>r.id===st.id)||TEMPLATES.find(r=>r.id===st.id);
+  const chips=(key,opts)=>`<div class="chips wrap" data-k="${key}">${opts.map(([v,l])=>`<button class="chip" data-v="${v}" aria-pressed="${String(st[key])===String(v)}">${l}</button>`).join('')}</div>`;
+  function pickRoutine(){
+    const mine=ST.routines.slice().sort((a,b)=>a.name.localeCompare(b.name)),tpl=TEMPLATES.filter(t=>t.exercises.some(e=>enKind(e.exId)!=='x'));
+    const row=r=>`<button class="card choice en-r" data-r="${r.id}"><b>${esc(r.name)}</b><span class="muted">${esc(r.exercises.map(e=>enName(e.exId)).slice(0,3).join(', '))}${r.exercises.length>3?'…':''}</span></button>`;
+    box.innerHTML=`<p class="muted" style="margin:0 0 4px">Pick a routine and your goal. You’ll get suggestions to get more out of it, and you choose which to keep.</p>
+      ${mine.length?`<span class="eyebrow">Your routines</span>${mine.map(row).join('')}`:'<p class="muted">You don’t have any routines yet. Try one of these templates.</p>'}
+      <span class="eyebrow">Templates</span>${tpl.map(row).join('')}`;
+  }
+  function form(){
+    const r=src();
+    box.innerHTML=`<div class="card en-pick"><span class="eyebrow">Routine</span><b>${esc(r.name)}</b><button class="link" data-en="change">Change</button></div>
+      <div class="field"><label>What’s your main goal?</label>${chips('goal',EN_GOALS)}</div>
+      ${st.goal==='lift'?`<div class="field"><label>Which lift?</label>${chips('lift',Object.entries(PLAN_LIFTS).map(([k,v])=>[k,v.name]))}</div>`:''}
+      ${st.goal==='muscle'?`<div class="field"><label>Which muscle?</label>${chips('muscle',Object.entries(PLAN_MUSCLES).map(([k,v])=>[k,v.name]))}</div>`:''}
+      <div class="field"><label>How long have you been lifting?</label>${chips('level',LVL_OPTS.map(([v,l,s])=>[v,`${l} · ${s}`]))}</div>
+      <button class="primary" data-en="go" ${st.level?'':'disabled'}>Improve it</button>`;
+  }
+  function results(){
+    const r=src();st.S=enhanceRoutine(r,st);
+    if(!st.S.length){box.innerHTML=`<div class="card"><h3>This routine already fits your goal well</h3><p class="muted" style="margin:0">Keep adding a little weight or a rep when you get all your sets. That’s what drives progress from here.</p></div><button class="secondary" data-en="back">Try another goal</button>`;return}
+    draw();
+  }
+  function draw(){
+    const r=src(),R=enApply(r,st.S),own=ST.routines.some(x=>x.id===r.id);
+    box.innerHTML=`<p class="muted" style="margin:0">${st.S.length} suggestion${st.S.length>1?'s':''} for ${esc(r.name)}. Turn off any you don’t want.</p>
+      ${st.S.map(s=>`<label class="card en-s${s.on?'':' off'}"><input type="checkbox" data-s="${s.id}" ${s.on?'checked':''}><span><b>${esc(s.title)}</b><span class="muted">${esc(s.why)}</span></span></label>`).join('')}
+      <div class="card"><span class="eyebrow">The new version</span><ol class="en-list">${R.exercises.map(x=>{const was=r.exercises.find(y=>y.exId===x.exId);const changed=!was||enSummary(was)!==enSummary(x);return`<li><b>${esc(enName(x.exId))}</b>${!was?'<span class="badge teal">New</span>':changed?'<span class="badge">Changed</span>':''}<span class="muted">${esc(enSummary(x))}</span></li>`}).join('')}</ol></div>
+      ${own?`<button class="primary" data-en="save">Save changes to ${esc(r.name)}</button>`:''}
+      <button class="${own?'secondary':'primary'}" data-en="copy">Save as a new routine</button>
+      <button class="outline" data-en="start">Start it now</button>
+      <button class="link" data-en="back" style="align-self:center">Change my goal</button>
+      <p class="g-note" style="text-align:left">General training guidance, not medical or professional advice.</p>`;
+  }
+  o.addEventListener('click',e=>{
+    const rr=e.target.closest('[data-r]');if(rr){st.id=rr.dataset.r;form();return}
+    const c=e.target.closest('[data-k] [data-v]');if(c){const k=c.closest('[data-k]').dataset.k;st[k]=c.dataset.v;if(k==='level')setLevel(st.level);form();return}
+    const b=e.target.closest('[data-en]');if(!b)return;const a=b.dataset.en;
+    if(a==='change'){pickRoutine();return}
+    if(a==='back'){form();return}
+    if(a==='go'){if(!st.level)return;setLevel(st.level);results();o.querySelector('.sheet').scrollTop=0;return}
+    const r=src(),R=enApply(r,st.S);
+    if(a==='save'){putItem('routines',Object.assign({},r,{exercises:R.exercises}));o.close();toast(`${r.name} updated`);render();return}
+    if(a==='copy'){const n={id:'r-'+newId(),name:`${r.name.replace(/ \(improved\)$/,'')} (improved)`,exercises:R.exercises};putItem('routines',n);o.close();toast('Saved as a new routine');render();return}
+    if(a==='start'){o.close();startWorkout({name:r.name,exercises:R.exercises});return}
+  });
+  o.addEventListener('change',e=>{const t=e.target.closest('[data-s]');if(!t)return;const s=st.S.find(x=>x.id===t.dataset.s);if(s){s.on=t.checked;draw()}});
+  if(st.id&&src())form();else pickRoutine();
+}
+
 /* ================= free tier ================= */
 // Free accounts: workout logging, up to 3 saved routines, the feed and messages, Quick math, Reaction and the Daily word.
 // Member unlocks every game, unlimited routines, the plan builder, programs, progress charts and leaderboards.
