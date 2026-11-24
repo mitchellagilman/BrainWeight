@@ -983,7 +983,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='52';
+var APP_VERSION='53';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -1542,8 +1542,12 @@ const Cloud={ok:false,mode:null,cols:{},q:Promise.resolve(),aq:Promise.resolve()
 };
 function saveSettings(){LS.set('settings',ST.settings);Cloud.saveSettings();try{syncWatchCache()}catch(e){}}
 let aLocal=null;
+let orderSeen='';
+const orderSig=A=>A?A.id+':'+A.exercises.map(e=>e.uid).join():'';
 function saveActive(now){
-  if(ST.active)ST.active.updated=Date.now();
+  if(ST.active){ST.active.updated=Date.now();
+    // Reordered here: stamp it so the new order wins when it syncs to the watch.
+    const sig=orderSig(ST.active);if(orderSeen&&sig!==orderSeen&&orderSeen.split(':')[0]===ST.active.id)ST.active.orderAt=Date.now();orderSeen=sig}
   N('sync',watchState());
   clearTimeout(aLocal);const go=()=>LS.set('active',ST.active);now?go():(aLocal=setTimeout(go,250));
   Cloud.saveActive();
@@ -6541,6 +6545,9 @@ function mergeActive(a,b){
   (out.exercises||[]).forEach(e=>{const o=(older.exercises||[]).find(x=>x.uid===e.uid);if(!o)return;
     e.sets=(e.sets||[]).map(s=>{const os=(o.sets||[]).find(x=>x.id===s.id);return os&&(os.at||0)>(s.at||0)?os:s})});
   if(((older.restSync&&older.restSync.at)||0)>((out.restSync&&out.restSync.at)||0))out.restSync=older.restSync;
+  // The exercise order follows whichever side reordered last, even if the other side saved after.
+  if((older.orderAt||0)>(out.orderAt||0)){const pos=new Map((older.exercises||[]).map((e,i)=>[e.uid,i]));
+    out.exercises=(out.exercises||[]).map((e,i)=>[e,pos.has(e.uid)?pos.get(e.uid):1e6+i]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);out.orderAt=older.orderAt}
   return out;
 }
 // Record a rest timer change so a linked watch follows it.
@@ -6579,7 +6586,7 @@ function watchApplyRemote(R){
     if(M.restEnd){M.restTotal=Math.max(M.restTotal||0,M.restEnd-Date.now());restFired=false;N('restStart',M.restEnd,restLabel())}
     else{M.restOver=false;restFired=true;N('restCancel')}
   }
-  ST.active=M;LS.set('active',M);
+  ST.active=M;LS.set('active',M);orderSeen=orderSig(M);
   if(restNew){renderDock();syncPause();updateLock()}
   // A set logged on the watch starts the rest timer here too, counted from when it was logged on the
   // watch, so opening the phone later doesn't restart it. Skip it if the watch already changed the rest
