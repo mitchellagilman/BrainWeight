@@ -271,7 +271,7 @@ button.card:hover{border-color:#2D3746}
 .pz-row{display:flex;align-items:center;gap:12px;padding:12px 14px;text-align:left;width:100%;border-bottom:1px solid var(--line)}
 .pz-row:last-child{border-bottom:0}
 .pz-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font:700 16px var(--display);flex:none}
-.pz-word{background:var(--mind-dim);color:var(--mind)}.pz-groups{background:rgba(160,120,255,.16);color:#B9A0FF}.pz-mini{background:var(--body-dim);color:var(--body)}.pz-hive{background:rgba(255,192,46,.15);color:var(--p15)}.pz-sudoku{background:var(--surface-2);color:var(--fg)}.pz-queens{background:rgba(255,122,154,.15)}.pz-chess{background:rgba(127,178,255,.15);color:#7FB2FF;font-size:22px}
+.pz-word{background:var(--mind-dim);color:var(--mind)}.pz-groups{background:rgba(160,120,255,.16);color:#B9A0FF}.pz-mini{background:var(--body-dim);color:var(--body)}.pz-hive{background:rgba(255,192,46,.15);color:var(--p15)}.pz-sudoku{background:var(--surface-2);color:var(--fg)}.pz-queens{background:rgba(255,122,154,.15)}.pz-domino{background:rgba(245,184,61,.15);font-size:22px}.pz-chess{background:rgba(127,178,255,.15);color:#7FB2FF;font-size:22px}
 .pz-t{display:flex;flex-direction:column;min-width:0;flex:1}
 .pz-t b{font-size:15px}
 .pz-t span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -943,7 +943,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
 .mg button{border-radius:10px;border:1px solid var(--line);background:var(--surface);min-width:0;min-height:0;transition:background .15s}
 .mg button.lit{background:var(--mind);border-color:var(--mind)}.mg button.reveal{outline:3px solid var(--mind);outline-offset:-3px}.mg button.miss{background:var(--bad)}
 .ar-row{display:flex;justify-content:center;gap:6px;min-height:96px;align-items:center;font:700 52px/1 var(--mono)}.ar-row span{opacity:.75}.ar-row span.mid{opacity:1;color:var(--mind)}.ar-row b{font:600 17px var(--display)}
-.ar-time{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}.ar-time i{display:block;height:100%;width:0;background:var(--mind)}
+.ar-time{height:6px;flex:0 0 6px;border-radius:3px;background:var(--surface-2);overflow:hidden}.ar-time i{display:block;height:100%;width:0;background:var(--mind)}
 .ar-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ar-btns button{min-height:96px;border-radius:18px;border:1px solid var(--line);background:var(--surface);font:700 44px var(--mono)}
 .g-chal{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--mind);background:var(--mind-dim)}
 .g-chal b{display:block;font-size:14px}.ch-btns{display:flex;align-items:center;gap:8px;flex:0 0 auto}.g-chal .primary.sm{min-height:36px;padding:0 12px;font-size:13px}
@@ -957,7 +957,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
 .cb-s.lt{background:#E9DDC4}.cb-s.dk{background:#B08A63}.cb-s.sel{box-shadow:inset 0 0 0 4px var(--mind)}.cb-s.hint{box-shadow:inset 0 0 0 4px var(--good)}
 .pc{font-size:clamp(26px,9vw,40px);line-height:1}.pc.w{color:#fff;text-shadow:0 0 2px #000,0 0 1px #000,0 1px 2px rgba(0,0,0,.6)}.pc.b{color:#14161a}
 .cb-s i{position:absolute;font:700 9px var(--mono);color:rgba(0,0,0,.45);font-style:normal}.cb-s .rk{left:3px;top:2px}.cb-s .fl{right:3px;bottom:1px}
-.q-time{margin:-4px 0 2px}
+.q-time{margin:-4px 0 2px;flex:0 0 6px;min-height:6px}
 .g-daily{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font:600 14px var(--display);color:var(--fg)}
 .g-daily span{font:500 12px var(--mono);color:var(--muted)}
 .set-btns{display:grid;grid-template-columns:2fr 1fr;gap:8px}
@@ -968,6 +968,33 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
 .en-list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}.en-list li b{margin-right:6px}.en-list .muted{display:block;font-size:13px}.en-list .badge{font-size:11px}
 .rt-ask{gap:8px}.rt-ask h3{margin:0}.rt-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
 .rt-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pz-backbtn{font-size:15px;padding:0 4px 0 0;white-space:nowrap}
+.pz-lock{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(6px);padding-top:max(24px,env(safe-area-inset-top))}
+.pz-lock b{font:700 22px var(--display)}.pz-lock p{max-width:280px;margin:4px 0 8px}.pz-lock .primary{min-width:220px}
+.tv-g{margin:-2px 0 0;flex:0 0 auto;min-height:40px;overflow-x:auto;flex-wrap:nowrap}.tv-g .chip{flex:0 0 auto}.tv-cat{margin:0;text-align:center;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mind)}
+.tv-q{font-size:clamp(20px,5.6vw,26px);line-height:1.25;min-height:3.8em;display:flex;align-items:center;justify-content:center;text-align:center}
+.tv-a{grid-template-columns:1fr}.tv-o{font-size:16px;min-height:52px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px}
+.choice.right{background:color-mix(in srgb,var(--good) 25%,var(--surface));border-color:var(--good)}.choice.wrong{background:color-mix(in srgb,var(--bad) 22%,var(--surface));border-color:var(--bad)}
+.dg-show{min-height:72px;display:grid;place-items:center;font:700 clamp(34px,10vw,48px) var(--mono);letter-spacing:.12em;word-break:break-all;text-align:center}
+.dg-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.dg-pad button{min-height:56px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font:700 22px var(--mono);color:var(--fg)}.dg-pad .ok{background:var(--mind);border-color:var(--mind);color:#04110f;font:700 16px var(--display)}
+.dt-box{position:relative;width:min(100%,320px);aspect-ratio:1;margin:0 auto;border-radius:18px;border:1px solid var(--line);background:var(--surface)}
+.dt-box i{position:absolute;width:5%;aspect-ratio:1;border-radius:50%;background:var(--mind);transform:translate(-50%,-50%)}
+.dm-board{display:grid;gap:3px;width:min(100%,420px);margin:0 auto}
+.dm-gap{min-width:0}
+.dm-c{position:relative;min-width:0;aspect-ratio:1;padding:0;border-radius:8px;background:color-mix(in srgb,var(--ac) 32%,var(--surface));border:2px dashed transparent;display:grid;place-items:center}
+.dm-c.t{border-top-color:var(--ac)}.dm-c.r{border-right-color:var(--ac)}.dm-c.b{border-bottom-color:var(--ac)}.dm-c.l{border-left-color:var(--ac)}
+.dm-c.bad{box-shadow:inset 0 0 0 3px var(--bad)}
+.dm-rule{position:absolute;top:-6px;left:-6px;z-index:2;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--ac);color:#0b0e12;font:800 12px/22px var(--mono)}
+.dm-half{position:absolute;inset:1px;background:#F4F1EA;border-radius:9px;display:grid;place-items:center;box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.dm-half.o0.h0,.dm-half.o2.h1{border-top-right-radius:2px;border-bottom-right-radius:2px;right:-2px}.dm-half.o0.h1,.dm-half.o2.h0{border-top-left-radius:2px;border-bottom-left-radius:2px;left:-2px}
+.dm-half.o1.h0,.dm-half.o3.h1{border-bottom-left-radius:2px;border-bottom-right-radius:2px;bottom:-2px}.dm-half.o1.h1,.dm-half.o3.h0{border-top-left-radius:2px;border-top-right-radius:2px;top:-2px}
+.pips{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:62%;aspect-ratio:1}.pips i{border-radius:50%}.pips i.on{background:#14161a}
+.dm-tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:4px 0}
+.dm-pc{display:flex;gap:0;padding:0;border:none;background:none}.dm-pc.v{flex-direction:column}
+.dm-pc>.pips{width:38px;height:38px;padding:6px;box-sizing:border-box;background:#F4F1EA;border-radius:8px;gap:2px}
+.dm-pc>.pips:first-child{border-top-right-radius:2px;border-bottom-right-radius:2px;border-right:1px solid #c9c4b8}.dm-pc>.pips:last-child{border-top-left-radius:2px;border-bottom-left-radius:2px}
+.dm-pc.v>.pips:first-child{border-radius:8px 8px 2px 2px;border-right:none;border-bottom:1px solid #c9c4b8}.dm-pc.v>.pips:last-child{border-radius:2px 2px 8px 8px}
+.dm-pc.sel{outline:3px solid var(--mind);outline-offset:3px;border-radius:9px}
 </style>
 <div id="splash" role="status" aria-label="Loading Brainweight">
   <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -983,7 +1010,7 @@ html.vshort .dock{padding-bottom:6px}html.vshort .sheet{padding-bottom:18px}html
   <div class="sp-msg" id="spMsg">Loading the bar</div>
 </div>
 <script>
-var APP_VERSION='53';
+var APP_VERSION='56';
 // iPhone home-screen apps have a bug: after the keyboard opens, the app's window can shrink and stay short,
 // leaving a gap under the tab bar. When that happens, hide and show the app so the phone re-measures it.
 (function(){
@@ -2111,6 +2138,210 @@ async function openChallengeLink(code){
   setTab('games');chStart({g,s:+s,t:t===''||t==='null'?null:+t,from:from&&ME.user&&from!==ME.user.id?from:null,name});
 }
 
+/* ================= more rest games: trivia, number memory, dot flash ================= */
+
+/* ---------- Trivia ---------- */
+// Pick a topic or play them all mixed. 15 seconds a question. A miss or running out of time resets your streak.
+// Each question: [question, right answer, wrong, wrong, wrong]. Stable facts only, nothing that changes often.
+const TRIVIA={
+  sports:{name:'Sports',q:[
+    ['How many players does a basketball team have on the court?','5','6','7','4'],
+    ['How many holes are on a standard golf course?','18','9','12','24'],
+    ['Which country has won the most men’s FIFA World Cups?','Brazil','Germany','Italy','Argentina'],
+    ['How many points is a touchdown worth before the extra point?','6','7','3','5'],
+    ['In tennis, what is a score of zero called?','Love','Nil','Duck','Zip'],
+    ['How long is a marathon?','26.2 miles','24.2 miles','25 miles','28 miles'],
+    ['How many rings are on the Olympic flag?','5','4','6','7'],
+    ['Which sport uses a shuttlecock?','Badminton','Squash','Table tennis','Pickleball'],
+    ['How many players does a soccer team have on the field?','11','10','9','12'],
+    ['What is a perfect score in ten-pin bowling?','300','200','250','350'],
+    ['In golf, what is 3 under par on one hole called?','Albatross','Eagle','Birdie','Condor'],
+    ['Which city hosted the 2012 Summer Olympics?','London','Beijing','Rio de Janeiro','Tokyo'],
+    ['How many periods are in an NHL game?','3','2','4','5'],
+    ['Which Grand Slam tennis tournament is played on grass?','Wimbledon','French Open','US Open','Australian Open'],
+    ['How many minutes long is a regulation NBA game?','48','40','60','44'],
+    ['The Stanley Cup is the trophy for which sport?','Ice hockey','Baseball','Football','Basketball'],
+    ['How many players are on a volleyball team on the court?','6','5','7','8'],
+    ['What color jersey does the Tour de France leader wear?','Yellow','Green','Polka dot','White'],
+    ['How high is a basketball rim?','10 feet','9 feet','11 feet','12 feet'],
+    ['How many bases are on a baseball field, counting home plate?','4','3','5','6'],
+  ]},
+  fitness:{name:'Fitness and body',q:[
+    ['How many bones are in the adult human body?','206','186','212','256'],
+    ['What is the largest muscle in the human body?','Gluteus maximus','Quadriceps','Latissimus dorsi','Hamstrings'],
+    ['How many calories are in 1 gram of protein?','4','7','9','2'],
+    ['How many calories are in 1 gram of fat?','9','4','7','12'],
+    ['How many calories are in 1 gram of carbohydrate?','4','9','7','2'],
+    ['How many calories are in 1 gram of alcohol?','7','4','9','5'],
+    ['Which muscle is on the back of your upper arm?','Triceps','Biceps','Deltoid','Brachialis'],
+    ['Where is your latissimus dorsi?','Back','Chest','Legs','Shoulders'],
+    ['What does 1RM stand for?','One-rep max','One rest minute','One round minimum','One-range motion'],
+    ['Which vitamin does your skin make from sunlight?','Vitamin D','Vitamin C','Vitamin A','Vitamin B12'],
+    ['What is a normal resting heart rate for adults?','60–100 bpm','40–50 bpm','100–140 bpm','30–60 bpm'],
+    ['How many chambers does the human heart have?','4','2','3','6'],
+    ['How many muscles make up the quadriceps?','4','3','2','5'],
+    ['Where are your hamstrings?','Back of the thigh','Front of the thigh','Lower leg','Lower back'],
+    ['Which macronutrient is the main fuel for hard exercise?','Carbohydrates','Protein','Fat','Fiber'],
+    ['What is the largest organ of the body?','Skin','Liver','Brain','Lungs'],
+    ['Which mineral matters most for strong bones?','Calcium','Iron','Sodium','Zinc'],
+    ['What does DOMS stand for?','Delayed onset muscle soreness','Daily optimal muscle stress','Deep oxygen muscle strain','Dynamic overload muscle stretch'],
+    ['About how many grams are in a pound?','454','354','500','1,000'],
+    ['How much does a standard men’s Olympic barbell weigh?','20 kg (44 lb)','15 kg (33 lb)','25 kg (55 lb)','30 kg (66 lb)'],
+  ]},
+  science:{name:'Science and nature',q:[
+    ['What is the chemical symbol for gold?','Au','Ag','Gd','Go'],
+    ['Which planet is closest to the sun?','Mercury','Venus','Mars','Earth'],
+    ['At sea level, water boils at what temperature?','212°F','200°F','180°F','100°F'],
+    ['What is the largest planet in our solar system?','Jupiter','Saturn','Neptune','Uranus'],
+    ['Which gas do plants take in from the air?','Carbon dioxide','Oxygen','Nitrogen','Hydrogen'],
+    ['What is the hardest natural material?','Diamond','Quartz','Granite','Iron'],
+    ['How many legs does a spider have?','8','6','10','12'],
+    ['About how fast does light travel?','186,000 miles per second','18,600 miles per second','1.86 million miles per second','670 miles per second'],
+    ['What is the chemical formula for water?','H₂O','CO₂','HO₂','H₂O₂'],
+    ['Which planet is known as the Red Planet?','Mars','Jupiter','Venus','Mercury'],
+    ['What is the fastest land animal?','Cheetah','Lion','Pronghorn','Greyhound'],
+    ['How many planets are in our solar system?','8','9','7','10'],
+    ['What is the largest animal on Earth?','Blue whale','African elephant','Giraffe','Sperm whale'],
+    ['What is the chemical symbol for iron?','Fe','Ir','In','I'],
+    ['Where is most of a cell’s DNA kept?','Nucleus','Ribosome','Cell membrane','Cytoplasm'],
+    ['At what temperature does water freeze, in Celsius?','0°','32°','-10°','4°'],
+    ['Which gas makes up most of Earth’s air?','Nitrogen','Oxygen','Carbon dioxide','Argon'],
+    ['What force keeps us on the ground?','Gravity','Magnetism','Friction','Inertia'],
+  ]},
+  geography:{name:'Geography',q:[
+    ['What is the capital of Australia?','Canberra','Sydney','Melbourne','Perth'],
+    ['What is the largest ocean?','Pacific','Atlantic','Indian','Arctic'],
+    ['What is the capital of Canada?','Ottawa','Toronto','Vancouver','Montreal'],
+    ['How many states are in the US?','50','48','51','52'],
+    ['What is the largest country by area?','Russia','Canada','China','United States'],
+    ['What is the smallest country in the world?','Vatican City','Monaco','San Marino','Liechtenstein'],
+    ['What is the tallest mountain above sea level?','Mount Everest','K2','Kilimanjaro','Denali'],
+    ['What is the largest hot desert?','Sahara','Gobi','Arabian','Kalahari'],
+    ['Egypt is on which continent?','Africa','Asia','Europe','Australia'],
+    ['What is the capital of Japan?','Tokyo','Kyoto','Osaka','Seoul'],
+    ['What is the largest US state by area?','Alaska','Texas','California','Montana'],
+    ['What is the capital of Illinois?','Springfield','Chicago','Peoria','Rockford'],
+    ['Which Great Lake is entirely in the US?','Lake Michigan','Lake Superior','Lake Huron','Lake Erie'],
+    ['How many continents are there?','7','5','6','8'],
+    ['What is the capital of Spain?','Madrid','Barcelona','Lisbon','Seville'],
+    ['Which river runs through Paris?','Seine','Thames','Rhine','Loire'],
+    ['What is the capital of Brazil?','Brasília','Rio de Janeiro','São Paulo','Salvador'],
+    ['Which country has the most people?','India','China','United States','Indonesia'],
+  ]},
+  history:{name:'History',q:[
+    ['Who was the first US president?','George Washington','Thomas Jefferson','John Adams','Abraham Lincoln'],
+    ['In what year was the Declaration of Independence adopted?','1776','1789','1812','1765'],
+    ['Who was the first person to walk on the moon?','Neil Armstrong','Buzz Aldrin','Yuri Gagarin','John Glenn'],
+    ['In what year did people first land on the moon?','1969','1965','1972','1959'],
+    ['In what year did World War II end?','1945','1944','1946','1939'],
+    ['Who was the main author of the Declaration of Independence?','Thomas Jefferson','Benjamin Franklin','John Adams','George Washington'],
+    ['Which of the Seven Wonders of the Ancient World still stands?','Great Pyramid of Giza','Colossus of Rhodes','Lighthouse of Alexandria','Hanging Gardens of Babylon'],
+    ['In what year did the Berlin Wall fall?','1989','1991','1985','1979'],
+    ['Which empire built the Colosseum?','Roman','Greek','Ottoman','Persian'],
+    ['Who was US president during the Civil War?','Abraham Lincoln','Ulysses S. Grant','Andrew Jackson','James Buchanan'],
+    ['In what year did the Titanic sink?','1912','1905','1920','1898'],
+    ['In what year did the Wright brothers make their first flight?','1903','1910','1899','1920'],
+    ['Which ship carried the Pilgrims to America in 1620?','Mayflower','Santa Maria','Endeavour','Beagle'],
+    ['Who was the first woman to fly solo across the Atlantic?','Amelia Earhart','Bessie Coleman','Harriet Quimby','Jacqueline Cochran'],
+    ['Who received the first patent for the telephone?','Alexander Graham Bell','Thomas Edison','Nikola Tesla','Samuel Morse'],
+    ['In which city was President John F. Kennedy assassinated?','Dallas','Houston','Washington, DC','Chicago'],
+  ]},
+  entertainment:{name:'Movies, music and art',q:[
+    ['Who painted the Mona Lisa?','Leonardo da Vinci','Michelangelo','Raphael','Vincent van Gogh'],
+    ['“May the Force be with you” comes from which film series?','Star Wars','Star Trek','Dune','Avatar'],
+    ['How many strings does a standard guitar have?','6','4','7','12'],
+    ['Which band was John Lennon in?','The Beatles','The Rolling Stones','The Who','Queen'],
+    ['Who is known as the King of Pop?','Michael Jackson','Elvis Presley','Prince','Justin Timberlake'],
+    ['What is the cowboy’s name in Toy Story?','Woody','Buzz','Jessie','Bullseye'],
+    ['What is Dorothy’s dog called in The Wizard of Oz?','Toto','Benji','Lassie','Spot'],
+    ['How many keys does a standard piano have?','88','76','61','96'],
+    ['What is the name of Harry Potter’s school?','Hogwarts','Durmstrang','Beauxbatons','Ilvermorny'],
+    ['What is the name of Mickey Mouse’s dog?','Pluto','Goofy','Max','Butch'],
+    ['Who composed Für Elise?','Beethoven','Mozart','Bach','Chopin'],
+    ['In The Lion King, who is Simba’s father?','Mufasa','Scar','Rafiki','Zazu'],
+    ['Which city does Batman protect?','Gotham City','Metropolis','Star City','Central City'],
+    ['What is Spider-Man’s real name?','Peter Parker','Bruce Wayne','Clark Kent','Tony Stark'],
+    ['What color is Shrek?','Green','Blue','Brown','Gray'],
+    ['Who painted The Starry Night?','Vincent van Gogh','Claude Monet','Pablo Picasso','Salvador Dalí'],
+  ]},
+};
+function mountTrivia(root){
+  let genre=LS.get('triviaGenre','mix'),score=0,deck=[],cur=null,lock=false,tm=null;
+  const pool=()=>genre==='mix'?Object.entries(TRIVIA).flatMap(([k,g])=>g.q.map(x=>[k,x])):TRIVIA[genre].q.map(x=>[genre,x]);
+  root.innerHTML=`<div class="g-head"><span>Streak <b data-s>0</b></span><span>Best <b data-b>${bestG('trivia')??0}</b></span></div>
+    <div class="chips scroll tv-g" data-g>${[['mix','Mixed'],...Object.entries(TRIVIA).map(([k,g])=>[k,g.name])].map(([k,n])=>`<button class="chip" data-k="${k}" aria-pressed="${k===genre}">${n}</button>`).join('')}</div>
+    <p class="tv-cat" data-c></p><div class="prompt sm tv-q" data-q></div><div class="choices tv-a" data-a></div><p class="hint">15 seconds a question. A miss resets your streak.</p>`;
+  const $q=root.querySelector('[data-q]'),$a=root.querySelector('[data-a]'),$c=root.querySelector('[data-c]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
+  const T=qTimer(root,()=>15000,()=>miss(null));
+  function next(){
+    if(!deck.length)deck=shuffle(pool());
+    cur=deck.pop();const [k,x]=cur;lock=false;
+    $c.textContent=TRIVIA[k].name;$q.textContent=x[0];
+    $a.innerHTML=shuffle([1,2,3,4]).map(i=>`<button class="choice tv-o" data-i="${i}">${esc(x[i])}</button>`).join('');
+    if(!isPaused())T.start();
+  }
+  function miss(b){
+    lock=true;T.stop();score=0;sEl.textContent=0;
+    if(b)pulse(b,'bad');else $q.textContent='Time’s up!';
+    $a.querySelector('[data-i="1"]').classList.add('right');
+    clearTimeout(tm);tm=setTimeout(next,1600);
+  }
+  $a.onclick=e=>{const b=e.target.closest('[data-i]');if(!b||lock||isPaused())return;
+    if(b.dataset.i==='1'){lock=true;T.stop();score++;sEl.textContent=score;bEl.textContent=bestG('trivia',score);b.classList.add('right');clearTimeout(tm);tm=setTimeout(next,650)}
+    else{b.classList.add('wrong');miss(b)}};
+  root.querySelector('[data-g]').onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;genre=b.dataset.k;LS.set('triviaGenre',genre);
+    root.querySelectorAll('[data-g] .chip').forEach(c=>c.setAttribute('aria-pressed',c===b));deck=[];score=0;sEl.textContent=0;clearTimeout(tm);next()};
+  next();
+  return{pause(){T.stop()},resume(){if(!lock)T.start()},destroy(){T.stop();clearTimeout(tm)}};
+}
+
+/* ---------- Number memory ---------- */
+// A number flashes up, then type it back. One more digit each time you get it right.
+function mountDigits(root){
+  let len=3,num='',typed='',state='show',tm=null;
+  root.innerHTML=`<div class="g-head"><span>Digits <b data-s>3</b></span><span>Best <b data-b>${bestG('digits')??0}</b></span></div>
+    <div class="dg-show" data-n></div><p class="status" data-st></p>
+    <div class="dg-pad" data-p>${['1','2','3','4','5','6','7','8','9','back','0','ok'].map(k=>`<button data-k="${k}" class="${k==='ok'?'ok':''}">${k==='back'?'⌫':k==='ok'?'Enter':k}</button>`).join('')}</div>
+    <p class="hint">Remember the number, then type it back. A miss starts you over at 3 digits.</p>`;
+  const N=root.querySelector('[data-n]'),st=root.querySelector('[data-st]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
+  function round(){
+    clearTimeout(tm);num='';for(let i=0;i<len;i++)num+=String(Math.floor(GR()*10));if(num[0]==='0')num='1'+num.slice(1);
+    typed='';state='show';sEl.textContent=len;N.textContent=num;N.classList.remove('hide');st.textContent='Remember it…';
+    tm=setTimeout(()=>{state='input';N.textContent='';N.classList.add('hide');st.textContent=`Type the ${len} digits`},1000+len*450);
+  }
+  function check(){
+    if(typed===num){bEl.textContent=bestG('digits',len);st.textContent='Right! One more digit.';pulse(N,'good');len++;state='show';tm=setTimeout(round,700)}
+    else{state='show';st.innerHTML=`It was <b>${num}</b>. Back to 3 digits.`;pulse(N,'shake');len=3;tm=setTimeout(round,1800)}
+  }
+  root.querySelector('[data-p]').onclick=e=>{const b=e.target.closest('[data-k]');if(!b||state!=='input'||isPaused())return;const k=b.dataset.k;
+    if(k==='back')typed=typed.slice(0,-1);else if(k==='ok'){if(typed)check();return}else if(typed.length<len)typed+=k;
+    N.textContent=typed||'';if(typed.length===len)check()};
+  round();
+  return{pause(){clearTimeout(tm)},resume(){if(state!=='input')round()},destroy(){clearTimeout(tm)}};
+}
+
+/* ---------- Dot flash ---------- */
+// Dots flash for a moment. How many were there? More dots, and a quicker flash, as your streak grows.
+function mountDots(root){
+  let score=0,n=0,state='show',tm=null;
+  root.innerHTML=`<div class="g-head"><span>Streak <b data-s>0</b></span><span>Best <b data-b>${bestG('dots')??0}</b></span></div>
+    <div class="dt-box" data-d></div><div class="choices" data-a></div><p class="hint">Count the dots before they disappear. A miss resets your streak.</p>`;
+  const D=root.querySelector('[data-d]'),A=root.querySelector('[data-a]'),sEl=root.querySelector('[data-s]'),bEl=root.querySelector('[data-b]');
+  function round(){
+    clearTimeout(tm);const hi=Math.min(8+score*2,40),lo=Math.max(4,hi-8);n=lo+Math.floor(GR()*(hi-lo+1));
+    // Place dots without overlapping.
+    const pts=[];let tries=0;while(pts.length<n&&tries<3000){tries++;const x=6+GR()*88,y=6+GR()*88;if(pts.every(p=>Math.hypot(p[0]-x,p[1]-y)>9))pts.push([x,y])}n=pts.length;
+    D.innerHTML=pts.map(p=>`<i style="left:${p[0]}%;top:${p[1]}%"></i>`).join('');state='show';A.innerHTML='';
+    const step=n<15?1:2;const opts=new Set([n]);while(opts.size<4){const d=(1+Math.floor(GR()*3))*step*(GR()<.5?-1:1);if(n+d>0)opts.add(n+d)}
+    tm=setTimeout(()=>{D.innerHTML='';state='input';A.innerHTML=[...opts].sort((a,b)=>a-b).map(v=>`<button class="choice" data-v="${v}">${v}</button>`).join('')},Math.max(500,1400-score*40));
+  }
+  A.onclick=e=>{const b=e.target.closest('[data-v]');if(!b||state!=='input'||isPaused())return;state='show';
+    if(+b.dataset.v===n){score++;sEl.textContent=score;bEl.textContent=bestG('dots',score);pulse(b,'good');tm=setTimeout(round,500)}
+    else{score=0;sEl.textContent=0;pulse(b,'bad');A.querySelector(`[data-v="${n}"]`).classList.add('right');tm=setTimeout(round,1400)}};
+  round();
+  return{pause(){clearTimeout(tm)},resume(){if(state!=='input')round()},destroy(){clearTimeout(tm)}};
+}
+
 const GAMES=[
   {id:'math',name:'Quick math',skill:'Arithmetic speed',icon:'±',mount:mountMath,best:v=>`Best streak ${v}`},
   {id:'plates',name:'Plate sequence',skill:'Working memory',icon:'◎',mount:mountSeq,best:v=>`Best length ${v}`},
@@ -2126,6 +2357,9 @@ const GAMES=[
   {id:'grid',name:'Memory grid',skill:'Visual memory',icon:'▣',mount:mountGrid,best:v=>`Best level ${v}`},
   {id:'arrows',name:'Arrows',skill:'Focus and speed',icon:'→',mount:mountArrows,best:v=>`Best streak ${v}`},
   {id:'tensec',name:'10-second guess',skill:'Time sense',icon:'10',mount:mountTen,best:v=>`Best ${(v/1000).toFixed(2)}s off`},
+  {id:'trivia',name:'Trivia',skill:'Knowledge',icon:'?',mount:mountTrivia,best:v=>`Best streak ${v}`},
+  {id:'digits',name:'Number memory',skill:'Working memory',icon:'#',mount:mountDigits,best:v=>`Best ${v} digits`},
+  {id:'dots',name:'Dot flash',skill:'Quick counting',icon:'⁘',mount:mountDots,best:v=>`Best streak ${v}`},
 ];
 function mountGame(id){
   if(G.game&&G.game.destroy)G.game.destroy();
@@ -2150,6 +2384,7 @@ function openGame(free,id){
 function closeGame(){$('#gameov').hidden=true;syncPause();G.free=false;if(CH){CH=null;GR=Math.random}}
 function syncPause(){const p=!(overlayOpen()&&(G.free||resting()));if(p===G.paused)return;G.paused=p;if(G.game){if(p&&G.game.pause)G.game.pause();if(!p&&G.game.resume)G.game.resume()}}
 function updateLock(){
+  try{pzLockSync()}catch(e){}
   const A=ST.active,show=!G.free&&!!A&&!resting();
   $('#lock').hidden=!show;
   const ns=nextSet(),nx=ns&&A.exercises[ns.i];
@@ -2925,7 +3160,7 @@ function paywallHTML(msg){
   return `${GATE_LOGO}${!API.live?'<span class="preview-tag">Preview mode</span>':''}<h1>Choose your plan</h1>
     <div class="seg wide" style="grid-template-columns:1fr 1fr"><button data-int="month" aria-pressed="${!y}">Monthly</button><button data-int="year" aria-pressed="${y}">Yearly · save 33%</button></div>
     <div class="plans">
-      ${card('member','Member',['All 14 brain games between sets','Every daily puzzle: Mini grid, Hive, Sudoku, Queens and Mate in 1','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and leaderboards'])}
+      ${card('member','Member',['All 17 brain games between sets','Every daily puzzle: Mini grid, Hive, Sudoku, Queens, Dominoes and Mate in 1','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and leaderboards'])}
       ${card('pro','Pro',['Everything in Member',`${COACH}’s detailed Pro programs`,'New Pro programs as they’re added'])}
     </div>
     <p class="g-err" id="gErr">${esc(msg||'')}</p>
@@ -4400,7 +4635,7 @@ function maybeOnboard(){
 }
 
 /* ---------- leaderboards and challenges ---------- */
-const gameFmt=(id,v)=>v==null?'—':id==='hunt'?`${(v/1000).toFixed(1)}s`:id==='react'?`${v} ms`:id==='pairs'?`${v} moves`:id==='tensec'?`${(v/1000).toFixed(2)}s off`:id==='hrdrop'?`−${v} bpm`:id==='grid'?`Level ${v}`:String(v);
+const gameFmt=(id,v)=>v==null?'—':id==='hunt'?`${(v/1000).toFixed(1)}s`:id==='react'?`${v} ms`:id==='pairs'?`${v} moves`:id==='tensec'?`${(v/1000).toFixed(2)}s off`:id==='hrdrop'?`−${v} bpm`:id==='grid'?`Level ${v}`:id==='digits'?`${v} digits`:String(v);
 function openLeaderboard(gameId){
   const st={g:gameId||G.id||GAMES[0].id,scope:'friends',days:7};
   const o=sheet(`<div class="sheet-h"><h2>Leaderboards</h2><button class="link" data-close>Done</button></div>
@@ -4613,7 +4848,7 @@ function routeHash(h){
   else if(h==='#requests'){setTab('profile');openPrivacy()}
   else if(h==='#workout')setTab('workout');
   else if(h==='#daily'){setTab('games');openDaily()}
-  else if(/^#puzzle-(mini|hive|groups|sudoku|queens|chess)$/.test(h)){setTab('games');openPuzzle(h.slice(8))}
+  else if(/^#puzzle-(mini|hive|groups|sudoku|queens|chess|domino)$/.test(h)){setTab('games');openPuzzle(h.slice(8))}
   else if(h==='#profile')setTab('profile');
   else if(h.startsWith('#post-')){setTab('feed');openPost(h.slice(6))}
   else if(h==='#coach-portal')openCoachPortal();
@@ -4776,8 +5011,24 @@ function pzRecord(id,st,{solved,score,detail,lowerBetter=true,final=true}){
 }
 function pzOpenGuard(id){
   if(puzzleLocked(id)){openMember('puzzles');return false}
+  // During a workout, puzzles are for rest time, like the games.
+  if(ST.active&&!resting()){toast('During a workout, puzzles unlock while you rest.');return false}
   return true;
 }
+// Rest over: cover any open puzzle until your next rest. Progress is saved, and the clock stops.
+function pzLockSync(){
+  const lock=!!ST.active&&!resting();
+  document.querySelectorAll('.daily-ov').forEach(o=>{
+    o.classList.toggle('pz-locked',lock);
+    let l=o.querySelector('.pz-lock');
+    if(!lock){if(l)l.remove();return}
+    const ns=nextSet(),nx=ns&&ST.active.exercises[ns.i];
+    const html=`<span class="eyebrow">Rest’s over</span><b>${nx?esc(exOf(nx).name):'Back to your workout'}</b>${nx?`<span class="muted">Set ${setLabel(nx.sets,ns.j)}</span>`:''}<p class="muted">Your puzzle is saved. Pick it back up on your next rest.</p><button class="primary" data-act="pz-to-lift">Back to workout</button>`;
+    if(!l){l=el(`<div class="pz-lock" role="alertdialog" aria-label="Rest is over"></div>`);o.appendChild(l)}
+    if(l.innerHTML!==html)l.innerHTML=html;
+  });
+}
+setInterval(()=>{if(document.querySelector('.daily-ov'))pzLockSync()},1000);
 // The finished panel every puzzle shares: stats, share, post, friends today.
 function pzDonePanel(o,box,id,{title,big,stats,shareText}){
   box.innerHTML=`<div class="card dw-done">
@@ -4792,7 +5043,7 @@ function pzDonePanel(o,box,id,{title,big,stats,shareText}){
   box.querySelector('[data-pz="post"]').onclick=()=>{o.close();openComposer({body:shareText()})};
   pzLoadBoard(box,id,dailyNo());
 }
-const PZ_FMT={queens:r=>r.solved?fmtSecs(r.score):'—',chess:r=>r.solved?(r.score?`${r.score} miss${r.score>1?'es':''}`:'First try'):'Missed',mini:r=>r.solved?fmtSecs(r.score):'—',sudoku:r=>r.solved?fmtSecs(r.score):'—',hive:r=>`${r.score} pts`,groups:r=>r.solved?(r.score?`${r.score} miss${r.score>1?'es':''}`:'Perfect'):'Missed'};
+const PZ_FMT={domino:r=>r.solved?fmtSecs(r.score):'—',queens:r=>r.solved?fmtSecs(r.score):'—',chess:r=>r.solved?(r.score?`${r.score} miss${r.score>1?'es':''}`:'First try'):'Missed',mini:r=>r.solved?fmtSecs(r.score):'—',sudoku:r=>r.solved?fmtSecs(r.score):'—',hive:r=>`${r.score} pts`,groups:r=>r.solved?(r.score?`${r.score} miss${r.score>1?'es':''}`:'Perfect'):'Missed'};
 async function pzLoadBoard(box,id,n){
   try{
     const b=API.puzzleBoard?await API.puzzleBoard(id,n):null;if(!b||!box.isConnected)return;
@@ -4803,7 +5054,7 @@ async function pzLoadBoard(box,id,n){
   }catch(e){const x=box.querySelector('.pz-board');if(x)x.innerHTML='<p class="muted" style="font-size:14px">Couldn’t load friends right now.</p>'}
 }
 // A running clock that only counts while the sheet is open.
-function pzClock(o,st,id,el){let last=Date.now();const t=setInterval(()=>{if(!o.isConnected){clearInterval(t);return}if(st.done)return;const now=Date.now();st.secs+=Math.round((now-last)/1000);last=now;pzSave(id,st);if(el())el().textContent=fmtSecs(st.secs)},1000);return()=>clearInterval(t)}
+function pzClock(o,st,id,el){let last=Date.now();const t=setInterval(()=>{if(!o.isConnected){clearInterval(t);return}if(st.done)return;const now=Date.now();if(o.classList.contains('pz-locked')){last=now;return}st.secs+=Math.round((now-last)/1000);last=now;pzSave(id,st);if(el())el().textContent=fmtSecs(st.secs)},1000);return()=>clearInterval(t)}
 function pzKeys(o,handler){const on=e=>{if(!o.isConnected){document.removeEventListener('keydown',on);return}if(e.metaKey||e.ctrlKey||e.altKey||(e.target.closest&&e.target.closest('input,textarea')))return;handler(e)};document.addEventListener('keydown',on);const c=o.close;o.close=()=>{document.removeEventListener('keydown',on);c();try{softRender()}catch(e){}}}
 function pzKeyboard(extra=''){return `<div class="dw-kb">${['QWERTYUIOP','ASDFGHJKL','ZXCVBNM-'].map(row=>`<div>${[...row].map(c=>c==='-'?'<button class="dw-k wide" data-k="back" aria-label="Delete">⌫</button>':`<button class="dw-k" data-k="${c}">${c}</button>`).join('')}</div>`).join('')}${extra}</div>`}
 
@@ -5213,10 +5464,147 @@ function openChess(){
   draw();if(st.done)finish(st.solved);
 }
 
+/* ---------- Dominoes (daily) ---------- */
+// Place every domino on the board so each colored area matches its rule: a total (8), less than (<4),
+// more than (>2), all the same (=) or all different (≠). Gray squares take anything.
+// A new board every day. Easier early in the week, bigger at the weekend.
+const DOM_CACHE={};
+function dominoPuzzle(day){
+  if(DOM_CACHE[day])return DOM_CACHE[day];
+  const R=pzRand(day*104729+17),dow=new Date().getDay();
+  const nd=[8,5,6,7,8,9,10][dow],W=nd<=6?5:6,H=nd<=6?4:nd<=8?5:6;
+  const ri=n=>Math.floor(R()*n);
+  for(let tries=0;tries<400;tries++){
+    // 1. A connected shape built from dominoes.
+    const cell=new Map(),pieces=[];const key=(r,c)=>r*10+c,free=(r,c)=>r>=0&&c>=0&&r<H&&c<W&&!cell.has(key(r,c));
+    let ok=true;
+    for(let k=0;k<nd&&ok;k++){
+      const opts=[];
+      if(!pieces.length){const r=ri(H),c=ri(W-1);opts.push([[r,c],[r,c+1]])}
+      else for(const [kk] of cell){const r=Math.floor(kk/10),c=kk%10;
+        for(const [dr,dc] of [[0,1],[1,0],[0,-1],[-1,0]]){const a=[r+dr,c+dc];if(!free(...a))continue;
+          for(const [er,ec] of [[0,1],[1,0]]){const b=[a[0]+er,a[1]+ec];if(free(...b))opts.push([a,b]);const b2=[a[0]-er,a[1]-ec];if(free(...b2))opts.push([b2,a])}}}
+      if(!opts.length){ok=false;break}
+      const [a,b]=opts[ri(opts.length)];const id=pieces.length;cell.set(key(...a),{p:id,h:0});cell.set(key(...b),{p:id,h:1});pieces.push({a,b});
+    }
+    if(!ok)continue;
+    // 2. Values from a double-six set, no domino twice.
+    const all=[];for(let x=0;x<=6;x++)for(let y=x;y<=6;y++)all.push([x,y]);
+    const set=pzShuffle(all,R).slice(0,nd).map(d=>R()<.5?d:[d[1],d[0]]);
+    const val=new Map();pieces.forEach((p,i)=>{val.set(key(...p.a),set[i][0]);val.set(key(...p.b),set[i][1])});
+    // 3. Areas: small groups of touching squares, each with a rule that's true for the answer.
+    const cells=[...cell.keys()],area=new Map(),areas=[];
+    for(const start of pzShuffle(cells.slice(),R)){
+      if(area.has(start))continue;
+      const size=1+ri(4),grp=[start];area.set(start,areas.length);
+      while(grp.length<size){const nb=[];for(const g of grp){const r=Math.floor(g/10),c=g%10;for(const [dr,dc] of [[0,1],[1,0],[0,-1],[-1,0]]){const k2=key(r+dr,c+dc);if(cell.has(k2)&&!area.has(k2))nb.push(k2)}}
+        if(!nb.length)break;const k2=nb[ri(nb.length)];area.set(k2,areas.length);grp.push(k2)}
+      const vs=grp.map(g=>val.get(g)),sum=vs.reduce((a,b)=>a+b,0);let rule;
+      const same=vs.length>1&&vs.every(v=>v===vs[0]),diff=vs.length>2&&new Set(vs).size===vs.length;
+      const roll=R();
+      if(vs.length===1&&roll<.35)rule={t:'any'};
+      else if(same&&roll<.8)rule={t:'eq'};
+      else if(diff&&roll<.45)rule={t:'ne'};
+      else if(roll<.62)rule={t:'sum',n:sum};
+      else if(roll<.81&&sum<6*vs.length)rule={t:'lt',n:sum+1+ri(2)};
+      else if(sum>0)rule={t:'gt',n:Math.max(0,sum-1-ri(2))};
+      else rule={t:'sum',n:sum};
+      areas.push({cells:grp,rule});
+    }
+    // Keep it interesting: not too many free squares.
+    if(areas.filter(a=>a.rule.t==='any').length>Math.ceil(nd/3))continue;
+    return DOM_CACHE[day]={W,H,cells,pieces:set.map((d,i)=>({id:i,v:d})),areas,area:[...area.entries()]};
+  }
+  return null;
+}
+function domRuleOK(rule,vs,complete){
+  if(rule.t==='any')return true;
+  if(!complete){
+    const s=vs.reduce((a,b)=>a+b,0);
+    if(rule.t==='sum'||rule.t==='lt')return s<=(rule.t==='sum'?rule.n:rule.n-1);
+    if(rule.t==='eq')return vs.every(v=>v===vs[0]);
+    if(rule.t==='ne')return new Set(vs).size===vs.length;
+    return true;
+  }
+  const s=vs.reduce((a,b)=>a+b,0);
+  return rule.t==='sum'?s===rule.n:rule.t==='lt'?s<rule.n:rule.t==='gt'?s>rule.n:rule.t==='eq'?vs.every(v=>v===vs[0]):new Set(vs).size===vs.length;
+}
+const DOM_COLORS=['#B48CFF','#F5B83D','#34E3C8','#FF7A9A','#7FB2FF','#9BE36A','#FF9F5A','#E6A3FF','#5ED1FF'];
+const domLabel=r=>r.t==='sum'?String(r.n):r.t==='lt'?`<${r.n}`:r.t==='gt'?`>${r.n}`:r.t==='eq'?'=':r.t==='ne'?'≠':'';
+function domPips(v){
+  // Pip positions on a 3×3 grid, like a real domino.
+  const P={0:[],1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[v];
+  return `<span class="pips">${[...Array(9)].map((_,i)=>`<i${P.includes(i)?' class="on"':''}></i>`).join('')}</span>`;
+}
+function openDomino(){
+  if(!pzOpenGuard('domino'))return;
+  const P=dominoPuzzle(dailyNo());if(!P){toast('Today’s board isn’t ready. Try again in a bit.');return}
+  const st=pzState('domino',()=>({place:{}})); // place: piece id -> {k: first square, o: 0 right, 1 down, 2 left, 3 up}
+  let sel=null,rot=0;
+  const areaOf=new Map(P.area),inShape=new Set(P.cells);
+  const o=sheet(`<div class="sheet-h"><div><span class="eyebrow">Daily puzzles · #${st.n}</span><h2>Dominoes</h2></div><span class="mono pz-time" id="dmTime">${fmtSecs(st.secs)}</span><button class="link" data-close>Close</button></div>
+    <p class="muted" style="margin:0;font-size:14px">Place every domino so each colored area matches its rule: a total, less than (&lt;), more than (&gt;), all the same (=) or all different (≠). Gray squares take anything. Tap a domino, tap ↻ to turn it, then tap a square.</p>
+    <div class="dm-board" id="dmBoard" style="grid-template-columns:repeat(${P.W},1fr);aspect-ratio:${P.W}/${P.H}"></div>
+    <p class="dw-msg" id="dmMsg" role="status"></p><div id="dmTray"></div><div id="dmBottom"></div>`,{full:true});
+  o.classList.add('daily-ov');
+  const $o=s=>o.querySelector(s);
+  const DIR=[[0,1],[1,0],[0,-1],[-1,0]];
+  function cover(){const m=new Map();for(const [id,pl] of Object.entries(st.place)){const p=P.pieces[id],r=Math.floor(pl.k/10),c=pl.k%10,[dr,dc]=DIR[pl.o];m.set(pl.k,{id:+id,v:p.v[0],half:0});m.set((r+dr)*10+c+dc,{id:+id,v:p.v[1],half:1})}return m}
+  function check(){
+    const m=cover(),bad=new Set();
+    P.areas.forEach(a=>{const vs=a.cells.filter(k=>m.has(k)).map(k=>m.get(k).v);const full=vs.length===a.cells.length;if(vs.length&&!domRuleOK(a.rule,vs,full))a.cells.forEach(k=>bad.add(k))});
+    return{m,bad,done:m.size===P.cells.length&&!bad.size};
+  }
+  function draw(){
+    const {m,bad}=check();
+    let html='';
+    for(let r=0;r<P.H;r++)for(let c=0;c<P.W;c++){const k=r*10+c;
+      if(!inShape.has(k)){html+='<span class="dm-gap"></span>';continue}
+      const ai=areaOf.get(k),a=P.areas[ai],col=a.rule.t==='any'?'var(--surface-2)':DOM_COLORS[ai%DOM_COLORS.length];
+      const lead=a.cells.slice().sort((x,y)=>x-y)[0]===k&&a.rule.t!=='any';
+      const edge=[[-1,0,'t'],[0,1,'r'],[1,0,'b'],[0,-1,'l']].filter(([dr,dc])=>areaOf.get((r+dr)*10+c+dc)!==ai).map(x=>x[2]).join(' ');
+      const pc=m.get(k);
+      html+=`<button class="dm-c ${edge}${bad.has(k)?' bad':''}${pc?' on':''}" data-k="${k}" style="--ac:${col}">${pc?`<span class="dm-half h${pc.half} o${st.place[pc.id].o}">${domPips(pc.v)}</span>`:''}${lead?`<b class="dm-rule">${esc(domLabel(a.rule))}</b>`:''}</button>`;
+    }
+    $o('#dmBoard').innerHTML=html;
+    if(st.done){$o('#dmTray').innerHTML='';return}
+    const left=P.pieces.filter(p=>!st.place[p.id]);
+    $o('#dmTray').innerHTML=`<div class="dm-tray">${left.map(p=>`<button class="dm-pc${sel===p.id?' sel':''}${sel===p.id&&rot%2?' v':''}" data-p="${p.id}" aria-label="Domino ${p.v[0]} and ${p.v[1]}">${domPips(sel===p.id&&rot>=2?p.v[1]:p.v[0])}${domPips(sel===p.id&&rot>=2?p.v[0]:p.v[1])}</button>`).join('')}</div>
+      <div class="pz-tools"><button class="secondary" data-dm="rot" ${sel==null?'disabled':''}>↻ Turn</button><button class="secondary" data-dm="clear">Clear board</button></div>`;
+  }
+  function finish(){
+    st.done=true;st.solved=true;pzSave('domino',st);draw();
+    const s=pzRecord('domino',st,{solved:true,score:st.secs,detail:`${P.pieces.length} dominoes`});beep(880,.1);
+    $o('#dmMsg').textContent=`Solved in ${fmtSecs(st.secs)}`;
+    pzDonePanel(o,$o('#dmBottom'),'domino',{title:'Solved',big:fmtSecs(st.secs),stats:[[s.played,'Played'],[pzStreakNow('domino'),'Streak'],[s.best!=null?fmtSecs(s.best):'—','Best time']],
+      shareText:()=>`Brainweight Dominoes #${st.n} 🁣 ${fmtSecs(st.secs)}\n\nbrainweight.fit`});
+  }
+  o.addEventListener('click',e=>{
+    if(st.done)return;
+    const pc=e.target.closest('[data-p]');if(pc){const id=+pc.dataset.p;if(sel===id){rot=(rot+1)%4}else{sel=id;rot=0}draw();return}
+    const t=e.target.closest('[data-dm]');
+    if(t){if(t.dataset.dm==='rot'&&sel!=null){rot=(rot+1)%4;draw()}if(t.dataset.dm==='clear'){st.place={};pzSave('domino',st);draw()}return}
+    const c=e.target.closest('[data-k]');if(!c)return;const k=+c.dataset.k,m=cover();
+    // Tap a placed domino to pick it back up.
+    if(m.has(k)){const id=m.get(k).id;delete st.place[id];sel=id;rot=0;pzSave('domino',st);draw();return}
+    if(sel==null){$o('#dmMsg').textContent='Pick a domino first';return}
+    // rot: 0 right, 1 down, 2 left (flipped), 3 up (flipped). Store as first half at k going o.
+    const o2=[0,1,0,1][rot],flip=rot>=2,r=Math.floor(k/10),cc=k%10,[dr,dc]=DIR[o2],k2=(r+dr)*10+cc+dc;
+    if(!inShape.has(k2)||m.has(k2)){pulse(c,'shake');$o('#dmMsg').textContent='It doesn’t fit there. Try turning it.';return}
+    st.place[sel]=flip?{k:k2,o:o2+2}:{k,o:o2};sel=null;rot=0;pzSave('domino',st);$o('#dmMsg').textContent='';
+    const res=check();if(res.done){finish();return}
+    if(res.m.size===P.cells.length)$o('#dmMsg').textContent='Every square is filled, but some areas don’t match yet.';
+    draw();
+  });
+  pzKeys(o,()=>{});
+  pzClock(o,st,'domino',()=>o.querySelector('#dmTime'));
+  draw();if(st.done)finish();
+}
+
 /* ---------- Brain gym list ---------- */
 function puzzleRows(){
   const n=dailyNo();
-  const w=dailyState(),m=pzState('mini',()=>({})),h=hiveStatus(),g=pzState('groups',()=>({})),s=pzState('sudoku',()=>({})),q=pzState('queens',()=>({})),c=pzState('chess',()=>({}));
+  const w=dailyState(),m=pzState('mini',()=>({})),h=hiveStatus(),g=pzState('groups',()=>({})),s=pzState('sudoku',()=>({})),q=pzState('queens',()=>({})),c=pzState('chess',()=>({})),dmo=pzState('domino',()=>({}));
   const done=(st,txt)=>st.done?txt:'';
   return [
     {id:'word',name:'Daily word',icon:'W',sub:w.done?(w.won?`Solved in ${w.guesses.length}`:'Missed'):w.guesses.length?`${w.guesses.length} of 6 guesses`:'Guess the word in six tries',done:w.done,streak:dailyStreakNow()},
@@ -5225,6 +5613,7 @@ function puzzleRows(){
     {id:'hive',name:'Hive',icon:'⬡',sub:h.st.found.length?`${h.rank} · ${h.sc} pts`:'Make words from 7 letters',done:h.rank==='Genius',streak:pzStreakNow('hive')},
     {id:'sudoku',name:'Sudoku',icon:'9',sub:done(s,`Solved in ${fmtSecs(s.secs)}`)||(s.secs?'In progress':'Fill the grid with 1 to 9'),done:s.done,streak:pzStreakNow('sudoku')},
     {id:'queens',name:'Queens',icon:'👑',sub:done(q,`Solved in ${fmtSecs(q.secs)}`)||(q.secs?'In progress':'One crown per row, column and color'),done:q.done,streak:pzStreakNow('queens')},
+    {id:'domino',name:'Dominoes',icon:'🁣',sub:done(dmo,`Solved in ${fmtSecs(dmo.secs)}`)||(dmo.secs?'In progress':'Place the dominoes to match every rule'),done:dmo.done,streak:pzStreakNow('domino')},
     {id:'chess',name:'Mate in 1',icon:'♞',sub:done(c,c.solved?(c.miss?`Solved · ${c.miss} miss${c.miss>1?'es':''}`:'Solved first try'):'Missed')||(c.miss?`${c.miss} of 3 misses`:'Find the checkmate in one move'),done:c.done,streak:pzStreakNow('chess')},
   ];
 }
@@ -5233,7 +5622,14 @@ function puzzlesHTML(){
   return `<section class="pz-sec"><div class="pz-head"><div><span class="eyebrow">Daily puzzles · #${n}</span><h3>Today’s puzzles</h3></div><span class="muted mono" style="font-size:12px">${doneCount}/${rows.length} done</span></div>
     <div class="pz-list">${rows.map(r=>{const lock=puzzleLocked(r.id);return `<button class="pz-row${r.done?' done':''}" data-act="puzzle" data-pz="${r.id}"><span class="pz-ic pz-${r.id}">${r.icon}</span><span class="pz-t"><b>${r.name}</b><span>${lock?'🔒 Member':esc(r.sub)}</span></span>${r.done?'<span class="pz-ok" aria-label="Done">✓</span>':r.streak?`<span class="dc-streak">🔥 ${r.streak}</span>`:'<span class="pz-go">›</span>'}</button>`}).join('')}</div></section>`;
 }
-function openPuzzle(id){({word:openDaily,mini:openMini,hive:openHive,groups:openGroups,sudoku:openSudoku,queens:openQueens,chess:openChess}[id]||openDaily)()}
+function openPuzzle(id){
+  ({word:openDaily,mini:openMini,hive:openHive,groups:openGroups,sudoku:openSudoku,queens:openQueens,chess:openChess,domino:openDomino}[id]||openDaily)();
+  // A way back to the list of puzzles without closing everything.
+  const o=[...document.querySelectorAll('.daily-ov')].pop();
+  if(o&&!o.querySelector('.pz-backbtn')){const h=o.querySelector('.sheet-h');if(h)h.insertAdjacentHTML('afterbegin','<button class="link pz-backbtn" data-act="pz-back" aria-label="Back to all puzzles">‹ Puzzles</button>')}
+  pzLockSync();
+}
+function openPuzzlePicker(){const o=sheet(`<div class="sheet-h"><h2>Daily puzzles</h2><button class="link" data-close>Close</button></div>${puzzlesHTML()}`);o.classList.add('pz-pick')}
 // Puzzle data. Mini grids (first days) and clued word list for generated grids, Hive letters (center first) and words, Groups sets and category bank.
 const MINI_GRIDS=[["off##","nail#","error","#menu","##den"],["the##","wolf#","orbit","#nova","##web"],["##her","#have","loved","open#","ten##"],["are##","loan#","logic","#menu","##rep"],["##her","#give","cared","amen#","bed##"],["#had#","coral","unite","posed","#red#"],["#must","lance","index","agent","rare#"],["#pay#","rapid","upper","belly","#red#"],["##for","#lane","could","ugly#","pot##"],["##how","#papa","alter","been#","sad##"],["##was","#nice","topic","used#","bed##"],["##she","#stay","alone","gold#","owe##"],["##him","#fade","eaten","area#","red##"],["are##","curb#","tired","#note","##ran"],["##but","#case","taken","aged#","per##"],["##and","#trio","thing","ease#","ate##"],["##get","#give","haven","oven#","pen##"],["#bad#","money","eagle","treat","#dry#"],["#put#","final","alike","noted","#ten#"],["##are","#plan","solid","upon#","new##"],["she##","earn#","arrow","#move","##rat"],["##get","#male","house","urge#","bee##"],["#set#","apart","ratio","creep","#end#"],["##his","#monk","party","also#","tee##"],["##the","#then","ahead","test#","eye##"],["##its","#free","loose","aunt#","dry##"],["##can","#solo","fault","ugly#","red##"],["##and","#plea","salad","pier#","any##"],["its##","crew#","eaten","#pure","##pet"],["##any","#tree","great","aunt#","sea##"],["##she","#when","third","wire#","opt##"],["##for","#tape","lived","iron#","per##"],["her##","oval#","wider","#line","##odd"],["##now","#fine","elect","race#","ate##"],["##who","#thin","guide","able#","see##"],["##not","#hope","seven","keen#","ill##"],["##are","#span","stand","park#","art##"],["##two","#swan","shine","post#","yet##"],["off##","lord#","dream","#data","##key"],["##the","#chin","world","idol#","new##"],["own##","what#","limit","#peer","##dry"],["##the","#gray","plate","rode#","owe##"],["end##","girl#","onion","#else","##let"],["##two","#chef","shelf","earl#","ate##"],["#bad#","relay","elite","fleet","#end#"]];
 const MINI_VOCAB="the|and|for|that|you|with|was|are|have|not|but|from|your|all|his|they|one|can|will|just|like|about|out|what|when|more|were|who|had|their|there|her|which|time|get|been|would|she|new|how|some|also|them|now|other|its|our|than|good|only|after|first|him|into|know|see|two|make|over|think|any|then|could|back|these|want|well|said|way|most|much|very|where|even|may|here|need|did|right|work|year|being|day|too|going|off|why|made|still|take|got|many|never|those|life|say|world|down|great|last|while|best|such|love|man|home|long|look|use|same|used|both|every|come|part|state|three|find|help|high|old|since|own|under|game|thing|give|house|place|again|next|each|end|found|must|show|big|feel|sure|team|ever|keep|might|put|money|free|away|left|city|lot|name|night|play|until|doing|few|let|real|set|done|group|top|care|start|week|case|today|full|live|point|read|told|yet|bad|four|hard|mean|once|tell|music|power|seen|stop|water|based|call|head|men|small|took|white|came|far|job|side|try|went|yes|later|less|line|order|party|run|open|thank|area|black|law|war|whole|car|face|five|kind|maybe|per|story|hope|least|able|book|early|local|post|video|young|ago|talk|court|fact|given|half|hand|level|mind|often|body|death|food|guy|pay|south|true|known|large|lost|room|win|wrong|along|else|girl|air|bit|hit|nice|yeah|class|close|idea|past|cause|due|happy|human|move|wait|woman|ask|data|late|leave|north|saw|watch|light|low|short|stay|taken|age|buy|deal|red|soon|third|turn|among|check|form|heart|act|asked|child|fire|fun|major|media|phone|art|easy|near|plan|quite|six|west|final|front|list|ready|son|bring|meet|type|baby|march|song|study|word|clear|gave|month|self|board|cost|cut|field|main|road|town|fight|fine|force|hear|issue|price|rest|space|term|wife|date|land|miss|shot|site|june|total|above|club|film|knew|lead|share|won|dead|hold|sense|star|test|view|break|event|hour|sorry|wish|boy|gold|gone|guess|king|learn|added|alone|bank|east|hot|movie|park|press|role|sent|tried|worth|bill|cool|sound|value|rate|round|save|stand|stuff|tax|blue|drive|eat|fall|fast|felt|green|match|model|size|step|trust|hey|key|page|range|trade|upon|chief|cup|hate|led|lower|send|style|vote|blood|dog|lord|oil|stage|title|add|born|enjoy|met|poor|code|cover|door|hair|legal|lose|pick|race|seem|seven|sign|staff|super|union|walk|bed|built|crazy|daily|die|loss|paper|safe|voice|whose|army|earth|goal|huge|okay|sea|sir|base|below|deep|mark|offer|pass|risk|sleep|table|ten|truth|ball|build|card|dark|mine|note|piece|visit|wall|wrote|pain|river|rock|shall|speak|write|album|cold|eight|eye|funny|peace|spent|store|track|ahead|allow|beat|brown|gas|moved|radio|text|cross|ice|join|kept|loved|sort|speed|drop|fair|kid|link|sale|tour|extra|quick|sell|agree|clean|photo|scene|sold|spend|sun|coach|heavy|train|wide|wow|claim|dad|fear|fit|hotel|judge|lady|named|unit|bar|brain|floor|hurt|image|meant|pro|reach|rule|civil|dance|none|ship|stock|worst|band|beach|cash|ended|fan|lack|older|wear|color|dream|grand|luck|rich|skin|sweet|touch|doubt|drink|fish|glad|grow|shown|sit|trip|basic|carry|crime|fully|male|plant|spot|worse|award|block|holy|lived|shop|sick|avoid|catch|cell|coast|foot|hall|mass|nine|pop|ran|trial|truly|heat|queen|broke|fell|glass|prior|ride|royal|serve|slow|tree|whom|begin|lie|sad|twice|wind|worry|brand|bus|cent|count|fresh|lake|mouth|owner|scale|score|smart|throw|click|faith|fund|hill|jack|metal|pull|push|rose|seat|agent|apply|draw|enter|gain|prime|ring|rise|soul|waste|weird|adult|grade|stone|wild|bag|bet|camp|cast|firm|till|apart|aware|cat|fifth|gift|nor|shut|van|wood|birth|copy|dear|host|labor|lucky|onto|prove|rare|tough|alive|apple|boss|dress|horse|liked|magic|map|net|owned|stick|wake|aid|busy|farm|file|fix|fly|frank|guide|raise|roll|treat|youth|dry|edge|evil|iron|mad|web|wine|arm|bay|core|exist|guard|port|shoot|solid|sport|taste|tea|flat|fuel|hello|ill|kick|mail|pair|plane|shape|sky|upper|zone|bear|boat|cheap|duty|joint|mix|path|rain|steel|tired|vice|warm|beer|crew|crowd|enemy|fixed|limit|moon|ocean|proof|suit|chair|debt|grew|honor|jump|noted|tech|user|email|flow|hero|joke|loan|soft|stuck|sugar|drama|entry|era|feed|grant|grown|lying|pool|route|saved|smoke|squad|teach|angry|fox|hole|laugh|leg|lunch|milk|pack|snow|storm|sub|weak|actor|chain|cook|cute|equal|fake|quiet|split|task|urban|fault|fill|lay|mixed|phase|pure|smile|truck|bird|blame|bowl|dying|false|fired|meat|mode|neck|novel|shirt|zero|cream|giant|jail|mayor|minor|theme|tiny|usual|voted|wave|draft|fail|seek|solo|spoke|upset|wing|cycle|row|salt|armed|aside|bell|blow|bond|cry|empty|mile|nick|prize|rural|admit|favor|flag|frame|guest|kiss|load|plot|rent|teeth|bunch|chat|diet|fruit|index|item|lane|mess|navy|shift|stood|tank|tend|tight|yard|crown|golf|grace|laid|tool|ban|chose|crash|depth|dirty|error|joy|mate|noise|panel|plate|rice|roof|shame|tip|cable|calm|hide|print|quit|sight|sing|wet|bike|broad|burn|cake|drawn|hat|loud|motor|peak|raw|solar|blind|brief|chest|debut|grab|paint|pilot|pink|steam|tall|aim|cap|exact|fed|fee|lock|nose|quote|swear|tie|trend|wise|aged|bread|ford|gang|inner|lift|reply|rid|tower|wheel|bush|coal|faced|filed|hunt|inch|jury|pride|rough|smell|tone|topic|vast|auto|earn|grey|meal|rush|sharp|trick|audio|bone|chart|gap|gate|harm|mount|occur|thin|tied|argue|awful|bound|cloud|drew|egg|gear|hip|loose|moral|shock|thick|threw|wash|acid|angel|duke|flash|fort|gray|gross|math|pet|refer|trail|uncle|badly|bath|chase|ideal|mood|rank|sand|tag|tape|wage|clock|desk|ear|gym|label|pitch|pizza|plain|rear|wire|anger|belt|comic|ghost|kit|lab|newly|odd|skill|soil|solve|trash|ugly|boost|crack|deck|dust|hired|knife|rail|root|saint|steal|bid|buddy|dean|delay|elite|forth|hire|hop|layer|marry|nurse|pot|pray|sake|sheet|bench|bye|medal|pan|shell|silly|angle|forum|grass|hence|mill|pace|pen|pope|rapid|sixth|spin|valid|vital|cop|creek|fraud|honey|hook|log|ratio|scary|seed|sin|spell|sword|ward|begun|coat|daddy|doc|drove|fate|gene|glory|jean|juice|logic|strip|tube|dozen|epic|exit|fancy|input|knock|ought|poll|rep|rob|tear|wolf|ate|bull|deny|ease|fame|flood|rally|sum|swing|tail|twin|alert|arena|boom|brave|fleet|knee|robin|shake|shore|teen|trap|bang|blast|cure|eve|pound|punch|bite|chip|dare|fewer|grave|jazz|mask|mouse|piano|ruin|sec|bat|bow|cape|craft|devil|edit|rated|ruled|sauce|seal|slide|stem|tiger|toy|alien|beast|beef|candy|cited|clay|dated|drag|fifty|fool|jet|loop|mall|relax|rely|sole|tale|ton|wore|acted|alarm|bass|con|dual|globe|gulf|hoped|logo|pin|pump|slip|spare|tap|dawn|huh|opera|pit|quest|sized|tune|weed|anime|bold|clip|exam|lover|menu|oral|panic|rip|scope|worn|aimed|alpha|brick|lion|mercy|outer|pipe|poem|rude|screw|vary|venue|dirt|habit|lazy|naval|noble|pat|robot|shoe|spy|toxic|wider|wound|asset|baker|brush|chef|essay|maker|palm|pole|pub|shed|snake|ultra|usage|bin|canal|climb|dig|fever|fluid|folk|leaf|nasty|sue|twist|unity|woke|arc|blown|dish|duck|fence|hood|hung|lied|nail|poet|sink|skip|snap|stole|swim|swiss|beta|bored|bug|cave|dealt|dose|flesh|flip|forty|hated|laser|loyal|patch|pic|punk|radar|villa|wrap|yoga|adopt|blade|boot|bulk|cargo|coin|corn|cried|humor|lit|mar|nerve|pie|raid|ram|sandy|sheep|taxi|trace|bare|chill|clue|earl|grain|grid|lap|liver|oak|rifle|rival|sadly|slept|soap|spray|suite|verse|bless|chuck|couch|crush|dam|genre|jam|lease|rat|shine|tweet|ash|aunt|flew|icon|react|rocky|shade|shy|tier|vocal|yield|bacon|burst|crop|ion|par|salad|soup|stake|swift|awake|beam|blank|cow|curve|harsh|horn|hurry|lean|mason|organ|pearl|peer|pig|pile|plug|rod|sweat|zoo|alike|arrow|bend|cabin|cage|disc|eagle|eaten|guilt|haven|keen|lip|mere|mud|owe|ski|theft|valve|visa|charm|cruel|deer|delta|dive|ham|heal|prof|rap|rev|ridge|tribe|ace|canon|cared|drum|grip|mild|noon|rage|silk|stamp|thy|urge|voter|witch|ally|array|belly|booth|cam|cliff|derby|fatal|fig|lemon|lung|ore|pine|pose|pour|sang|shark|bee|cult|dairy|diary|drill|hug|leak|meter|mice|olive|riot|setup|skull|slot|smash|basin|breed|bride|bud|chick|dump|duo|fairy|fold|freak|grief|hub|lined|lodge|merit|micro|myth|pale|rebel|toll|tooth|torn|viral|widow|beard|bio|curse|drain|flame|hint|ink|inn|nest|ninth|penny|petty|reed|reign|scan|scare|span|sunny|toe|cheat|cheer|chile|demon|doll|elder|fiber|fried|hull|pulse|realm|rope|shout|alter|beg|bout|brass|buzz|dip|dot|fled|foul|graph|hack|lamp|oven|shook|slim|spam|stack|tent|tide|aging|audit|bolt|bust|cope|dried|echo|nut|soda|spite|burnt|buyer|cease|cloth|eager|elect|fork|fur|junk|lobby|mob|orbit|pill|pork|ranch|tin|trunk|arch|badge|carol|ego|ferry|gauge|goat|gut|heck|lamb|liar|rider|shelf|slam|tire|warn|width|bail|buck|den|disk|loser|pad|sail|sheer|stark|tan|thumb|urged|void|wheat|whip|wipe|wrist|acute|chin|civic|clerk|coup|crude|dash|drone|flour|jerk|pause|puppy|slice|vinyl|barn|bent|deaf|dock|feat|neat|pal|probe|remix|sneak|sore|spark|steep|straw|weigh|adapt|bean|bump|cart|cord|dense|gig|jaw|kitty|lawn|oval|pity|pond|prey|ruby|wade|whale|amber|ankle|armor|berry|clan|clash|grasp|handy|manga|poker|rub|sally|scout|slap|steak|sweep|cheek|curry|drake|eyed|flu|melt|oath|polar|skirt|spa|spike|stir|tab|toast|trek|unto|waist|wit|wreck|amid|blend|brake|cab|chi|cough|depot|drank|feast|frost|hike|lame|lily|plea|purse|ref|sigh|tense|troy|vegan|chess|dull|fare|float|grind|grove|gum|hobby|idol|lance|leap|newer|prep|risky|scam|sided|sober|spice|swap|swept|towel|trio|acre|amen|arise|bloom|bore|clown|dial|dodge|guild|halt|jar|monk|norm|prone|siege|sixty|sonic|spine|admin|baked|boo|crane|donor|hail|lend|mint|nova|pasta|tenth|wax|bake|batch|fury|glow|hay|lone|papa|paste|plaza|rode|sack|stare|sung|toss|wool|yang|blunt|champ|ditch|dome|fog|gif|gosh|lad|opt|rack|scrap|shaft|slope|snack|stern|stiff|sworn|unite|vault|vet|wagon|bury|cod|fist|fond|frog|fry|heir|homer|midst|mommy|moss|onion|rex|rogue|tomb|trim|abbey|baron|blah|bunny|choir|haul|holly|karma|node|shiny|sour|spoon|thief|yale|alley|bully|gem|glen|marsh|messy|owl|roast|saga|salon|tuned|vague|woo|zip|abs|ant|coral|dough|dug|fade|hardy|irony|lime|maid|maple|relay|rig|risen|stunt|surf|sync|wiped|aired|bait|bark|freed|ivory|levy|mock|niche|porch|rim|spit|tub|utter|yell|creep|doe|elbow|envy|exile|gel|goose|grill|heel|hut|mat|ruler|spill|swamp|swan|tasty|bald|boil|cone|decay|flown|imply|isle|ivy|merry|obey|ramp|reef|reset|sage|shave|vodka|zoom|bot|cube|drift|dye|guru|hatch|lace|nap|niece|pier|quiz|scent|slate|surge|tee|token|whoa|woody|yacht|bash|doom|flee|gal|hawk|lid|manor|memo|pony|posed|pupil|sofa|spoil|altar|amp|awe|combo|crow|flush|font|glue|hairy|ounce|peel|seize|spicy|sting|tick|vent|wan|wired|axe|belle|bred|curb|hid|raven|stall|strap|bliss|daisy|faint|foam|forge|jade|notch|omega|queue|stab|trout";
@@ -6153,7 +6549,9 @@ document.addEventListener('click',e=>{
     case'member':openMember(b.dataset.why);break;
     case'daily':openDaily();break;
     case'puzzle':document.querySelectorAll('.pz-pick').forEach(o=>o.remove());openPuzzle(b.dataset.pz);break;
-    case'pz-sheet':{const o=sheet(`<div class="sheet-h"><h2>Daily puzzles</h2><button class="link" data-close>Close</button></div>${puzzlesHTML()}`);o.classList.add('pz-pick');break}
+    case'pz-sheet':openPuzzlePicker();break;
+    case'pz-back':{const o=b.closest('.sheet-ov');if(o&&o.close)o.close();else if(o)o.remove();openPuzzlePicker();break}
+    case'pz-to-lift':{document.querySelectorAll('.sheet-ov').forEach(o=>o.close?o.close():o.remove());if(overlayOpen())closeGame();setTab('workout');break}
     case'hide-install':LS.set('hideInstall',true);render();break;
     case'install':if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;render()})}break;
     case'new-custom':openCustom();break;
@@ -8208,11 +8606,11 @@ const MEMBER_WHY={
   progress:['See your progress','Strength charts, estimated maxes, PR history and brain game trends.'],
   leaderboard:['Compete on leaderboards','See where you rank against friends and everyone on Brainweight, and challenge people to beat your score.'],
   programs:['Unlock recommended programs','Ready-made programs you can start with one tap.'],
-  puzzles:['Unlock every daily puzzle','Free includes the Daily word and Groups. Member adds the Mini grid, Hive, Sudoku, Queens and Mate in 1 every day.'],
+  puzzles:['Unlock every daily puzzle','Free includes the Daily word and Groups. Member adds the Mini grid, Hive, Sudoku, Queens, Dominoes and Mate in 1 every day.'],
   readiness:['Train for how you recovered','Member adds your Garmin sleep, HRV, resting heart rate and stress to your daily readiness, and adjusts today’s workout for you.'],
   plan_more:['Upgrade to Member','Unlock everything Brainweight has to offer.'],
 };
-const MEMBER_LIST=['All 14 brain games','Every daily puzzle','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and PR history','Daily readiness from your Garmin data','Leaderboards and challenges'];
+const MEMBER_LIST=['All 17 brain games','Every daily puzzle','Unlimited routines','Plans built for your goal','Recommended programs','Progress charts and PR history','Daily readiness from your Garmin data','Leaderboards and challenges'];
 function openMember(reason){
   const w=MEMBER_WHY[reason]||MEMBER_WHY.plan_more,had=!!ME.access?.subscription?.had_trial;let iv='month';
   const o=sheet(`<span class="badge teal" style="align-self:flex-start">Member</span><h2>${esc(w[0])}</h2><p class="muted">${esc(w[1])}</p>
